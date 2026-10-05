@@ -1,0 +1,35 @@
+# Dependencies & build output
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+
+# Large raw captures stay out of git (see docs/fixtures.md).
+# Commit downscaled, User-ID-masked crops + golden JSON instead.
+fixtures/**/*.mp4
+fixtures/**/*.mov
+fixtures/raw/
+
+# Debug frames written by "save debug frames"
+debug-frames/
+
+# OS / editor
+.DS_Store
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Secrets (signing keys never live in the repo)
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+
+# TEMPORARY: all fixture media is ignored until User IDs are masked
+# (docs/fixtures.md rule 1). Remove this block once masked copies exist.
+fixtures/**/*.png
+fixtures/**/*.jpg
+fixtures/**/*.jpeg
+fixtures/**/*.webp
