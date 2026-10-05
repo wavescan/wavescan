@@ -24,7 +24,7 @@ Ship **two modes on one pipeline**:
 - **Watch mode (default):** no input is ever sent. The user clicks, and the scanner reads every stable, novel frame. It needs no admin and no Accessibility permission.
 - **Auto mode (opt-in):**
   - It's enabled in Settings after a plain-language warning that names the Fair Play risk, with a typed `I understand` confirmation. It's re-armed every session.
-  - Every input goes through `safety::guarded_input`: armed, game focused, point clamped to the client rect, and a per-session click cap.
+  - Every input goes through the auto-mode guard (`safety::AutoMode`): armed, game focused, target inside the client rect, and a per-session action cap.
   - It aborts instantly on physical mouse movement (cursor drift between our clicks), the F8 hotkey, or the game losing focus. Everything read so far is kept.
   - Waits are driven by frame changes (wait until the stats fingerprint is stable for 2 frames), never fixed sleeps.
   - Windows: if the game is elevated, offer to restart the scanner elevated, for auto mode only. macOS: request Accessibility only when the user first arms auto mode.

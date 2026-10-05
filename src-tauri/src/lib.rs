@@ -4,9 +4,25 @@
 //! Start with `docs/architecture.md` and `docs/rust-primer.md`. In short: this crate is a
 //! thin layer of OS adapters (window, capture, OCR, input) behind traits; the logic that
 //! understands the game lives in TypeScript.
+//!
+//! | Module | Role |
+//! |---|---|
+//! | [`traits`] | The four OS seams: window, capture, OCR, input |
+//! | [`safety`] | Gatekeeper for input (auto mode) and User ID privacy |
+//! | [`frame`] | In-memory captured images: crop, fill |
+//! | [`geometry`] | Pixel and fractional rectangles/points |
+//! | [`commands`] | IPC commands the UI calls |
+//! | [`error`] | The error type sent to the UI |
 
 pub mod commands;
 pub mod error;
+pub mod frame;
+pub mod geometry;
+pub mod safety;
+pub mod traits;
+
+#[cfg(test)]
+pub(crate) mod testing;
 
 pub use error::Error;
 

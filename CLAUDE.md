@@ -37,7 +37,9 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src-tauri/src/platform/{windows,macos}/` | **Only** place with OS APIs: `window.rs`, `capture.rs`, `ocr.rs`, `input.rs` |
 | `src-tauri/src/traits.rs` | `WindowFinder`, `FrameSource`, `OcrEngine`, `InputDriver`: the seams everything is tested through |
 | `src-tauri/src/commands.rs` | Tauri IPC commands (thin: validate → call trait → map error) |
-| `src-tauri/src/safety.rs` | Auto-mode arming, client-rect clamp, abort detection, User ID mask |
+| `src-tauri/src/safety.rs` | `AutoMode` input guard (arming, bounds, abort detection, action cap), User ID mask + crop guard |
+| `src-tauri/src/frame.rs`, `geometry.rs` | Captured images (crop/fill) and pixel ↔ fraction geometry |
+| `src-tauri/src/testing.rs` | Fakes for the four traits (test-only) |
 | `src-tauri/capabilities/` | Tauri permission allow-list (keep minimal) |
 | `src/session/` | `ScanSession`, `classifyScreen`, per-screen `extractors/` (TS "brain") |
 | `src/auto/` | Auto-mode navigator state machine, grid walking |
@@ -54,14 +56,14 @@ Parsing, fuzzy matching, ROI layouts and game data tables come from **`@wutherin
 - **Never** read or write game process memory, inject DLLs or hooks into the game, read or modify game install files, or capture network traffic.
 - **Capture the game window only.** Never the full desktop or other windows.
 - **No telemetry, analytics or crash reporting services.** No new outbound host without an ADR **and** an update to the README "internet connections" table and `docs/architecture.md#network`.
-- **Never OCR, log or persist the User ID region** (bottom-right). Debug frames and bug-report exports pass through `safety::mask_user_id` ([ADR 0013](docs/adr/0013-user-id-masking.md)).
+- **Never OCR, log or persist the User ID region** (bottom-right). OCR crops go through `safety::crop_outside_user_id`, and debug frames and bug-report exports pass through `safety::mask_user_id` ([ADR 0013](docs/adr/0013-user-id-masking.md)).
 - Frames live in memory only. Writing frames to disk happens only behind the user-enabled "Save debug frames" setting.
 - Tauri capabilities stay least-privilege. No `shell:allow-execute`, no broad `fs` scopes, a strict CSP and no remote scripts. Adding a permission needs an ADR.
 - Dependencies: a new crate or npm runtime package needs a one-line justification in the PR, and must pass `cargo deny` / `npm audit`. A crate that touches the OS or network needs an ADR.
 
 ### Synthetic input (auto mode)
 - Input APIs (`SendInput`, `CGEventPost`) appear **only** in `platform/*/input.rs`, behind the `InputDriver` trait.
-- Every input call goes through `safety::guarded_input`, which checks that auto mode is armed, the game window is focused, the point is inside the client rect, and the click cap isn't exceeded.
+- Every input call goes through `safety::AutoMode` (`click` / `scroll` / `press`), which checks that auto mode is armed, the game window is focused, the point is inside the client rect, and the click cap isn't exceeded.
 - Abort on physical user input, focus loss or hotkey. These paths **must** have tests.
 - Don't add randomised timing, "humanisation" or anything meant to hide automation from anti-cheat. Waits exist for correctness (frame settled), not stealth.
 
