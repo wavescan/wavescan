@@ -1,0 +1,30 @@
+# Local checks in a Linux container, so no Rust toolchain is needed on the host.
+# The app itself must run natively on Windows or macOS (docs/development.md).
+#
+#   docker compose run --rm check   # everything CI checks (minus Windows/macOS-only code)
+#   docker compose run --rm shell   # a shell with node, npm, cargo, nextest, deny
+services:
+  check:
+    build:
+      context: docker
+    image: wavescan-check
+    working_dir: /app
+    command: ["bash", "scripts/check.sh"]
+    volumes: &volumes
+      - .:/app
+      # Keep Linux-built dependencies out of the host checkout.
+      - node_modules:/app/node_modules
+      - cargo-registry:/usr/local/cargo/registry
+      - cargo-target:/app/src-tauri/target
+  shell:
+    image: wavescan-check
+    working_dir: /app
+    command: ["bash"]
+    stdin_open: true
+    tty: true
+    volumes: *volumes
+
+volumes:
+  node_modules:
+  cargo-registry:
+  cargo-target:

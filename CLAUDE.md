@@ -14,10 +14,11 @@ Mental model: [docs/architecture.md](docs/architecture.md). Decisions: [docs/adr
 ## Commands
 
 ```bash
-npm i                      # install JS deps
+npm run check              # Docker: every CI check in a Linux container (docs/development.md)
+npm ci                     # install JS deps
 npm run tauri dev          # run the app (Vite + Rust, hot reload)
 npm run test               # Vitest (TS: session, extractors, auto navigator)
-npm run lint               # eslint + vue-tsc
+npm run lint               # eslint + vue-tsc -b
 npm run tauri build        # release bundle for the current OS
 
 cd src-tauri
@@ -102,7 +103,7 @@ Parsing, fuzzy matching, ROI layouts and game data tables come from **`@wutherin
 
 ## Git workflow
 - Never commit to `main`. Use a branch → PR → squash merge. Branch, commit and PR naming are in [docs/conventions.md](docs/conventions.md).
-- One concern per PR, including its tests and docs. CI must be green on Windows and macOS.
+- One concern per PR (Phase 0 uses milestone PRs, see conventions), including its tests and docs. CI must be green on Windows and macOS.
 
 ## Reference
 - Plan of record: [docs/roadmap.md](docs/roadmap.md)

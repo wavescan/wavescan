@@ -18,8 +18,10 @@ The web app keeps all user data in localStorage and has no backend. Users want a
 ## Decision
 
 - **Save file:** a native save dialog writes `wuthering-scan-YYYY-MM-DD.json`.
-- **Open in Wuthering Tools:** writes the JSON to the clipboard (Tauri clipboard-manager, write-only), then opens `https://<site>/import/scan` in the default browser. That page has **Paste from scanner** (`navigator.clipboard.readText()` on click) and drag-and-drop.
+- **Open in Wuthering Tools:** writes the JSON to the clipboard (Tauri clipboard-manager, write-only), then opens `https://wutheringtools.com/import/scan` in the default browser. That page has **Paste from scanner** (`navigator.clipboard.readText()` on click) and drag-and-drop.
 - The import page validates ([ADR 0008](./0008-scan-json-schema-v1.md)), shows a review/diff (reusing `useEchoDuplicateReview`), and saves only on confirmation.
+- **Imports are additive, never a restore.** A Wavescan import adds new echoes and skips or flags duplicates. It never uses the Settings "full backup restore" path (`applyImportedDatabase`), which overwrites all data. For v0.2 (characters), the import updates only the scanned fields of the scanned characters, after a per-character confirmation. Builds, teams and rotations are never touched.
+- **Not used:** the existing Settings "Import echoes" (`importEchoesFromRaw`). It has no validation and no duplicate check (re-importing a scan would double the inventory), and it drops level/equipped data. It also spreads the incoming object *after* the generated `echoId`, so an `echoId` in the file would override it.
 
 ## Consequences
 

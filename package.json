@@ -1,0 +1,45 @@
+{
+  "name": "wavescan",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Reads your Wuthering Waves echoes from the game window and exports them for Wuthering Tools.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . && vue-tsc -b",
+    "check": "docker compose run --rm check"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.12.1",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/cli": "^2.12.1",
+    "@types/node": "^24.19.1",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/tsconfig": "^0.9.1",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "daisyui": "^5.7.47",
+    "eslint": "^10.12.0",
+    "eslint-plugin-vue": "^10.11.1",
+    "globals": "^17.13.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.71.0",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3",
+    "vue-tsc": "^3.3.12"
+  }
+}

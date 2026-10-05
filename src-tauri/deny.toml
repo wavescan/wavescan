@@ -1,0 +1,52 @@
+# Supply-chain policy, checked by `cargo deny check` in CI and `npm run check`.
+# See docs/adr/0014-gpl-3-license.md and docs/adr/0015-rust-code-standards.md.
+
+[graph]
+targets = [
+  "x86_64-pc-windows-msvc",
+  "aarch64-pc-windows-msvc",
+  "aarch64-apple-darwin",
+  "x86_64-apple-darwin",
+]
+all-features = false
+
+[advisories]
+# RustSec database. Unmaintained-crate notices are reviewed, not ignored silently.
+yanked = "deny"
+ignore = []
+
+[licenses]
+# GPL-3.0-compatible licences only.
+allow = [
+  "MIT",
+  "MIT-0",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "0BSD",
+  "MPL-2.0",
+  "Unicode-3.0",
+  "CC0-1.0",
+  "BSL-1.0",
+  "CDLA-Permissive-2.0",
+]
+confidence-threshold = 0.9
+# The allow-list covers licences we accept, not only ones in use today.
+unused-allowed-license = "allow"
+
+[licenses.private]
+# Our own crate (GPL-3.0-or-later, publish = false) isn't checked against the list.
+ignore = true
+
+[bans]
+multiple-versions = "allow"
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

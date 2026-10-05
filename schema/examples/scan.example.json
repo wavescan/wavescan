@@ -1,0 +1,46 @@
+{
+  "format": "WutheringToolsScan",
+  "version": 1,
+  "meta": {
+    "scannerVersion": "0.0.1",
+    "scannedAt": "2026-10-05T18:00:00Z",
+    "platform": "windows",
+    "resolution": { "width": 2880, "height": 1800 },
+    "language": "en",
+    "mode": "watch"
+  },
+  "echoes": [
+    {
+      "scanId": "scan-echo-1",
+      "echo": "BellBorneGeochelone",
+      "echoSet": "RejuvenatingGlow",
+      "cost": 4,
+      "rank": 5,
+      "level": 15,
+      "stat": "CritRate",
+      "substats": [
+        { "type": "ATK_FLAT", "value": 40 },
+        { "type": "BasicAttackDMGBonus", "value": 9.4 },
+        { "type": "EnergyRegen", "value": 10.0 }
+      ],
+      "equippedBy": "Rebecca"
+    },
+    {
+      "scanId": "scan-echo-2",
+      "echo": "ViridblazeSaurian",
+      "echoSet": "MoltenRift",
+      "cost": 3,
+      "rank": 5,
+      "level": 15,
+      "stat": "Electro",
+      "substats": [
+        { "type": "HP_FLAT", "value": 470 },
+        { "type": "ATK_FLAT", "value": 40 },
+        { "type": "ATK", "value": 9.4 }
+      ],
+      "equippedBy": null,
+      "locked": true,
+      "lowConfidence": ["echoSet"]
+    }
+  ]
+}

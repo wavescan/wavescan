@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Everything the main window may call. Keep minimal: adding a permission needs an ADR (CLAUDE.md, ADR 0010/0015).",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "allow-app-info"
+  ]
+}
