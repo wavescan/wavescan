@@ -22,7 +22,9 @@ pub struct WindowId(pub u64);
 pub struct GameWindow {
     /// Identifies the window for capture.
     pub id: WindowId,
-    /// The drawable area (no title bar or borders), in physical screen pixels.
+    /// The window's area in the OS's input coordinates: physical pixels on Windows (the
+    /// client area, without title bar), points on macOS (the whole window). Click targets
+    /// are fractions of this rectangle, and captured frames cover the same area.
     pub client_rect: Rect,
     /// Display scale factor (1.0 = 100%, 2.0 = Retina/200%).
     pub scale_factor: f64,
@@ -30,6 +32,9 @@ pub struct GameWindow {
     pub focused: bool,
     /// True if the window is minimised (nothing can be captured or clicked).
     pub minimized: bool,
+    /// The owning process id, when the OS reports it with the window list (macOS). Used
+    /// only to bring the game to the front; never to open or inspect the process.
+    pub process_id: Option<u32>,
 }
 
 /// A window that might be the game, listed on the Diagnostics screen to debug

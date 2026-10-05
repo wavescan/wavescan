@@ -28,6 +28,25 @@
           "column": 4
         }
       ]
+    },
+    {
+      "owner": "rust-error-line",
+      "pattern": [
+        {
+          "regexp": "^(error)(\\[\\S+\\])?: (.*)$",
+          "severity": 1,
+          "message": 3
+        }
+      ]
+    },
+    {
+      "owner": "build-script-error",
+      "pattern": [
+        {
+          "regexp": "^\\s+(.*(?:error|Error|ERROR)\\b.*)$",
+          "message": 1
+        }
+      ]
     }
   ]
 }
