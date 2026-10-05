@@ -18,6 +18,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - [x] Adapters implemented (ADR 0018); compiled on CI's macOS runner
   - [ ] Verified by a community tester (Diagnostics report + click test) No Apple Silicon Mac in-house, so this is validated by **Discord community testers**:
   - CI builds an arm64 `.dmg` (ad-hoc signed until the Developer ID is set up; testers right-click → Open)
+  - [x] `tester-build.yml` publishes unsigned macOS (ad-hoc signed) + Windows builds to the rolling `tester-build` pre-release on every merge; tester guide in `docs/testing-guide.md`
   - the app's **Diagnostics** screen runs a self-test (window found? capture fps? OCR on a sample crop? test click registered?) and exports a masked report the tester posts back
 - [ ] Record ms per stage in `docs/screens/echoes.md`
 

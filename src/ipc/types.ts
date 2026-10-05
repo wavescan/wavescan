@@ -7,6 +7,8 @@ export interface AppInfo {
   version: string;
   /** Operating system the app was built for. */
   platform: "windows" | "macos" | "linux";
+  /** Short commit id for CI-built tester/release builds; null for local builds. */
+  build: string | null;
 }
 
 /** Every error a Rust command can return, serialized as `{ kind, message }`. */

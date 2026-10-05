@@ -36,6 +36,8 @@ Get Wavescan from **[wavescan.app](https://wavescan.app)** or this repository's 
 
 Don't download the scanner from anywhere else.
 
+Want to help test early builds? See the [testing guide](docs/testing-guide.md).
+
 ## Will it work on my PC/Mac?
 
 You need:

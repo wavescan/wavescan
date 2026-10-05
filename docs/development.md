@@ -85,6 +85,10 @@ macOS asks for **Screen Recording** permission the first time Wavescan looks for
 
 Intel Macs can build and run the app, but can't run Wuthering Waves, so real-game testing needs Apple Silicon. Until we have one, macOS testing relies on community testers and the Diagnostics screen ([roadmap](roadmap.md)).
 
-## 4. Release builds
+## 4. Tester builds
+
+Every merge to `main` runs `.github/workflows/tester-build.yml`. It builds an unsigned Apple Silicon `.dmg` (ad-hoc signed so macOS will open it) and a Windows installer, then replaces the **[tester-build](https://github.com/wavescan/wavescan/releases/tag/tester-build)** pre-release with them, plus SHA-256 checksums. You can also run it by hand from the Actions tab. The commit id is baked in (`WAVESCAN_BUILD`) and shown on the home screen and in Diagnostics reports. Share [testing-guide.md](testing-guide.md) with testers.
+
+## 5. Release builds
 
 `npm run tauri build` makes an installer for the current OS in `src-tauri/target/release/bundle/`. Official, signed releases are only built by CI ([ADR 0011](adr/0011-signing-provenance-and-updater.md)).
