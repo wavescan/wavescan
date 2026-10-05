@@ -22,6 +22,10 @@ defineEmits<{ diagnostics: [] }>();
       >
         <span class="badge badge-neutral mr-2">v{{ info.version }}</span>
         <span class="badge badge-outline">{{ info.platform }}</span>
+        <span
+          v-if="info.build"
+          class="badge badge-ghost ml-2"
+        >build {{ info.build }}</span>
       </div>
       <div
         v-else-if="error"

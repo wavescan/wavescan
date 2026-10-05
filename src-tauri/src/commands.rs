@@ -33,6 +33,8 @@ pub struct AppInfo {
     pub version: &'static str,
     /// Operating system this build targets: `windows`, `macos` or `linux`.
     pub platform: &'static str,
+    /// Short commit id for CI builds (`WAVESCAN_BUILD` at compile time); `None` locally.
+    pub build: Option<&'static str>,
 }
 
 /// Size and sequence number of a captured frame.
@@ -272,6 +274,7 @@ pub fn app_info() -> AppInfo {
         name: "Wavescan",
         version: env!("CARGO_PKG_VERSION"),
         platform: std::env::consts::OS,
+        build: option_env!("WAVESCAN_BUILD"),
     }
 }
 
@@ -439,6 +442,7 @@ mod tests {
         assert_eq!(info.name, "Wavescan");
         assert_eq!(info.version, env!("CARGO_PKG_VERSION"));
         assert_eq!(info.platform, std::env::consts::OS);
+        assert_eq!(info.build, option_env!("WAVESCAN_BUILD"));
     }
 
     #[test]
