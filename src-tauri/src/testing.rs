@@ -28,6 +28,7 @@ impl FakeWindowFinder {
                 scale_factor: 2.0,
                 focused: true,
                 minimized: false,
+                process_id: None,
             })),
         }
     }

@@ -1,31 +1,21 @@
+# Type-checks the macOS adapters that don't need Apple's SDK (Vision OCR, Core Graphics
+# input) from Linux, so `npm run check` catches most macOS errors without a Mac.
+# capture.rs / window.rs use ScreenCaptureKit (a Swift bridge) and are checked on CI's
+# macOS runner only. Keep the objc2 dependency versions/features in sync with
+# src-tauri/Cargo.toml.
 [package]
-name = "wavescan"
-version = "0.0.1"
-description = "Reads Wuthering Waves echoes from the game window and exports them for Wuthering Tools"
-license = "GPL-3.0-or-later"
-repository = "https://github.com/wavescan/wavescan"
+name = "wavescan-macos-probe"
+version = "0.0.0"
 edition = "2024"
-rust-version = "1.99"
 publish = false
 
 [lib]
-# `_lib` suffix avoids a name clash with the binary on Windows (Tauri convention).
-name = "wavescan_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
-
-[build-dependencies]
-tauri-build = { version = "2", features = [] }
+path = "src/lib.rs"
 
 [dependencies]
-tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
-
-# macOS-only OS adapters (src/platform/macos/). See ADR 0004 (OCR), 0005 (capture), 0018.
-# Keep objc2 versions/features in sync with scripts/macos-probe/Cargo.toml.
-[target.'cfg(target_os = "macos")'.dependencies]
-screencapturekit = "11"
 objc2 = "0.6"
 objc2-foundation = { version = "0.3", features = ["NSArray", "NSString", "NSDictionary", "NSError"] }
 objc2-core-foundation = { version = "0.3", features = ["CFData", "CFCGTypes", "CFDictionary", "CFNumber", "CFString"] }
@@ -33,24 +23,6 @@ objc2-core-graphics = { version = "0.3", features = ["CGImage", "CGDataProvider"
 objc2-vision = { version = "0.3", features = ["VNRequest", "VNRecognizeTextRequest", "VNRequestHandler", "VNObservation", "VNTypes", "objc2-core-graphics"] }
 objc2-app-kit = { version = "0.3", features = ["NSRunningApplication", "NSWorkspace"] }
 objc2-application-services = { version = "0.3", features = ["HIServices", "AXUIElement"] }
-
-# Windows-only OS adapters (src/platform/windows/). See ADR 0004 (OCR) and ADR 0005 (capture).
-[target.'cfg(windows)'.dependencies]
-windows-capture = "2"
-windows = { version = "0.62", features = [
-  "Foundation",
-  "Foundation_Collections",
-  "Globalization",
-  "Graphics_Imaging",
-  "Media_Ocr",
-  "Storage_Streams",
-  "Win32_Foundation",
-  "Win32_Graphics_Gdi",
-  "Win32_System_WinRT",
-  "Win32_UI_HiDpi",
-  "Win32_UI_Input_KeyboardAndMouse",
-  "Win32_UI_WindowsAndMessaging",
-] }
 
 # Lint policy: docs/adr/0015-rust-code-standards.md. CI runs clippy with `-D warnings`,
 # so every "warn" below fails the build. Allow a lint only on a specific item, with a reason.
@@ -70,9 +42,3 @@ dbg_macro = "deny"
 print_stdout = "deny"
 undocumented_unsafe_blocks = "deny"
 missing_errors_doc = "warn"
-
-[profile.release]
-codegen-units = 1
-lto = true
-opt-level = "s"
-strip = true

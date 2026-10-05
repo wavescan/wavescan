@@ -1,5 +1,5 @@
-//! Placeholder adapters for operating systems that aren't implemented yet (macOS until
-//! milestone 4; Linux, which only runs in the Docker check container).
+//! Placeholder adapters for Linux, which only runs in the Docker check container. The app
+//! itself supports Windows and macOS.
 
 use std::sync::Arc;
 

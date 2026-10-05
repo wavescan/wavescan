@@ -18,7 +18,7 @@ RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
 
 # Rust toolchain components + test/supply-chain tools (prebuilt binaries, no compile)
 RUN rustup component add rustfmt clippy \
- && rustup target add x86_64-pc-windows-msvc \
+ && rustup target add x86_64-pc-windows-msvc aarch64-apple-darwin \
  && curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash \
  && cargo binstall -y --locked cargo-nextest cargo-deny
 

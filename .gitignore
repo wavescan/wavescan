@@ -33,3 +33,4 @@ fixtures/**/*.png
 fixtures/**/*.jpg
 fixtures/**/*.jpeg
 fixtures/**/*.webp
+scripts/macos-probe/target/

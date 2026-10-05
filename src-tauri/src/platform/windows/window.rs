@@ -78,6 +78,7 @@ fn describe(hwnd: HWND) -> Result<GameWindow, Error> {
         scale_factor: if dpi == 0 { 1.0 } else { f64::from(dpi) / 96.0 },
         focused,
         minimized,
+        process_id: None,
     })
 }
 
