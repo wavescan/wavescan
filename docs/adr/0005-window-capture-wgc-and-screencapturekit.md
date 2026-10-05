@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-10-05
 tags: [capture, security]
+superseded_by: [18]
 ---
 
 # 5. Window-only capture via Windows.Graphics.Capture and ScreenCaptureKit
@@ -17,6 +18,7 @@ Inventory Kamera captures with GDI `CopyFromScreen`. That needs the game in the 
 
 - Windows: the `windows-capture` crate (WGC), with `cursor_capture: off` and the border off where supported.
 - macOS: the `screencapturekit` crate, with a single-window `SCContentFilter`, `showsCursor = false` and BGRA output.
+  **Superseded 2026-10-05:** we use `objc2-screen-capture-kit` instead of the `screencapturekit` crate (same API, no Swift bridge); see [ADR 0018](./0018-macos-adapters.md).
 - `FrameSource` only accepts a window handle from `WindowFinder`. **There is no API for capturing the desktop or a display.**
 - Frames go into a single-slot "latest frame" buffer and are never queued or written to disk ([ADR 0013](./0013-user-id-masking.md) covers debug frames).
 

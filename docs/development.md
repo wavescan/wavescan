@@ -77,7 +77,7 @@ Paste the report into the PR or issue you're testing.
 
 ## 3. Running the app on macOS (Apple Silicon)
 
-1. Xcode Command Line Tools: `xcode-select --install` (includes Swift, needed by the `screencapturekit` crate)
+1. Xcode Command Line Tools: `xcode-select --install`
 2. Node 24 and Rust (<https://rustup.rs>)
 3. `npm ci && npm run tauri dev`
 

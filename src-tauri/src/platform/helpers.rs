@@ -139,6 +139,48 @@ pub(crate) fn strip_row_padding(
     Some(out)
 }
 
+/// What the macOS window list tells us about one window, copied out of the
+/// `ScreenCaptureKit` objects so the selection logic can be unit-tested.
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(
+    not(target_os = "macos"),
+    allow(
+        dead_code,
+        reason = "used by the macOS adapters; unit-tested on every OS"
+    )
+)]
+pub(crate) struct MacWindowInfo {
+    pub id: u32,
+    pub app_name: String,
+    pub title: String,
+    pub layer: isize,
+    pub on_screen: bool,
+    pub pid: i32,
+    /// Frame in points: x, y, width, height.
+    pub frame: (f64, f64, f64, f64),
+}
+
+/// Picks the game's main window: a normal-level (layer 0) window of the game, preferring
+/// on-screen windows, then the largest.
+#[cfg_attr(
+    not(target_os = "macos"),
+    allow(
+        dead_code,
+        reason = "used by the macOS adapters; unit-tested on every OS"
+    )
+)]
+pub(crate) fn pick_mac_game_window(windows: &[MacWindowInfo]) -> Option<&MacWindowInfo> {
+    let area = |w: &MacWindowInfo| w.frame.2 * w.frame.3;
+    windows
+        .iter()
+        .filter(|w| w.layer == 0 && is_mac_game_window(&w.app_name, &w.title))
+        .max_by(|a, b| {
+            (a.on_screen, area(a))
+                .partial_cmp(&(b.on_screen, area(b)))
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -197,5 +239,39 @@ mod tests {
         assert_eq!(out, vec![1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]);
         assert_eq!(strip_row_padding(&padded, 2, 3, 12), None, "too few rows");
         assert_eq!(strip_row_padding(&padded, 4, 2, 12), None, "stride < row");
+    }
+
+    fn mac_window(id: u32, app: &str, layer: isize, on_screen: bool, w: f64) -> MacWindowInfo {
+        MacWindowInfo {
+            id,
+            app_name: app.into(),
+            title: String::new(),
+            layer,
+            on_screen,
+            pid: 1,
+            frame: (0.0, 0.0, w, w * 0.625),
+        }
+    }
+
+    #[test]
+    fn picks_the_largest_on_screen_normal_game_window() {
+        let windows = [
+            mac_window(1, "Safari", 0, true, 3000.0),
+            mac_window(2, "Wuthering Waves", 3, true, 2000.0), // overlay layer
+            mac_window(3, "Wuthering Waves", 0, false, 2880.0), // minimised
+            mac_window(4, "Wuthering Waves", 0, true, 1440.0),
+            mac_window(5, "Wuthering Waves", 0, true, 100.0),
+        ];
+        assert_eq!(pick_mac_game_window(&windows).map(|w| w.id), Some(4));
+    }
+
+    #[test]
+    fn falls_back_to_an_off_screen_game_window() {
+        let windows = [mac_window(3, "Wuthering Waves", 0, false, 2880.0)];
+        assert_eq!(pick_mac_game_window(&windows).map(|w| w.id), Some(3));
+        assert_eq!(
+            pick_mac_game_window(&[mac_window(1, "Finder", 0, true, 10.0)]),
+            None
+        );
     }
 }

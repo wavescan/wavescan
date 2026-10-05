@@ -9,6 +9,8 @@ pub mod frame;
 pub mod geometry;
 #[path = "../../../src-tauri/src/safety.rs"]
 pub mod safety;
+#[path = "../../../src-tauri/src/stats.rs"]
+pub mod stats;
 #[path = "../../../src-tauri/src/traits.rs"]
 pub mod traits;
 

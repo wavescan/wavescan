@@ -93,7 +93,7 @@ stateDiagram-v2
 
 ## 4. Rust trait seams
 
-Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs`. Tests use the fakes in `src-tauri/src/testing.rs`, which simulate the window (focus, minimise, close), the cursor and user mouse movement, OS input rejection, and replayed frames. Platform implementations live in `platform/` (`platform::create()` picks one per OS). **Windows** is implemented: Win32 window enumeration, `windows-capture` (WGC, cursor off, border off on Windows 11, title bar cropped), and `Windows.Media.Ocr` (en-US). **macOS** is implemented: `screencapturekit` (window list + single-window capture), Vision OCR, Core Graphics events, and Accessibility/Screen Recording checks with instructions ([ADR 0018](adr/0018-macos-adapters.md)). `platform/unsupported.rs` covers only Linux (the Docker check container).
+Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs`. Tests use the fakes in `src-tauri/src/testing.rs`, which simulate the window (focus, minimise, close), the cursor and user mouse movement, OS input rejection, and replayed frames. Platform implementations live in `platform/` (`platform::create()` picks one per OS). **Windows** is implemented: Win32 window enumeration, `windows-capture` (WGC, cursor off, border off on Windows 11, title bar cropped), and `Windows.Media.Ocr` (en-US). **macOS** is implemented: `objc2-screen-capture-kit` (window list + single-window capture), Vision OCR, Core Graphics events, and Accessibility/Screen Recording checks with instructions ([ADR 0018](adr/0018-macos-adapters.md)). `platform/unsupported.rs` covers only Linux (the Docker check container).
 
 Key types:
 
@@ -105,7 +105,7 @@ Key types:
 | Trait | Windows impl | macOS impl | Fake (tests) |
 |---|---|---|---|
 | `WindowFinder` | Win32 `EnumWindows`, window class `UnrealWindow` + title | SCK shareable-content snapshot, app name / title | Fixed rect |
-| `FrameSource` | `windows-capture` (Windows.Graphics.Capture) | `screencapturekit` (SCStream, window filter) | PNGs/video frames from `fixtures/` |
+| `FrameSource` | `windows-capture` (Windows.Graphics.Capture) | `objc2-screen-capture-kit` (SCStream, single-window filter) | PNGs/video frames from `fixtures/` |
 | `OcrEngine` | `Windows.Media.Ocr` via `windows` crate | Vision `VNRecognizeTextRequest` via `objc2-vision` | Canned text per crop |
 | `InputDriver` | `SetCursorPos` + `SendInput` (scancodes) | `CGEvent` posts + Accessibility check | Records calls for assertions |
 

@@ -2,9 +2,10 @@
 status: accepted
 date: 2026-10-05
 tags: [capture, ocr, input, macos, testing]
+supersedes: [5]
 ---
 
-# 18. macOS adapters: ScreenCaptureKit, Vision, Core Graphics events, and a type-check probe
+# 18. macOS adapters: ScreenCaptureKit (via objc2), Vision, Core Graphics events, and a type-check probe
 
 ## Context
 
@@ -12,11 +13,13 @@ v0.1 ships on macOS (Apple Silicon) as well as Windows. The maintainer has no Ap
 
 ## Decision
 
-- **Window finding and capture use `screencapturekit` (v11).**
-  - The crate wraps `ScreenCaptureKit` and builds a small Swift bridge, which needs Xcode / Command Line Tools on macOS. It's a macOS-only dependency, so Windows and Linux builds are unaffected.
-  - Windows are matched by owning app name or title "Wuthering Waves" (normal window level; prefer on-screen, then largest), using its window-list snapshot.
-  - Capture uses a single-window `SCContentFilter`, BGRA, cursor hidden, at full pixel resolution (points × `point_pixel_scale`).
-  - Listing window titles needs **Screen Recording**, so a missing permission surfaces at "find window" with step-by-step instructions.
+- **Window finding and capture use `objc2-screen-capture-kit`.** These are pure-Rust bindings to `ScreenCaptureKit`, like the rest of the macOS code.
+  - The higher-level `screencapturekit` crate was tried first and rejected. Its bundled Swift/Metal bridge needs a newer Xcode SDK than CI's macOS 14 runner has (it uses macOS 15 APIs such as `MTLLogState`). Code built against those APIs can also crash on the macOS 13/14 systems we support. Dropping it also removes the Swift and Metal build dependencies.
+  - Windows are listed with `getShareableContent…` (off-screen windows included, so a minimised game is still found). They're matched by owning app name or title "Wuthering Waves" (normal window level; prefer on-screen, then largest) by the unit-tested `helpers::pick_mac_game_window`.
+  - Capture uses an `SCStream` with a single-window `SCContentFilter`, BGRA, cursor hidden, at points × `pointPixelScale`.
+    - `pointPixelScale` needs macOS 14; on macOS 13 we fall back to 2×. That's harmless, because `ScreenCaptureKit` never scales windows up.
+    - Frames arrive on a dedicated dispatch queue via a small Objective-C class (`define_class!`) that implements `SCStreamOutput`.
+  - Listing windows needs **Screen Recording**. A missing permission (`SCStreamErrorUserDeclined`) surfaces at "find window" with step-by-step instructions.
 - **Text uses Apple Vision** (`VNRecognizeTextRequest`): accurate level, `en-US`, language correction off (game names and numbers aren't dictionary words). It runs inside an autorelease pool, because it executes on worker threads.
 - **Input uses Core Graphics events** posted to the HID event tap. The keys are the closed `Key` list as macOS key codes.
   - **Accessibility** is checked before every action, because macOS silently drops events from untrusted apps. The first failure shows the macOS prompt and returns instructions.
@@ -24,7 +27,7 @@ v0.1 ships on macOS (Apple Silicon) as well as Windows. The maintainer has no Ap
 - **Coordinate space:**
   - On macOS, `GameWindow::client_rect` is the whole window in **points** (the input coordinate space). Captured frames cover the same window in pixels. Click targets are fractions, so the two always line up.
   - On Windows, `client_rect` remains the client area in physical pixels.
-- **`scripts/macos-probe/`** is a tiny crate that compiles the real `macos/ocr.rs`, `macos/input.rs` and `macos/app.rs` (via `#[path]`) for `aarch64-apple-darwin` from Linux. It doesn't need Apple's SDK, because those files use pure-Rust `objc2` bindings. `npm run check` lints it with the same strict rules. The `ScreenCaptureKit` files are compiled only on CI's macOS runner.
+- **`scripts/macos-probe/`** is a tiny crate that compiles **all** of `platform/macos/` (via `#[path]`) for `aarch64-apple-darwin` from Linux. It doesn't need Apple's SDK, because every file uses pure-Rust `objc2` bindings. `npm run check` lints it with the same strict rules. Tests still run on CI's macOS runner.
 
 ## Consequences
 
@@ -33,13 +36,13 @@ v0.1 ships on macOS (Apple Silicon) as well as Windows. The maintainer has no Ap
   - Most macOS code is type-checked locally.
   - Permission problems come with clear instructions.
 - Cons:
-  - The Swift bridge adds a build-time requirement on macOS.
+  - More low-level code (an Objective-C delegate class, completion-handler blocks), all type-checked locally and kept small.
   - Windowed mode includes the title bar in both capture and click space. That's consistent for clicking, but layouts must tolerate it; the Diagnostics frame-size check reports it.
   - The probe's `objc2` features must be kept in sync with `src-tauri/Cargo.toml` by hand (both files say so).
 
 ## Guidance
 
-- **Do** add new macOS code that doesn't need `ScreenCaptureKit` to the probe so it's checked locally.
+- **Do** keep macOS code on pure-Rust `objc2` bindings so the probe can check it. Avoid crates with Swift/C build steps.
 - **Don't** read process details beyond the pid that the window list already reports.
 
 ## Related

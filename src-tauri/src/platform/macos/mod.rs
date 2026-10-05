@@ -8,6 +8,7 @@ mod app;
 mod capture;
 mod input;
 mod ocr;
+mod sck;
 mod window;
 
 use crate::platform::Platform;

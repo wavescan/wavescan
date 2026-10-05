@@ -1,8 +1,7 @@
-# Type-checks the macOS adapters that don't need Apple's SDK (Vision OCR, Core Graphics
-# input) from Linux, so `npm run check` catches most macOS errors without a Mac.
-# capture.rs / window.rs use ScreenCaptureKit (a Swift bridge) and are checked on CI's
-# macOS runner only. Keep the objc2 dependency versions/features in sync with
-# src-tauri/Cargo.toml.
+# Type-checks all macOS adapters (src-tauri/src/platform/macos/) from Linux, so
+# `npm run check` catches macOS errors without a Mac. Works because the adapters use only
+# pure-Rust objc2 bindings (no Swift/C build steps). Keep the dependency list in sync
+# with src-tauri/Cargo.toml's macOS section.
 [package]
 name = "wavescan-macos-probe"
 version = "0.0.0"
@@ -17,7 +16,12 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
 objc2 = "0.6"
-objc2-foundation = { version = "0.3", features = ["NSArray", "NSString", "NSDictionary", "NSError"] }
+block2 = "0.6"
+dispatch2 = "0.3"
+objc2-foundation = { version = "0.3", features = ["NSArray", "NSString", "NSDictionary", "NSError", "NSObject"] }
+objc2-screen-capture-kit = { version = "0.3", features = ["SCShareableContent", "SCStream", "objc2-core-media", "objc2-core-graphics", "block2", "dispatch2", "libc"] }
+objc2-core-media = { version = "0.3", features = ["CMSampleBuffer", "CMTime", "objc2-core-video"] }
+objc2-core-video = { version = "0.3", features = ["CVPixelBuffer", "CVImageBuffer", "CVBuffer", "CVReturn", "CVBase"] }
 objc2-core-foundation = { version = "0.3", features = ["CFData", "CFCGTypes", "CFDictionary", "CFNumber", "CFString"] }
 objc2-core-graphics = { version = "0.3", features = ["CGImage", "CGDataProvider", "CGColorSpace", "CGEvent", "CGEventTypes", "CGRemoteOperation", "CGEventSource"] }
 objc2-vision = { version = "0.3", features = ["VNRequest", "VNRecognizeTextRequest", "VNRequestHandler", "VNObservation", "VNTypes", "objc2-core-graphics"] }

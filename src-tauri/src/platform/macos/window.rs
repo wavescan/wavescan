@@ -1,20 +1,23 @@
 //! Finds the game window via `ScreenCaptureKit`'s window list. Reads only window titles,
-//! owning app names and geometry. Listing windows with titles needs the Screen Recording
-//! permission, so a missing permission shows up here first, with instructions.
+//! owning app names and geometry. Listing windows needs the Screen Recording permission,
+//! so a missing permission shows up here first, with instructions.
 
-use screencapturekit::prelude::*;
-use screencapturekit::shareable_content::{ApplicationSnapshot, ContentSnapshot, WindowSnapshot};
+use objc2::AnyThread;
+use objc2::runtime::NSObjectProtocol;
+use objc2::sel;
+use objc2_screen_capture_kit::{SCContentFilter, SCWindow};
 
 use super::app::frontmost_pid;
+use super::sck::{shareable_content, window_infos};
 use crate::error::Error;
 use crate::geometry::Rect;
-use crate::platform::{is_candidate_title, is_mac_game_window};
+use crate::platform::{is_candidate_title, pick_mac_game_window};
 use crate::traits::{GameWindow, WindowCandidate, WindowFinder, WindowId};
 
-/// Message shown when macOS hasn't granted Screen Recording.
-pub(super) const SCREEN_RECORDING_HELP: &str = "Screen Recording. Open System Settings → \
-    Privacy & Security → Screen & System Audio Recording, turn on Wavescan, then quit and \
-    reopen Wavescan.";
+/// Used when macOS is too old to report the scale (`pointPixelScale` needs macOS 14).
+/// Apple Silicon built-in displays are 2×; asking for too large a capture is harmless
+/// because `ScreenCaptureKit` never scales windows up.
+pub(super) const FALLBACK_SCALE: f64 = 2.0;
 
 /// `ScreenCaptureKit`-based finder.
 pub(super) struct SckWindowFinder;
@@ -22,98 +25,57 @@ pub(super) struct SckWindowFinder;
 impl WindowFinder for SckWindowFinder {
     fn find_game_window(&self) -> Result<GameWindow, Error> {
         let content = shareable_content()?;
-        let snapshot = snapshot(&content)?;
-        let (window, app) = pick_game_window(&snapshot).ok_or(Error::WindowNotFound)?;
+        let windows = window_infos(&content);
+        let infos: Vec<_> = windows.iter().map(|(info, _)| info.clone()).collect();
+        let game = pick_mac_game_window(&infos).ok_or(Error::WindowNotFound)?;
+        let live = windows
+            .iter()
+            .find(|(info, _)| info.id == game.id)
+            .map(|(_, window)| window)
+            .ok_or(Error::WindowNotFound)?;
 
-        // The scale (points → pixels) comes from a filter for this window.
-        let scale = content
-            .windows()
-            .into_iter()
-            .find(|w| w.window_id() == window.window_id)
-            .and_then(|live| SCContentFilter::create().with_window(&live).build().ok())
-            .map_or(1.0, |filter| f64::from(filter.point_pixel_scale()));
-
+        let (x, y, w, h) = game.frame;
         Ok(GameWindow {
-            id: WindowId(u64::from(window.window_id)),
-            client_rect: rect_from_points(
-                window.frame.origin.x,
-                window.frame.origin.y,
-                window.frame.size.width,
-                window.frame.size.height,
-            ),
-            scale_factor: scale,
-            focused: frontmost_pid() == Some(app.process_id),
-            minimized: !window.is_on_screen,
-            process_id: u32::try_from(app.process_id).ok(),
+            id: WindowId(u64::from(game.id)),
+            client_rect: rect_from_points(x, y, w, h),
+            scale_factor: point_pixel_scale(live),
+            focused: frontmost_pid() == Some(game.pid),
+            minimized: !game.on_screen,
+            process_id: u32::try_from(game.pid).ok(),
         })
     }
 
     fn candidates(&self) -> Result<Vec<WindowCandidate>, Error> {
         let content = shareable_content()?;
-        let snapshot = snapshot(&content)?;
-        let chosen = pick_game_window(&snapshot).map(|(w, _)| w.window_id);
-        Ok(snapshot
-            .windows
+        let infos: Vec<_> = window_infos(&content)
+            .into_iter()
+            .map(|(info, _)| info)
+            .collect();
+        let chosen = pick_mac_game_window(&infos).map(|w| w.id);
+        Ok(infos
             .iter()
-            .filter_map(|w| {
-                let app = app_of(&snapshot, w)?;
-                let title = w.title.clone().unwrap_or_default();
-                let relevant =
-                    is_candidate_title(&title) || is_candidate_title(&app.application_name);
-                relevant.then(|| WindowCandidate {
-                    title,
-                    class: app.application_name.clone(),
-                    matched: Some(w.window_id) == chosen,
-                })
+            .filter(|w| is_candidate_title(&w.title) || is_candidate_title(&w.app_name))
+            .map(|w| WindowCandidate {
+                title: w.title.clone(),
+                class: w.app_name.clone(),
+                matched: Some(w.id) == chosen,
             })
             .collect())
     }
 }
 
-/// Lists shareable content, mapping a missing permission to a helpful error.
-pub(super) fn shareable_content() -> Result<SCShareableContent, Error> {
-    SCShareableContent::get().map_err(|e| match e {
-        SCError::PermissionDenied(_) => Error::PermissionDenied(SCREEN_RECORDING_HELP.into()),
-        other => Error::CaptureFailed(other.to_string()),
-    })
-}
-
-fn snapshot(content: &SCShareableContent) -> Result<ContentSnapshot, Error> {
-    content
-        .snapshot()
-        .ok_or_else(|| Error::CaptureFailed("couldn't read the window list".into()))
-}
-
-fn app_of<'a>(
-    snapshot: &'a ContentSnapshot,
-    window: &WindowSnapshot,
-) -> Option<&'a ApplicationSnapshot> {
-    window
-        .owning_app_index
-        .and_then(|i| snapshot.applications.get(i))
-}
-
-/// The game's main window: a normal-level window of the game app, preferring on-screen
-/// windows, then the largest.
-fn pick_game_window(snapshot: &ContentSnapshot) -> Option<(&WindowSnapshot, &ApplicationSnapshot)> {
-    snapshot
-        .windows
-        .iter()
-        .filter(|w| w.window_layer == 0)
-        .filter_map(|w| {
-            let app = app_of(snapshot, w)?;
-            let title = w.title.as_deref().unwrap_or("");
-            is_mac_game_window(&app.application_name, title).then_some((w, app))
-        })
-        .max_by(|(a, _), (b, _)| {
-            (a.is_on_screen, area(a))
-                .partial_cmp(&(b.is_on_screen, area(b)))
-                .unwrap_or(std::cmp::Ordering::Equal)
-        })
-}
-
-fn area(window: &WindowSnapshot) -> f64 {
-    window.frame.size.width * window.frame.size.height
+/// Points-to-pixels scale for `window`'s display.
+pub(super) fn point_pixel_scale(window: &SCWindow) -> f64 {
+    // SAFETY: creating a filter for a window ScreenCaptureKit just returned.
+    let filter = unsafe {
+        SCContentFilter::initWithDesktopIndependentWindow(SCContentFilter::alloc(), window)
+    };
+    if filter.respondsToSelector(sel!(pointPixelScale)) {
+        // SAFETY: the selector exists on this macOS version (checked above).
+        f64::from(unsafe { filter.pointPixelScale() })
+    } else {
+        FALLBACK_SCALE
+    }
 }
 
 #[allow(

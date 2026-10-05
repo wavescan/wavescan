@@ -29,8 +29,8 @@ step "cargo clippy (Windows target, type-check only)"
 # Catches Windows compile errors and lints locally; Windows tests still run on CI.
 cargo clippy --target x86_64-pc-windows-msvc --all-targets --locked -- -D warnings
 
-step "cargo clippy (macOS OCR/input via scripts/macos-probe, type-check only)"
-# ScreenCaptureKit files need Apple's SDK and are checked on CI's macOS runner only.
+step "cargo clippy (macOS adapters via scripts/macos-probe, type-check only)"
+# Covers all of platform/macos (pure-Rust objc2 bindings); tests run on CI's macOS runner.
 (cd ../scripts/macos-probe && CARGO_TARGET_DIR=../../src-tauri/target/macos-probe \
   cargo clippy --target aarch64-apple-darwin -- -D warnings)
 

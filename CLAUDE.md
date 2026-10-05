@@ -36,7 +36,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 |---|---|
 | `src-tauri/src/platform/{windows,macos}/` | **Only** place with OS APIs: `window.rs`, `capture.rs`, `ocr.rs`, `input.rs` (+ `macos/app.rs`) |
 | `src-tauri/src/platform/helpers.rs` | OS-independent helpers for the adapters (unit-tested everywhere) |
-| `scripts/macos-probe/` | Type-checks macOS OCR/input from Linux (ADR 0018); keep its objc2 features in sync |
+| `scripts/macos-probe/` | Type-checks all macOS adapters from Linux (ADR 0018); keep its deps in sync |
 | `src-tauri/src/traits.rs` | `WindowFinder`, `FrameSource`, `OcrEngine`, `InputDriver`: the seams everything is tested through |
 | `src-tauri/src/commands.rs` | Tauri IPC commands (thin: validate → call trait → map error) |
 | `src-tauri/src/safety.rs` | `AutoMode` input guard (arming, bounds, abort detection, action cap), User ID mask + crop guard |
@@ -79,7 +79,7 @@ Parsing, fuzzy matching, ROI layouts and game data tables come from **`@wutherin
 - **Every `pub` item has a `///` doc comment in plain English**: what it does, why it exists, and when it returns an error. Assume the reader knows TypeScript, not Rust.
 - Prefer clear over clever: no macros of our own, minimal generics/lifetimes, no `async` unless the API forces it.
 - Tests: `#[cfg(test)] mod tests` in each module, plus integration tests in `src-tauri/tests/` that run against saved frames in `fixtures/`. OS-specific tests use `#[cfg(target_os = ...)]` and run on that CI runner.
-- `Cargo.lock` is committed. Use only well-maintained crates (`windows`, `objc2-*`, `windows-capture`, `screencapturekit`, `thiserror`, `serde`, `image`).
+- `Cargo.lock` is committed. Use only well-maintained crates (`windows`, `objc2-*`, `windows-capture`, `thiserror`, `serde`, `image`).
 
 ### TypeScript rules
 - Strict TS (`strict: true`, no `any` without a comment). Composition API / `<script setup>`. DaisyUI + Tailwind like the optimizer.
