@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-disarm-auto-mode"
+description = "Enables the disarm_auto_mode command without any pre-configured scope."
+commands.allow = ["disarm_auto_mode"]
+
+[[permission]]
+identifier = "deny-disarm-auto-mode"
+description = "Denies the disarm_auto_mode command without any pre-configured scope."
+commands.deny = ["disarm_auto_mode"]

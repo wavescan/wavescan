@@ -17,10 +17,12 @@ use serde::Serialize;
 
 use crate::error::Error;
 use crate::frame::Frame;
-use crate::geometry::FracRect;
+use crate::geometry::{FracPoint, FracRect};
 use crate::platform::Platform;
-use crate::safety;
-use crate::traits::{FrameSource, GameWindow, OcrEngine, OcrLine, WindowCandidate, WindowFinder};
+use crate::safety::{self, AutoMode, AutoModeState};
+use crate::traits::{
+    FrameSource, GameWindow, InputDriver, OcrEngine, OcrLine, WindowCandidate, WindowFinder,
+};
 
 /// Basic facts about the running app. Mirrored in `src/ipc/types.ts` as `AppInfo`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -68,6 +70,15 @@ pub struct OcrResult {
     pub height: u32,
 }
 
+/// Auto-mode state for the UI. Mirrored as `AutoModeStatus` in TS.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub struct AutoModeStatus {
+    /// Disarmed, armed, or aborted (with the reason).
+    pub state: AutoModeState,
+    /// Actions sent since arming.
+    pub actions_used: u32,
+}
+
 /// Largest preview the UI may request, in pixels wide. Keeps IPC payloads small.
 const MAX_PREVIEW_WIDTH: u32 = 1280;
 
@@ -76,6 +87,9 @@ pub struct AppState {
     finder: Box<dyn WindowFinder + Send + Sync>,
     capture: Mutex<Box<dyn FrameSource + Send>>,
     ocr: Arc<dyn OcrEngine + Send + Sync>,
+    input: Box<dyn InputDriver + Send + Sync>,
+    /// Starts disarmed on every launch; never persisted (ADR 0006).
+    auto: Mutex<AutoMode>,
     capturing: AtomicBool,
 }
 
@@ -87,6 +101,8 @@ impl AppState {
             finder: platform.finder,
             capture: Mutex::new(platform.capture),
             ocr: Arc::from(platform.ocr),
+            input: platform.input,
+            auto: Mutex::new(AutoMode::default()),
             capturing: AtomicBool::new(false),
         }
     }
@@ -184,6 +200,57 @@ impl AppState {
         let frame = self.latest_frame()?;
         let crop = safety::crop_outside_user_id(&frame, region)?;
         Ok((crop, Arc::clone(&self.ocr)))
+    }
+
+    /// See [`auto_mode_status`].
+    pub fn auto_mode_status(&self) -> AutoModeStatus {
+        let auto = self.lock_auto();
+        AutoModeStatus {
+            state: auto.state(),
+            actions_used: auto.actions_used(),
+        }
+    }
+
+    /// See [`arm_auto_mode`].
+    ///
+    /// # Errors
+    ///
+    /// [`Error::ConfirmationMismatch`] if the phrase is wrong.
+    pub fn arm_auto_mode(&self, confirmation: &str) -> Result<AutoModeStatus, Error> {
+        self.lock_auto().arm(confirmation)?;
+        Ok(self.auto_mode_status())
+    }
+
+    /// See [`disarm_auto_mode`].
+    pub fn disarm_auto_mode(&self) -> AutoModeStatus {
+        self.lock_auto().disarm();
+        self.auto_mode_status()
+    }
+
+    /// See [`auto_focus_game`].
+    ///
+    /// # Errors
+    ///
+    /// Any [`AutoMode::focus_game`] error.
+    pub fn auto_focus_game(&self) -> Result<AutoModeStatus, Error> {
+        self.lock_auto()
+            .focus_game(self.finder.as_ref(), self.input.as_ref())?;
+        Ok(self.auto_mode_status())
+    }
+
+    /// See [`auto_click`].
+    ///
+    /// # Errors
+    ///
+    /// Any [`AutoMode::click`] error.
+    pub fn auto_click(&self, target: FracPoint) -> Result<AutoModeStatus, Error> {
+        self.lock_auto()
+            .click(self.finder.as_ref(), self.input.as_ref(), target)?;
+        Ok(self.auto_mode_status())
+    }
+
+    fn lock_auto(&self) -> std::sync::MutexGuard<'_, AutoMode> {
+        self.auto.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     fn latest_frame(&self) -> Result<Arc<Frame>, Error> {
@@ -284,6 +351,56 @@ pub async fn ocr_region(
         .map_err(|e| Error::OcrFailed(format!("OCR task failed: {e}")))?
 }
 
+/// Current auto-mode state.
+#[tauri::command]
+#[must_use]
+pub fn auto_mode_status(state: tauri::State<'_, AppState>) -> AutoModeStatus {
+    state.auto_mode_status()
+}
+
+/// Arms auto mode if `confirmation` is the exact phrase shown with the Fair Play warning.
+///
+/// # Errors
+///
+/// [`Error::ConfirmationMismatch`] if the phrase is wrong.
+#[tauri::command]
+pub fn arm_auto_mode(
+    state: tauri::State<'_, AppState>,
+    confirmation: String,
+) -> Result<AutoModeStatus, Error> {
+    state.arm_auto_mode(&confirmation)
+}
+
+/// Turns auto mode off.
+#[tauri::command]
+#[must_use]
+pub fn disarm_auto_mode(state: tauri::State<'_, AppState>) -> AutoModeStatus {
+    state.disarm_auto_mode()
+}
+
+/// Brings the game to the front (auto mode must be armed).
+///
+/// # Errors
+///
+/// See [`AppState::auto_focus_game`].
+#[tauri::command]
+pub fn auto_focus_game(state: tauri::State<'_, AppState>) -> Result<AutoModeStatus, Error> {
+    state.auto_focus_game()
+}
+
+/// Clicks at `target` (fractions of the game window) through every safety check.
+///
+/// # Errors
+///
+/// See [`AppState::auto_click`].
+#[tauri::command]
+pub fn auto_click(
+    state: tauri::State<'_, AppState>,
+    target: FracPoint,
+) -> Result<AutoModeStatus, Error> {
+    state.auto_click(target)
+}
+
 /// Recognises text in `crop` and times it.
 fn run_ocr(crop: &Frame, ocr: &(dyn OcrEngine + Send + Sync)) -> Result<OcrResult, Error> {
     let started = Instant::now();
@@ -300,13 +417,15 @@ fn run_ocr(crop: &Frame, ocr: &(dyn OcrEngine + Send + Sync)) -> Result<OcrResul
 mod tests {
     use super::*;
     use crate::geometry::Rect;
-    use crate::testing::{FakeFrames, FakeOcr, FakeWindowFinder};
+    use crate::safety::{AbortReason, CONFIRMATION_PHRASE};
+    use crate::testing::{FakeFrames, FakeInput, FakeOcr, FakeWindowFinder};
 
     fn state_with(frames: Vec<Frame>, lines: Vec<OcrLine>) -> AppState {
         AppState::new(Platform {
             finder: Box::new(FakeWindowFinder::focused()),
             capture: Box::new(FakeFrames::new(frames)),
             ocr: Box::new(FakeOcr::returning(lines)),
+            input: Box::new(FakeInput::default()),
         })
     }
 
@@ -401,10 +520,45 @@ mod tests {
             finder: Box::new(finder),
             capture: Box::new(FakeFrames::new(vec![white_frame()])),
             ocr: Box::new(FakeOcr::returning(vec![])),
+            input: Box::new(FakeInput::default()),
         });
         assert!(matches!(
             state.start_capture(30),
             Err(Error::WindowMinimized)
         ));
+    }
+
+    #[test]
+    fn auto_mode_starts_disarmed_and_clicks_only_after_arming() {
+        let state = state_with(vec![], vec![]);
+        assert_eq!(state.auto_mode_status().state, AutoModeState::Disarmed);
+        assert!(matches!(
+            state.auto_click(FracPoint::new(0.5, 0.5)),
+            Err(Error::AutoModeNotArmed)
+        ));
+        assert!(matches!(
+            state.arm_auto_mode("ok"),
+            Err(Error::ConfirmationMismatch)
+        ));
+
+        state.arm_auto_mode(CONFIRMATION_PHRASE).unwrap();
+        let status = state.auto_click(FracPoint::new(0.5, 0.5)).unwrap();
+        assert_eq!(status.state, AutoModeState::Armed);
+        assert_eq!(status.actions_used, 1);
+
+        assert_eq!(state.disarm_auto_mode().state, AutoModeState::Disarmed);
+    }
+
+    #[test]
+    fn auto_mode_status_serializes_abort_reason_for_the_ui() {
+        let status = AutoModeStatus {
+            state: AutoModeState::Aborted(AbortReason::UserInput),
+            actions_used: 3,
+        };
+        let json = serde_json::to_value(status).unwrap();
+        assert_eq!(
+            json,
+            serde_json::json!({ "state": { "Aborted": "UserInput" }, "actions_used": 3 })
+        );
     }
 }

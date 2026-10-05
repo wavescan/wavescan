@@ -1,7 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
   AppInfo,
+  AutoModeStatus,
   CaptureStatus,
+  FracPoint,
   FracRect,
   GameWindow,
   IpcError,
@@ -43,6 +45,27 @@ export function getCapturePreview(maxWidth: number): Promise<ArrayBuffer> {
 
 export function ocrRegion(region: FracRect): Promise<OcrResult> {
   return invoke<OcrResult>("ocr_region", { region });
+}
+
+export function getAutoModeStatus(): Promise<AutoModeStatus> {
+  return invoke<AutoModeStatus>("auto_mode_status");
+}
+
+/** Arms auto mode. `confirmation` must be the phrase shown with the Fair Play warning. */
+export function armAutoMode(confirmation: string): Promise<AutoModeStatus> {
+  return invoke<AutoModeStatus>("arm_auto_mode", { confirmation });
+}
+
+export function disarmAutoMode(): Promise<AutoModeStatus> {
+  return invoke<AutoModeStatus>("disarm_auto_mode");
+}
+
+export function autoFocusGame(): Promise<AutoModeStatus> {
+  return invoke<AutoModeStatus>("auto_focus_game");
+}
+
+export function autoClick(target: FracPoint): Promise<AutoModeStatus> {
+  return invoke<AutoModeStatus>("auto_click", { target });
 }
 
 /** Turns whatever a failed command rejected with into a readable message. */

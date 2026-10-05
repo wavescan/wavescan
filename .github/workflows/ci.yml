@@ -1,8 +1,10 @@
 name: CI
 
 on:
+  # Every branch push runs CI, so results exist before a PR is opened.
   push:
-    branches: [main]
+  # PRs from forks need this trigger; same-repo PRs are already covered by `push`
+  # (see the job-level `if` that skips the duplicate run).
   pull_request:
 
 permissions:
@@ -16,6 +18,7 @@ concurrency:
 jobs:
   frontend:
     name: Frontend (lint, types, tests, build)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -30,6 +33,7 @@ jobs:
 
   rust:
     name: Rust (${{ matrix.os }})
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
       matrix:
@@ -49,6 +53,9 @@ jobs:
       - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: cargo-nextest
+      # Turn compiler errors and test panics into annotations on the run (readable
+      # without logging in, which helps when iterating on macOS-only code).
+      - run: echo "::add-matcher::.github/rust-problem-matcher.json"
       # tauri::generate_context! embeds the built frontend, so build it first.
       - run: npm ci --no-audit --no-fund
       - run: npx vite build
@@ -64,6 +71,7 @@ jobs:
 
   supply-chain:
     name: Supply chain (cargo deny, npm audit)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

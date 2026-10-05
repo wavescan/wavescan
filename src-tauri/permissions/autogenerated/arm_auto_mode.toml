@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-arm-auto-mode"
+description = "Enables the arm_auto_mode command without any pre-configured scope."
+commands.allow = ["arm_auto_mode"]
+
+[[permission]]
+identifier = "deny-arm-auto-mode"
+description = "Denies the arm_auto_mode command without any pre-configured scope."
+commands.deny = ["arm_auto_mode"]

@@ -48,6 +48,11 @@ pub fn run() -> Result<(), Error> {
             commands::capture_status,
             commands::capture_preview,
             commands::ocr_region,
+            commands::auto_mode_status,
+            commands::arm_auto_mode,
+            commands::disarm_auto_mode,
+            commands::auto_focus_game,
+            commands::auto_click,
         ])
         .run(tauri::generate_context!())
         .map_err(|source| Error::Startup(source.to_string()))

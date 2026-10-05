@@ -4,7 +4,7 @@
 //! this file are OS-independent so they can be unit-tested everywhere.
 
 use crate::geometry::Rect;
-use crate::traits::{FrameSource, OcrEngine, WindowFinder};
+use crate::traits::{FrameSource, InputDriver, OcrEngine, WindowFinder};
 
 #[cfg(windows)]
 mod windows;
@@ -20,6 +20,8 @@ pub struct Platform {
     pub capture: Box<dyn FrameSource + Send>,
     /// Reads text.
     pub ocr: Box<dyn OcrEngine + Send + Sync>,
+    /// Sends input. Only `safety::AutoMode` may use it.
+    pub input: Box<dyn InputDriver + Send + Sync>,
 }
 
 /// Creates the adapters for this OS. On platforms that aren't implemented yet, every

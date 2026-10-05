@@ -12,7 +12,8 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [ ] **Spike, Windows:** find the window, WGC capture of the live game (borderless + fullscreen) at ≥30 fps, WinRT OCR on an echo panel crop, `SendInput` click lands in the game (with and without elevation)
   - [x] Window finder, WGC capture, WinRT OCR, and the Diagnostics screen are implemented (milestone 3)
   - [ ] Verified against the live game on Boot Camp (paste the Diagnostics report into the PR)
-  - [ ] `SendInput` spike (milestone 4)
+  - [x] `SendInput` driver + Diagnostics click test implemented (ADR 0017)
+  - [ ] Click test verified against the live game on Boot Camp (normal and as administrator)
 - [ ] **Spike, macOS (Apple Silicon):** SCK window capture, Vision OCR, `CGEventPost` click lands in the game. No Apple Silicon Mac in-house, so this is validated by **Discord community testers**:
   - CI builds an arm64 `.dmg` (ad-hoc signed until the Developer ID is set up; testers right-click → Open)
   - the app's **Diagnostics** screen runs a self-test (window found? capture fps? OCR on a sample crop? test click registered?) and exports a masked report the tester posts back

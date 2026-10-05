@@ -1,7 +1,8 @@
 //! Windows adapters: Win32 for finding the window, Windows.Graphics.Capture for frames
-//! (ADR 0005), Windows.Media.Ocr for text (ADR 0004). Input arrives in a later milestone.
+//! (ADR 0005), Windows.Media.Ocr for text (ADR 0004), `SendInput` for auto mode (ADR 0006).
 
 mod capture;
+mod input;
 mod ocr;
 mod window;
 
@@ -12,6 +13,7 @@ pub(super) fn create() -> Platform {
         finder: Box::new(window::Win32WindowFinder),
         capture: Box::new(capture::WgcCapture::default()),
         ocr: Box::new(ocr::WinRtOcr),
+        input: Box::new(input::SendInputDriver),
     }
 }
 

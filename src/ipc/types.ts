@@ -70,3 +70,28 @@ export interface OcrResult {
   width: number;
   height: number;
 }
+
+/** A point as 0–1 fractions of the game's client area (`geometry::FracPoint`). */
+export interface FracPoint {
+  x: number;
+  y: number;
+}
+
+/** Why auto mode stopped (`safety::AbortReason`). */
+export type AbortReason =
+  | "UserInput"
+  | "Hotkey"
+  | "FocusLost"
+  | "WindowGone"
+  | "ActionCapReached"
+  | "InvalidTarget"
+  | "InputRejected"
+  | "CheckFailed";
+
+/** `safety::AutoModeState` as serialized by serde. */
+export type AutoModeState = "Disarmed" | "Armed" | { Aborted: AbortReason };
+
+export interface AutoModeStatus {
+  state: AutoModeState;
+  actions_used: number;
+}

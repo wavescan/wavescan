@@ -124,8 +124,12 @@ Implemented (milestone 3). Each one is listed in `build.rs` and granted in `capa
 | `capture_status` | `()` → `CaptureStatus { running, fps, frame }` | |
 | `capture_preview` | `{ maxWidth }` → raw bytes `[w u32][h u32][RGBA]` | Downscaled, **User ID masked in Rust** |
 | `ocr_region` | `{ region: FracRect }` → `OcrResult { lines, elapsed_ms, width, height }` | Crops via `crop_outside_user_id`; runs on a blocking worker thread |
+| `auto_mode_status` | `()` → `AutoModeStatus { state, actions_used }` | `state`: `"Disarmed"` · `"Armed"` · `{ "Aborted": reason }` |
+| `arm_auto_mode` / `disarm_auto_mode` | `{ confirmation }` / `()` → `AutoModeStatus` | Arming needs the exact phrase; never persisted |
+| `auto_focus_game` | `()` → `AutoModeStatus` | Guarded; needs arming, not focus ([ADR 0017](adr/0017-input-spike-and-auto-mode-commands.md)) |
+| `auto_click` | `{ target: FracPoint }` → `AutoModeStatus` | Every `AutoMode` check; Windows: `SetCursorPos` + `SendInput` |
 
-*(Planned)*: `crop_regions` (batched ROIs for the scanner), `layout_check`, `arm_auto_mode` / `disarm_auto_mode`, `click` / `scroll` / `key` (all through `safety::AutoMode`), `save_debug_frame` (setting-gated, masked).
+*(Planned)*: `crop_regions` (batched ROIs for the scanner), `layout_check`, scroll/key commands (driver already supports them), F8 stop hotkey, `save_debug_frame` (setting-gated, masked).
 
 Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `src/ipc/commands.ts` has one typed wrapper per command, plus `errorMessage` / `errorKind`.
 

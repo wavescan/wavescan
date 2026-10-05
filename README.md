@@ -155,7 +155,9 @@ On the home screen, press **Run diagnostics**. With the game open on **Bag → E
 - capture it smoothly
 - read the echo text
 
-It shows a preview with your User ID blacked out and gives you a report you can copy. The report contains no pictures. Diagnostics never clicks anything in the game.
+It shows a preview with your User ID blacked out and gives you a report you can copy. The report contains no pictures. The basic checks never click anything in the game.
+
+There's also an optional **click test** for auto mode. After the same Fair Play warning and typed confirmation as auto mode, it brings the game to the front and clicks two echoes in your grid. Clicking only selects them; nothing is changed. Moving the mouse stops it instantly.
 
 ## Reporting a bug
 
