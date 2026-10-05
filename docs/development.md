@@ -37,7 +37,7 @@ docker compose run --rm shell
 Notes:
 
 - `node_modules` and the Rust `target/` dir live in Docker volumes, not your checkout, so the Linux builds never clash with anything on the host. To reset them: `docker compose down -v`.
-- Code behind `#[cfg(target_os = "windows")]` / `"macos"` isn't compiled in the Linux container. CI checks it on real Windows and macOS runners.
+- Windows-only code is **type-checked and linted** in the container (`cargo clippy --target x86_64-pc-windows-msvc`), but its tests only run on CI's Windows runner. macOS-only code needs Apple's SDK, so it's checked on CI's macOS runner only.
 
 ## 2. Running the app on Windows (including Boot Camp)
 
@@ -59,6 +59,14 @@ npm run tauri dev
 ```
 
 The first `tauri dev` compiles everything (5–10 minutes). After that it's quick, and both the Vue UI and the Rust code hot-reload.
+
+**Checking it works with the game:** open Wuthering Waves, go to **Bag → Echoes**, and click an echo. Then in Wavescan press **Run diagnostics → Run**. You should see:
+
+- a masked preview of the game
+- pass/warn badges for window, capture, screen shape and text reading
+- a report you can copy
+
+Paste the report into the PR or issue you're testing.
 
 **Boot Camp workflow:** the Mac and Windows sides can't share a live folder, so use GitHub as the bridge. Push a branch from the Mac, then `git pull` on Windows to test against the game. You can also run Claude Code on the Windows side directly.
 

@@ -5,6 +5,8 @@
 //! in `testing.rs`, so the logic built on top (safety, sessions) is tested without a game
 //! or a real screen. See `docs/architecture.md` §4.
 
+use std::sync::Arc;
+
 use serde::{Deserialize, Serialize};
 
 use crate::error::Error;
@@ -30,6 +32,18 @@ pub struct GameWindow {
     pub minimized: bool,
 }
 
+/// A window that might be the game, listed on the Diagnostics screen to debug
+/// "game window not found".
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WindowCandidate {
+    /// Window title.
+    pub title: String,
+    /// OS window class (Windows) or owning app name (macOS).
+    pub class: String,
+    /// True if this is the window `find_game_window` would pick.
+    pub matched: bool,
+}
+
 /// Finds the Wuthering Waves window.
 pub trait WindowFinder {
     /// Looks up the game window right now. Call it again whenever fresh state matters
@@ -40,6 +54,16 @@ pub trait WindowFinder {
     /// Returns [`Error::WindowNotFound`] if the game isn't running, or a platform error if
     /// the OS query fails.
     fn find_game_window(&self) -> Result<GameWindow, Error>;
+
+    /// Visible windows whose title mentions Wuthering Waves, for diagnostics. Only titles
+    /// containing "Wuthering" are returned, so no other apps' window names are collected.
+    ///
+    /// # Errors
+    ///
+    /// Returns a platform error if the OS query fails.
+    fn candidates(&self) -> Result<Vec<WindowCandidate>, Error> {
+        Ok(Vec::new())
+    }
 }
 
 /// Captures frames of one window, never the whole screen (ADR 0005).
@@ -54,8 +78,12 @@ pub trait FrameSource {
     fn start(&mut self, window: &GameWindow, max_fps: u32) -> Result<(), Error>;
 
     /// The most recent frame, if one has arrived since `start`. Older frames are dropped,
-    /// never queued, so this is always "what the game looks like now".
-    fn latest_frame(&self) -> Option<Frame>;
+    /// never queued, so this is always "what the game looks like now". Shared (`Arc`) so
+    /// callers don't copy megabytes of pixels.
+    fn latest_frame(&self) -> Option<Arc<Frame>>;
+
+    /// Frames received per second over the last second (0.0 when idle).
+    fn fps(&self) -> f64;
 
     /// Stops capturing. Safe to call when nothing is running.
     fn stop(&mut self);

@@ -25,6 +25,10 @@ cargo fmt --check
 step "cargo clippy"
 cargo clippy --all-targets --locked -- -D warnings
 
+step "cargo clippy (Windows target, type-check only)"
+# Catches Windows compile errors and lints locally; Windows tests still run on CI.
+cargo clippy --target x86_64-pc-windows-msvc --all-targets --locked -- -D warnings
+
 step "cargo nextest"
 cargo nextest run --locked
 

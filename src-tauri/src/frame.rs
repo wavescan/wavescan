@@ -152,6 +152,50 @@ impl Frame {
         Ok(())
     }
 
+    /// A smaller copy at most `max_width` pixels wide (aspect ratio kept), converted to
+    /// RGBA for drawing in the webview. Uses box averaging so small text stays legible.
+    /// Returns `(width, height, rgba_bytes)`.
+    ///
+    /// Never call this on an unmasked frame that leaves the app; the preview command masks
+    /// the User ID on the result before sending it.
+    #[must_use]
+    pub fn downscaled_rgba(&self, max_width: u32) -> (u32, u32, Vec<u8>) {
+        let out_w = max_width.clamp(1, self.width);
+        // Keep the aspect ratio; widen to u64 so the multiplication can't overflow.
+        let out_h = u32::try_from(
+            (u64::from(self.height) * u64::from(out_w) / u64::from(self.width)).max(1),
+        )
+        .unwrap_or(1);
+        let mut out = Vec::with_capacity(out_w as usize * out_h as usize * BYTES_PER_PIXEL);
+        for oy in 0..out_h {
+            let (y0, y1) = source_span(oy, out_h, self.height);
+            for ox in 0..out_w {
+                let (x0, x1) = source_span(ox, out_w, self.width);
+                let [b, g, r, a] = self.average(x0, x1, y0, y1);
+                out.extend_from_slice(&[r, g, b, a]);
+            }
+        }
+        (out_w, out_h, out)
+    }
+
+    /// Average BGRA colour of the source block `[x0, x1) × [y0, y1)`.
+    fn average(&self, x0: u32, x1: u32, y0: u32, y1: u32) -> [u8; 4] {
+        let mut sums = [0u64; 4];
+        let mut count = 0u64;
+        for y in y0..y1 {
+            for x in x0..x1 {
+                if let Some(pixel) = self.pixel(x, y) {
+                    for (sum, channel) in sums.iter_mut().zip(pixel) {
+                        *sum += u64::from(channel);
+                    }
+                    count += 1;
+                }
+            }
+        }
+        let count = count.max(1);
+        sums.map(|sum| u8::try_from(sum / count).unwrap_or(u8::MAX))
+    }
+
     /// Byte offset of pixel `(x, y)`, or `None` if it's outside the frame.
     fn offset(&self, x: u32, y: u32) -> Option<usize> {
         if x >= self.width || y >= self.height {
@@ -160,6 +204,17 @@ impl Frame {
         let index = y as usize * self.width as usize + x as usize;
         index.checked_mul(BYTES_PER_PIXEL)
     }
+}
+
+/// The source pixel range `[start, end)` that output pixel `index` (of `out_len`) covers
+/// when shrinking `src_len` pixels. Always at least one pixel wide.
+fn source_span(index: u32, out_len: u32, src_len: u32) -> (u32, u32) {
+    let scale = |i: u32| {
+        u32::try_from(u64::from(i) * u64::from(src_len) / u64::from(out_len)).unwrap_or(src_len)
+    };
+    let start = scale(index);
+    let end = scale(index + 1).max(start + 1).min(src_len);
+    (start, end)
 }
 
 /// `width * height * 4`, or `None` on overflow.
@@ -237,6 +292,30 @@ mod tests {
         assert_eq!(frame.pixel(5, 5), Some(BLACK));
         assert_eq!(frame.pixel(9, 9), Some(BLACK));
         assert_eq!(frame.pixel(9, 4), Some(RED));
+    }
+
+    #[test]
+    fn downscale_keeps_aspect_and_converts_to_rgba() {
+        // 4x2 frame, left half pure blue (BGRA 255,0,0), right half pure red (0,0,255).
+        let mut frame = Frame::solid(4, 2, 0, [255, 0, 0, 255]).unwrap();
+        frame.fill(FracRect::new(0.5, 0.0, 0.5, 1.0), RED).unwrap();
+        let (w, h, rgba) = frame.downscaled_rgba(2);
+        assert_eq!((w, h), (2, 1));
+        // RGBA order: left pixel blue, right pixel red.
+        assert_eq!(&rgba[0..4], &[0, 0, 255, 255]);
+        assert_eq!(&rgba[4..8], &[255, 0, 0, 255]);
+    }
+
+    #[test]
+    fn downscale_never_upscales_and_averages_blocks() {
+        let mut frame = Frame::solid(2, 2, 0, [0, 0, 0, 255]).unwrap();
+        frame
+            .fill(FracRect::new(0.0, 0.0, 0.5, 1.0), [200, 200, 200, 255])
+            .unwrap();
+        let (w, h, _) = frame.downscaled_rgba(10);
+        assert_eq!((w, h), (2, 2), "max_width larger than the frame keeps size");
+        let (_, _, one) = frame.downscaled_rgba(1);
+        assert_eq!(&one, &[100, 100, 100, 255], "average of the two halves");
     }
 
     #[test]

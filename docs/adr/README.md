@@ -47,3 +47,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0013](./0013-user-id-masking.md) | Never read the User ID, and mask it in any saved frame | accepted | | privacy |
 | [0014](./0014-gpl-3-license.md) | License under GPL-3.0-or-later | accepted | | legal |
 | [0015](./0015-rust-code-standards.md) | Rust code standards for a non-Rust maintainer | accepted | | rust, process, testing |
+| [0016](./0016-diagnostics-screen-and-capture-commands.md) | Diagnostics screen, capture/OCR commands, and window matching without touching the game | accepted | | capture, ocr, privacy, testing |

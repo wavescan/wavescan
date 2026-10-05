@@ -11,14 +11,18 @@
 //! | [`safety`] | Gatekeeper for input (auto mode) and User ID privacy |
 //! | [`frame`] | In-memory captured images: crop, fill |
 //! | [`geometry`] | Pixel and fractional rectangles/points |
-//! | [`commands`] | IPC commands the UI calls |
+//! | [`platform`] | Windows/macOS implementations of the traits |
+//! | [`stats`] | Frame-rate measurement |
+//! | [`commands`] | IPC commands the UI calls, and the shared app state |
 //! | [`error`] | The error type sent to the UI |
 
 pub mod commands;
 pub mod error;
 pub mod frame;
 pub mod geometry;
+pub mod platform;
 pub mod safety;
+pub mod stats;
 pub mod traits;
 
 #[cfg(test)]
@@ -34,7 +38,17 @@ pub use error::Error;
 /// (for example, `WebView2` missing on Windows).
 pub fn run() -> Result<(), Error> {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![commands::app_info])
+        .manage(commands::AppState::new(platform::create()))
+        .invoke_handler(tauri::generate_handler![
+            commands::app_info,
+            commands::find_game_window,
+            commands::window_candidates,
+            commands::start_capture,
+            commands::stop_capture,
+            commands::capture_status,
+            commands::capture_preview,
+            commands::ocr_region,
+        ])
         .run(tauri::generate_context!())
         .map_err(|source| Error::Startup(source.to_string()))
 }

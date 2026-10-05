@@ -41,7 +41,9 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src-tauri/src/frame.rs`, `geometry.rs` | Captured images (crop/fill) and pixel ↔ fraction geometry |
 | `src-tauri/src/testing.rs` | Fakes for the four traits (test-only) |
 | `src-tauri/capabilities/` | Tauri permission allow-list (keep minimal) |
-| `src/session/` | `ScanSession`, `classifyScreen`, per-screen `extractors/` (TS "brain") |
+| `src/diagnostics/` | Diagnostics checks + report builder (no images; ADR 0016) |
+| `src/ipc/` | Typed wrappers for every Rust command + mirrored types |
+| `src/session/` | `ScanSession`, `classifyScreen`, per-screen `extractors/` (TS "brain") *(planned)* |
 | `src/auto/` | Auto-mode navigator state machine, grid walking |
 | `src/views/` | Vue UI |
 | `schema/scan.v1.json` | Output contract with the web app ([ADR 0008](docs/adr/0008-scan-json-schema-v1.md)) |

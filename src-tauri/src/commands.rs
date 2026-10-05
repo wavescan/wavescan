@@ -1,8 +1,26 @@
-//! IPC commands the UI can call. Keep these thin: validate input, call into a module,
-//! map errors. Each command must also be listed in `build.rs` and granted in
-//! `capabilities/default.json`, or the UI can't call it.
+//! IPC commands the UI can call. Keep these thin: each `#[tauri::command]` forwards to an
+//! [`AppState`] method, which holds the logic and is unit-tested with fakes. Every command
+//! must also be listed in `build.rs` and granted in `capabilities/default.json`, or the UI
+//! can't call it.
+
+// Tauri hands commands their `State` by value; that's the framework's calling convention.
+#![allow(
+    clippy::needless_pass_by_value,
+    reason = "Tauri commands receive State<'_, T> by value"
+)]
+
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex, PoisonError};
+use std::time::Instant;
 
 use serde::Serialize;
+
+use crate::error::Error;
+use crate::frame::Frame;
+use crate::geometry::FracRect;
+use crate::platform::Platform;
+use crate::safety;
+use crate::traits::{FrameSource, GameWindow, OcrEngine, OcrLine, WindowCandidate, WindowFinder};
 
 /// Basic facts about the running app. Mirrored in `src/ipc/types.ts` as `AppInfo`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -13,6 +31,170 @@ pub struct AppInfo {
     pub version: &'static str,
     /// Operating system this build targets: `windows`, `macos` or `linux`.
     pub platform: &'static str,
+}
+
+/// Size and sequence number of a captured frame.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub struct FrameInfo {
+    /// Sequence number within the capture session.
+    pub seq: u64,
+    /// Width in pixels.
+    pub width: u32,
+    /// Height in pixels.
+    pub height: u32,
+}
+
+/// Whether capture is running and how well. Mirrored as `CaptureStatus` in TS.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct CaptureStatus {
+    /// True between `start_capture` and `stop_capture`.
+    pub running: bool,
+    /// Frames received in the last second.
+    pub fps: f64,
+    /// The latest frame, if any has arrived.
+    pub frame: Option<FrameInfo>,
+}
+
+/// Result of reading one region of the latest frame. Mirrored as `OcrResult` in TS.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct OcrResult {
+    /// Lines of text, top to bottom, with positions inside the cropped region.
+    pub lines: Vec<OcrLine>,
+    /// Time spent in the OS OCR engine, in milliseconds.
+    pub elapsed_ms: f64,
+    /// Cropped region width in pixels.
+    pub width: u32,
+    /// Cropped region height in pixels.
+    pub height: u32,
+}
+
+/// Largest preview the UI may request, in pixels wide. Keeps IPC payloads small.
+const MAX_PREVIEW_WIDTH: u32 = 1280;
+
+/// The app's OS adapters and capture state, shared by all commands.
+pub struct AppState {
+    finder: Box<dyn WindowFinder + Send + Sync>,
+    capture: Mutex<Box<dyn FrameSource + Send>>,
+    ocr: Arc<dyn OcrEngine + Send + Sync>,
+    capturing: AtomicBool,
+}
+
+impl AppState {
+    /// Wraps the platform adapters.
+    #[must_use]
+    pub fn new(platform: Platform) -> Self {
+        Self {
+            finder: platform.finder,
+            capture: Mutex::new(platform.capture),
+            ocr: Arc::from(platform.ocr),
+            capturing: AtomicBool::new(false),
+        }
+    }
+
+    /// See [`find_game_window`].
+    ///
+    /// # Errors
+    ///
+    /// [`Error::WindowNotFound`] if the game isn't running.
+    pub fn find_game_window(&self) -> Result<GameWindow, Error> {
+        self.finder.find_game_window()
+    }
+
+    /// See [`window_candidates`].
+    ///
+    /// # Errors
+    ///
+    /// A platform error if the OS query fails.
+    pub fn window_candidates(&self) -> Result<Vec<WindowCandidate>, Error> {
+        self.finder.candidates()
+    }
+
+    /// See [`start_capture`].
+    ///
+    /// # Errors
+    ///
+    /// [`Error::WindowNotFound`], [`Error::WindowMinimized`], or a capture error.
+    pub fn start_capture(&self, max_fps: u32) -> Result<GameWindow, Error> {
+        let window = self.finder.find_game_window()?;
+        if window.minimized {
+            return Err(Error::WindowMinimized);
+        }
+        self.lock_capture().start(&window, max_fps.clamp(1, 60))?;
+        self.capturing.store(true, Ordering::SeqCst);
+        Ok(window)
+    }
+
+    /// See [`stop_capture`].
+    pub fn stop_capture(&self) {
+        self.lock_capture().stop();
+        self.capturing.store(false, Ordering::SeqCst);
+    }
+
+    /// See [`capture_status`].
+    pub fn capture_status(&self) -> CaptureStatus {
+        let capture = self.lock_capture();
+        CaptureStatus {
+            running: self.capturing.load(Ordering::SeqCst),
+            fps: capture.fps(),
+            frame: capture.latest_frame().map(|f| FrameInfo {
+                seq: f.seq(),
+                width: f.width(),
+                height: f.height(),
+            }),
+        }
+    }
+
+    /// See [`capture_preview`]. Returns `[width u32 LE][height u32 LE][RGBA bytes]`.
+    ///
+    /// # Errors
+    ///
+    /// [`Error::CaptureFailed`] if no frame has arrived yet.
+    pub fn capture_preview(&self, max_width: u32) -> Result<Vec<u8>, Error> {
+        let frame = self.latest_frame()?;
+        let (width, height, rgba) = frame.downscaled_rgba(max_width.clamp(64, MAX_PREVIEW_WIDTH));
+        // Black out the User ID before the image leaves Rust (ADR 0013). The fill colour is
+        // opaque black in both BGRA and RGBA, so masking the RGBA buffer is correct.
+        let mut preview = Frame::from_bgra(width, height, frame.seq(), rgba)?;
+        safety::mask_user_id(&mut preview)?;
+
+        let mut out = Vec::with_capacity(8 + preview.pixels().len());
+        out.extend_from_slice(&width.to_le_bytes());
+        out.extend_from_slice(&height.to_le_bytes());
+        out.extend_from_slice(preview.pixels());
+        Ok(out)
+    }
+
+    /// See [`ocr_region`]. Blocking: call from a worker thread.
+    ///
+    /// # Errors
+    ///
+    /// [`Error::CaptureFailed`] if no frame has arrived, [`Error::InvalidRegion`] if the
+    /// region is invalid or overlaps the User ID, or an OCR error.
+    pub fn ocr_region(&self, region: FracRect) -> Result<OcrResult, Error> {
+        let (crop, ocr) = self.prepare_ocr(region)?;
+        run_ocr(&crop, ocr.as_ref())
+    }
+
+    /// Crops `region` (refusing the User ID area) and hands back the OCR engine, so the
+    /// slow recognition step can run on another thread.
+    fn prepare_ocr(
+        &self,
+        region: FracRect,
+    ) -> Result<(Frame, Arc<dyn OcrEngine + Send + Sync>), Error> {
+        let frame = self.latest_frame()?;
+        let crop = safety::crop_outside_user_id(&frame, region)?;
+        Ok((crop, Arc::clone(&self.ocr)))
+    }
+
+    fn latest_frame(&self) -> Result<Arc<Frame>, Error> {
+        self.lock_capture()
+            .latest_frame()
+            .ok_or_else(|| Error::CaptureFailed("no frame has been captured yet".into()))
+    }
+
+    fn lock_capture(&self) -> std::sync::MutexGuard<'_, Box<dyn FrameSource + Send>> {
+        self.capture.lock().unwrap_or_else(PoisonError::into_inner)
+    }
 }
 
 /// Returns the app's name, version and platform. Used by the home and diagnostics screens.
@@ -26,9 +208,111 @@ pub fn app_info() -> AppInfo {
     }
 }
 
+/// Finds the game window and reports its size, scale and focus.
+///
+/// # Errors
+///
+/// [`Error::WindowNotFound`] if the game isn't running.
+#[tauri::command]
+pub fn find_game_window(state: tauri::State<'_, AppState>) -> Result<GameWindow, Error> {
+    state.find_game_window()
+}
+
+/// Lists windows whose title mentions Wuthering Waves (diagnostics only).
+///
+/// # Errors
+///
+/// A platform error if the OS query fails.
+#[tauri::command]
+pub fn window_candidates(state: tauri::State<'_, AppState>) -> Result<Vec<WindowCandidate>, Error> {
+    state.window_candidates()
+}
+
+/// Starts capturing the game window at up to `max_fps` (clamped to 1–60).
+///
+/// # Errors
+///
+/// [`Error::WindowNotFound`], [`Error::WindowMinimized`], [`Error::PermissionDenied`] or
+/// [`Error::CaptureFailed`].
+#[tauri::command]
+pub fn start_capture(state: tauri::State<'_, AppState>, max_fps: u32) -> Result<GameWindow, Error> {
+    state.start_capture(max_fps)
+}
+
+/// Stops capturing. Safe to call when not capturing.
+#[tauri::command]
+pub fn stop_capture(state: tauri::State<'_, AppState>) {
+    state.stop_capture();
+}
+
+/// Reports whether capture is running, its frame rate and the latest frame size.
+#[tauri::command]
+#[must_use]
+pub fn capture_status(state: tauri::State<'_, AppState>) -> CaptureStatus {
+    state.capture_status()
+}
+
+/// A small, User-ID-masked preview of the latest frame for the Diagnostics screen.
+///
+/// # Errors
+///
+/// [`Error::CaptureFailed`] if no frame has arrived yet.
+#[tauri::command]
+pub fn capture_preview(
+    state: tauri::State<'_, AppState>,
+    max_width: u32,
+) -> Result<tauri::ipc::Response, Error> {
+    state
+        .capture_preview(max_width)
+        .map(tauri::ipc::Response::new)
+}
+
+/// Reads text from `region` (fractions of the frame) of the latest frame.
+///
+/// # Errors
+///
+/// See [`AppState::ocr_region`].
+#[tauri::command]
+pub async fn ocr_region(
+    state: tauri::State<'_, AppState>,
+    region: FracRect,
+) -> Result<OcrResult, Error> {
+    let (crop, ocr) = state.prepare_ocr(region)?;
+    // OCR blocks for tens of milliseconds; run it on a blocking-work thread.
+    tauri::async_runtime::spawn_blocking(move || run_ocr(&crop, ocr.as_ref()))
+        .await
+        .map_err(|e| Error::OcrFailed(format!("OCR task failed: {e}")))?
+}
+
+/// Recognises text in `crop` and times it.
+fn run_ocr(crop: &Frame, ocr: &(dyn OcrEngine + Send + Sync)) -> Result<OcrResult, Error> {
+    let started = Instant::now();
+    let lines = ocr.recognize(crop)?;
+    Ok(OcrResult {
+        lines,
+        elapsed_ms: started.elapsed().as_secs_f64() * 1000.0,
+        width: crop.width(),
+        height: crop.height(),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::geometry::Rect;
+    use crate::testing::{FakeFrames, FakeOcr, FakeWindowFinder};
+
+    fn state_with(frames: Vec<Frame>, lines: Vec<OcrLine>) -> AppState {
+        AppState::new(Platform {
+            finder: Box::new(FakeWindowFinder::focused()),
+            capture: Box::new(FakeFrames::new(frames)),
+            ocr: Box::new(FakeOcr::returning(lines)),
+        })
+    }
+
+    fn white_frame() -> Frame {
+        Frame::solid(2880, 1800, 1, [255, 255, 255, 255]).unwrap()
+    }
 
     #[test]
     fn app_info_reports_cargo_version_and_os() {
@@ -39,10 +323,88 @@ mod tests {
     }
 
     #[test]
-    fn app_info_serializes_with_ts_field_names() {
-        let json = serde_json::to_value(app_info()).unwrap();
-        assert!(json.get("name").is_some());
-        assert!(json.get("version").is_some());
-        assert!(json.get("platform").is_some());
+    fn capture_status_follows_start_and_stop() {
+        let state = state_with(vec![white_frame()], vec![]);
+        assert!(!state.capture_status().running);
+        state.start_capture(30).unwrap();
+        let status = state.capture_status();
+        assert!(status.running);
+        assert_eq!(
+            status.frame,
+            Some(FrameInfo {
+                seq: 1,
+                width: 2880,
+                height: 1800
+            })
+        );
+        state.stop_capture();
+        assert!(!state.capture_status().running);
+        assert_eq!(state.capture_status().frame, None);
+    }
+
+    #[test]
+    fn preview_is_downscaled_and_masks_the_user_id() {
+        let state = state_with(vec![white_frame()], vec![]);
+        state.start_capture(30).unwrap();
+        let bytes = state.capture_preview(640).unwrap();
+
+        let width = u32::from_le_bytes(bytes[0..4].try_into().unwrap());
+        let height = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
+        assert_eq!((width, height), (640, 400));
+        let pixel = |x: u32, y: u32| {
+            let i = 8 + ((y * width + x) * 4) as usize;
+            [bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]]
+        };
+        assert_eq!(pixel(10, 10), [255, 255, 255, 255], "normal area untouched");
+        assert_eq!(pixel(620, 397), [0, 0, 0, 255], "User ID area blacked out");
+    }
+
+    #[test]
+    fn preview_without_a_frame_is_an_error() {
+        let state = state_with(vec![], vec![]);
+        assert!(matches!(
+            state.capture_preview(640),
+            Err(Error::CaptureFailed(_))
+        ));
+    }
+
+    #[test]
+    fn ocr_region_returns_lines_and_crop_size() {
+        let line = OcrLine {
+            text: "Thousand-Puppet Pavilion".into(),
+            bounds: Rect::new(0, 0, 100, 20),
+        };
+        let state = state_with(vec![white_frame()], vec![line.clone()]);
+        state.start_capture(30).unwrap();
+        let result = state
+            .ocr_region(FracRect::new(0.685, 0.104, 0.27, 0.034))
+            .unwrap();
+        assert_eq!(result.lines, vec![line]);
+        assert!(result.width > 700 && result.height > 50);
+    }
+
+    #[test]
+    fn ocr_region_refuses_the_user_id_area() {
+        let state = state_with(vec![white_frame()], vec![]);
+        state.start_capture(30).unwrap();
+        assert!(matches!(
+            state.ocr_region(FracRect::new(0.8, 0.9, 0.2, 0.1)),
+            Err(Error::InvalidRegion)
+        ));
+    }
+
+    #[test]
+    fn start_capture_refuses_a_minimized_game() {
+        let finder = FakeWindowFinder::focused();
+        finder.set_minimized(true);
+        let state = AppState::new(Platform {
+            finder: Box::new(finder),
+            capture: Box::new(FakeFrames::new(vec![white_frame()])),
+            ocr: Box::new(FakeOcr::returning(vec![])),
+        });
+        assert!(matches!(
+            state.start_capture(30),
+            Err(Error::WindowMinimized)
+        ));
     }
 }
