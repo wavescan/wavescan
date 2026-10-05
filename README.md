@@ -2,7 +2,7 @@
 
 > 🌐 [wavescan.app](https://wavescan.app) · **Status: in development, not released yet.** This page describes how the scanner will work at v0.1. Download links appear here once the first signed build ships.
 
-Wavescan is a small, free desktop app for Windows and Mac. It reads your **echoes** from the Wuthering Waves game window and turns them into a file you can import into [Wuthering Tools](https://github.com/ryanbenson/wuthering-waves-optimizer) in one click. No typing in substats one by one.
+Wavescan is a small, free desktop app for Windows and Mac. It reads your **echoes** from the Wuthering Waves game window and turns them into a file you can import into [Wuthering Tools](https://wutheringtools.com) in one click. No typing in substats one by one.
 
 Characters (level, weapon, forte, resonance chain) and weapons come in later updates. See [What's coming](#whats-coming).
 

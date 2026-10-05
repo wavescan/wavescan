@@ -36,8 +36,8 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 
 ## Phase 4: Handoff + web import (optimizer repo)
 
-- [ ] Export (save file + clipboard → open `/import/scan`)
-- [ ] `ImportScan.vue` + `src/import/scanImport.ts`: validate, review (reuse `useEchoDuplicateReview`), "+25 only" filter, apply to inventory + equip map
+- [ ] Export (save file + clipboard → open `https://wutheringtools.com/import/scan`)
+- [ ] `ImportScan.vue` + `src/import/scanImport.ts`: validate, review (reuse `useEchoDuplicateReview`), "+25 only" filter, apply to inventory + equip map. **Additive only:** never route through the full-backup restore (see ADR 0009)
 - [ ] Mapper unit tests + a Cypress drop-file test
 
 ## Phase 6: Release pipeline & trust
