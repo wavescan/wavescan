@@ -12,7 +12,7 @@ Every game screen in the fixtures prints `User ID: <number>` in the bottom-right
 
 ## Decision
 
-- **No ROI ever overlaps the User ID region.** `layoutCheck` asserts this for every layout in tests.
+- **No ROI ever overlaps the User ID region.** Rust enforces it: OCR crops go through `safety::crop_outside_user_id`, which refuses any region overlapping `USER_ID_REGION`. `layoutCheck` also asserts it for every layout in tests.
 - `safety::mask_user_id(frame)` fills the region with black before **any** frame or crop leaves memory: debug frames, bug-report exports, and the in-app preview.
 - The mask region is defined per aspect ratio, relative to the detected content rect, with generous padding. Tests run it against every fixture and check that OCR of the masked area returns no digits.
 - The scan JSON never contains the User ID or any account identifier ([ADR 0008](./0008-scan-json-schema-v1.md)).

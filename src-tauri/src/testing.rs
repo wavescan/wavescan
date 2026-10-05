@@ -1,0 +1,239 @@
+//! Fake implementations of the OS traits, for tests. They behave like the real OS in the
+//! ways our logic depends on (e.g. a click moves the cursor) and let tests simulate the
+//! user, the game window and OS failures.
+
+use std::cell::{Cell, RefCell};
+use std::collections::VecDeque;
+
+use crate::error::Error;
+use crate::frame::Frame;
+use crate::geometry::{Rect, ScreenPoint};
+use crate::traits::{
+    FrameSource, GameWindow, InputDriver, Key, OcrEngine, OcrLine, WindowFinder, WindowId,
+};
+
+/// A fake game window that tests can focus, minimise or close.
+pub struct FakeWindowFinder {
+    window: RefCell<Option<GameWindow>>,
+}
+
+impl FakeWindowFinder {
+    /// A focused 2880×1800 game window at screen position (100, 50).
+    pub fn focused() -> Self {
+        Self {
+            window: RefCell::new(Some(GameWindow {
+                id: WindowId(42),
+                client_rect: Rect::new(100, 50, 2880, 1800),
+                scale_factor: 2.0,
+                focused: true,
+                minimized: false,
+            })),
+        }
+    }
+
+    /// The current window state (panics if closed, test-only).
+    pub fn window(&self) -> GameWindow {
+        self.window.borrow().clone().expect("window was closed")
+    }
+
+    /// Simulates the user clicking another app (or back into the game).
+    pub fn set_focused(&self, focused: bool) {
+        if let Some(window) = self.window.borrow_mut().as_mut() {
+            window.focused = focused;
+        }
+    }
+
+    /// Simulates minimising or restoring the game.
+    pub fn set_minimized(&self, minimized: bool) {
+        if let Some(window) = self.window.borrow_mut().as_mut() {
+            window.minimized = minimized;
+        }
+    }
+
+    /// Simulates the game closing.
+    pub fn close(&self) {
+        *self.window.borrow_mut() = None;
+    }
+}
+
+impl WindowFinder for FakeWindowFinder {
+    fn find_game_window(&self) -> Result<GameWindow, Error> {
+        self.window.borrow().clone().ok_or(Error::WindowNotFound)
+    }
+}
+
+/// An input action recorded by [`FakeInput`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InputEvent {
+    /// A left click at a screen point.
+    Click(ScreenPoint),
+    /// A wheel scroll at a screen point.
+    Scroll(ScreenPoint, i32),
+    /// A key press.
+    Press(Key),
+}
+
+/// Records input instead of sending it, and simulates the cursor.
+#[derive(Default)]
+pub struct FakeInput {
+    events: RefCell<Vec<InputEvent>>,
+    cursor: Cell<Option<ScreenPoint>>,
+    reject: Cell<bool>,
+    cursor_query_fails: Cell<bool>,
+}
+
+impl FakeInput {
+    /// Everything sent so far, in order.
+    pub fn events(&self) -> Vec<InputEvent> {
+        self.events.borrow().clone()
+    }
+
+    /// Simulates the user moving the mouse.
+    pub fn user_moves_cursor_by(&self, dx: i32, dy: i32) {
+        let current = self.cursor.get().unwrap_or(ScreenPoint::new(0, 0));
+        self.cursor
+            .set(Some(ScreenPoint::new(current.x + dx, current.y + dy)));
+    }
+
+    /// Makes every input call fail like Windows UIPI blocking an elevated game.
+    pub fn reject_input(&self) {
+        self.reject.set(true);
+    }
+
+    /// Makes cursor queries fail.
+    pub fn fail_cursor_queries(&self) {
+        self.cursor_query_fails.set(true);
+    }
+
+    fn record(&self, event: InputEvent, moves_to: Option<ScreenPoint>) -> Result<(), Error> {
+        if self.reject.get() {
+            return Err(Error::InputBlocked("fake: input rejected".into()));
+        }
+        if let Some(point) = moves_to {
+            self.cursor.set(Some(point));
+        }
+        self.events.borrow_mut().push(event);
+        Ok(())
+    }
+}
+
+impl InputDriver for FakeInput {
+    fn click(&self, point: ScreenPoint) -> Result<(), Error> {
+        self.record(InputEvent::Click(point), Some(point))
+    }
+
+    fn scroll(&self, point: ScreenPoint, ticks: i32) -> Result<(), Error> {
+        self.record(InputEvent::Scroll(point, ticks), Some(point))
+    }
+
+    fn press(&self, key: Key) -> Result<(), Error> {
+        self.record(InputEvent::Press(key), None)
+    }
+
+    fn cursor_position(&self) -> Result<ScreenPoint, Error> {
+        if self.cursor_query_fails.get() {
+            return Err(Error::CaptureFailed("fake: cursor query failed".into()));
+        }
+        Ok(self.cursor.get().unwrap_or(ScreenPoint::new(0, 0)))
+    }
+}
+
+/// Replays a fixed list of frames, one per [`FakeFrames::advance`].
+#[derive(Default)]
+pub struct FakeFrames {
+    queue: VecDeque<Frame>,
+    running: bool,
+}
+
+impl FakeFrames {
+    /// A source that will deliver `frames` in order.
+    pub fn new(frames: impl IntoIterator<Item = Frame>) -> Self {
+        Self {
+            queue: frames.into_iter().collect(),
+            running: false,
+        }
+    }
+
+    /// Moves to the next frame (like time passing). Keeps the last frame at the end.
+    pub fn advance(&mut self) {
+        if self.queue.len() > 1 {
+            self.queue.pop_front();
+        }
+    }
+}
+
+impl FrameSource for FakeFrames {
+    fn start(&mut self, _window: &GameWindow, _max_fps: u32) -> Result<(), Error> {
+        self.running = true;
+        Ok(())
+    }
+
+    fn latest_frame(&self) -> Option<Frame> {
+        if self.running {
+            self.queue.front().cloned()
+        } else {
+            None
+        }
+    }
+
+    fn stop(&mut self) {
+        self.running = false;
+    }
+}
+
+/// Returns the same OCR lines for every image.
+pub struct FakeOcr {
+    lines: Vec<OcrLine>,
+}
+
+impl FakeOcr {
+    /// An engine that "reads" `lines` from any image.
+    pub fn returning(lines: Vec<OcrLine>) -> Self {
+        Self { lines }
+    }
+}
+
+impl OcrEngine for FakeOcr {
+    fn recognize(&self, _image: &Frame) -> Result<Vec<OcrLine>, Error> {
+        Ok(self.lines.clone())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fake_frames_only_deliver_while_running() {
+        let finder = FakeWindowFinder::focused();
+        let a = Frame::solid(2, 2, 1, [0; 4]).unwrap();
+        let b = Frame::solid(2, 2, 2, [0; 4]).unwrap();
+        let mut source = FakeFrames::new([a, b]);
+        assert!(source.latest_frame().is_none());
+        source.start(&finder.window(), 30).unwrap();
+        assert_eq!(source.latest_frame().unwrap().seq(), 1);
+        source.advance();
+        source.advance();
+        assert_eq!(source.latest_frame().unwrap().seq(), 2, "stays on last");
+        source.stop();
+        assert!(source.latest_frame().is_none());
+    }
+
+    #[test]
+    fn fake_ocr_returns_its_lines() {
+        let line = OcrLine {
+            text: "Crit. DMG 15.0%".into(),
+            bounds: Rect::new(0, 0, 10, 2),
+        };
+        let ocr = FakeOcr::returning(vec![line.clone()]);
+        let frame = Frame::solid(1, 1, 0, [0; 4]).unwrap();
+        assert_eq!(ocr.recognize(&frame).unwrap(), vec![line]);
+    }
+
+    #[test]
+    fn fake_click_moves_the_cursor() {
+        let input = FakeInput::default();
+        input.click(ScreenPoint::new(5, 6)).unwrap();
+        assert_eq!(input.cursor_position().unwrap(), ScreenPoint::new(5, 6));
+    }
+}

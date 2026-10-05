@@ -93,7 +93,14 @@ stateDiagram-v2
 
 ## 4. Rust trait seams
 
-Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs` *(planned)*. Tests use fakes that replay fixture frames.
+Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs`. Tests use the fakes in `src-tauri/src/testing.rs`, which simulate the window (focus, minimise, close), the cursor and user mouse movement, OS input rejection, and replayed frames. The Windows/macOS implementations are *(planned)* in `platform/`.
+
+Key types:
+
+- `GameWindow { id, client_rect, scale_factor, focused, minimized }`, always re-queried before an action.
+- `Frame`: BGRA pixels with no row padding, plus a sequence number.
+- `Key`: a **closed list** (`Escape`, `B`, `C`), so auto mode can never type anything else.
+- Layout coordinates are fractions (`FracPoint`, `FracRect`) of the client area, converted to pixels only at the last moment (`geometry.rs`). Out-of-range fractions are **refused, never clamped**.
 
 | Trait | Windows impl | macOS impl | Fake (tests) |
 |---|---|---|---|
@@ -113,7 +120,7 @@ Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs` *(pl
 | `crop_regions` | `{ seq, regions: RoiFraction[], ocr: bool }` → `CropResult[]` | Returns text + boxes and/or small RGBA bytes (`ipc::Response`) |
 | `layout_check` | `{ seq }` → `LayoutReport` | Aspect, content rect, anchor hits |
 | `arm_auto_mode` / `disarm_auto_mode` | `{ confirmation }` → `()` | Arming requires the typed confirmation from the UI |
-| `click` / `scroll` / `key` | `{ x_frac, y_frac }` … → `()` | All go through `safety::guarded_input` |
+| `click` / `scroll` / `key` | `{ x_frac, y_frac }` … → `()` | All go through `safety::AutoMode` |
 | `save_debug_frame` | `{ seq }` → `path` | Only when the setting is on, and always masked |
 
 Errors cross IPC as `{ kind: "WindowNotFound" | "PermissionDenied" | "InputBlocked" | ..., message }`. TS mirrors live in `src/ipc/types.ts`.
@@ -131,9 +138,9 @@ Errors cross IPC as `{ kind: "WindowNotFound" | "PermissionDenied" | "InputBlock
 |---|---|
 | Window-only capture | `FrameSource` takes a window id. There's no desktop-capture code path |
 | No memory/file access to the game | Nothing in the codebase opens the game process or install dir. Reviewed in PRs per CLAUDE.md |
-| Input gating | `safety::guarded_input`: armed + focused + in-rect + under cap |
+| Input gating | `safety::AutoMode`: armed (typed phrase) → window exists, focused, not minimised → cursor where we left it (else the user took over) → target inside the client rect → under the action cap. **Any failure aborts** until the user re-arms |
 | Abort | Cursor-drift check between our clicks, F8 global hotkey, focus-loss event |
-| User ID never read | Excluded from all ROIs. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
+| User ID never read | `crop_outside_user_id` refuses OCR crops that overlap it. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
 | Tauri capabilities | `src-tauri/capabilities/default.json`: only our commands + updater + dialog save + clipboard write |
 | CSP | `default-src 'self'`. No remote scripts or styles |
 | Least privilege | Admin (Windows) / Accessibility (macOS) requested only when arming auto mode |
