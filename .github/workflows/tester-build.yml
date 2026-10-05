@@ -6,7 +6,7 @@ name: Tester build
 
 on:
   push:
-    branches: [main, ci/tester-builds] # TEMP: remove the branch before merging
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
