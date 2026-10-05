@@ -1,6 +1,6 @@
 # Wavescan
 
-> **Status: in development, not released yet.** This page describes how the scanner will work at v0.1. Download links appear here once the first signed build ships.
+> 🌐 [wavescan.app](https://wavescan.app) · **Status: in development, not released yet.** This page describes how the scanner will work at v0.1. Download links appear here once the first signed build ships.
 
 Wavescan is a small, free desktop app for Windows and Mac. It reads your **echoes** from the Wuthering Waves game window and turns them into a file you can import into [Wuthering Tools](https://github.com/ryanbenson/wuthering-waves-optimizer) in one click. No typing in substats one by one.
 
@@ -28,7 +28,7 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 | Windows 10/11 (64-bit) | `Wavescan_x.y.z_x64-setup.exe` *(coming soon)* |
 | macOS 13+ (Apple Silicon) | `Wavescan_x.y.z_aarch64.dmg` *(coming soon)* |
 
-All downloads come from this repository's **Releases** page. Every file is:
+Get Wavescan from **[wavescan.app](https://wavescan.app)** or this repository's **[Releases](https://github.com/wavescan/wavescan/releases)** page. The website links to the same Releases files. Every file is:
 
 - **signed** with a Microsoft/Apple-verified certificate, so Windows and macOS know who made it, and
 - **built automatically** from the public source code by GitHub, with a checksum you can verify ([how](#verify-your-download)).
