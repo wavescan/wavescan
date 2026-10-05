@@ -33,7 +33,7 @@ v0.1 ships on macOS (Apple Silicon) as well as Windows. The maintainer has no Ap
 
 - Pros:
   - Same feature set as Windows, built from well-maintained bindings.
-  - Most macOS code is type-checked locally.
+  - All macOS code is type-checked locally.
   - Permission problems come with clear instructions.
 - Cons:
   - More low-level code (an Objective-C delegate class, completion-handler blocks), all type-checked locally and kept small.
