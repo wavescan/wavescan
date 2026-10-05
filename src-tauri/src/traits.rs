@@ -127,6 +127,14 @@ pub enum Key {
 /// checks arming, focus, bounds and abort conditions first. Only `safety.rs` and the
 /// platform implementations may refer to this trait's methods.
 pub trait InputDriver {
+    /// Brings the game window to the front so it receives input.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::InputBlocked`] if the OS refused (Windows only lets the app the
+    /// user is currently using change the foreground window).
+    fn focus(&self, window: &GameWindow) -> Result<(), Error>;
+
     /// Moves the cursor to `point` and left-clicks.
     ///
     /// # Errors

@@ -23,6 +23,17 @@ export const OCR_TEST_REGIONS: TestRegion[] = [
   },
 ];
 
+/**
+ * Where the input test clicks on Bag → Echoes: two cells in the echo grid (left side).
+ * Clicking a cell only selects that echo, so it's harmless whatever is there. Measured
+ * from the 16:10 fixtures: column centres are about 0.130 and 0.222, and y 0.42 lands
+ * inside a full row whether or not the grid is scrolled.
+ */
+export const INPUT_TEST_TARGETS = [
+  { x: 0.13, y: 0.42 },
+  { x: 0.222, y: 0.42 },
+] as const;
+
 /** Game UI aspect ratios the layouts support: 16:10 to 16:9, with a little slack. */
 export const SUPPORTED_ASPECT = { min: 16 / 10 - 0.05, max: 16 / 9 + 0.05 } as const;
 

@@ -14,6 +14,11 @@ fn main() {
             "capture_status",
             "capture_preview",
             "ocr_region",
+            "auto_mode_status",
+            "arm_auto_mode",
+            "disarm_auto_mode",
+            "auto_focus_game",
+            "auto_click",
         ]));
     if let Err(error) = tauri_build::try_build(attributes) {
         eprintln!("tauri build step failed: {error:#}");

@@ -68,6 +68,8 @@ The first `tauri dev` compiles everything (5–10 minutes). After that it's quic
 
 Paste the report into the PR or issue you're testing.
 
+**Click test (auto mode):** after a run, the optional **click test** brings the game to the front and clicks two echoes in the grid. Clicking only selects them; nothing is changed. Type the phrase, press **Run click test**, and don't touch the mouse. If it reports "no change", start your terminal **as administrator** and run `npm run tauri dev` again: Windows silently blocks clicks from a normal app into a game running as admin.
+
 **Boot Camp workflow:** the Mac and Windows sides can't share a live folder, so use GitHub as the bridge. Push a branch from the Mac, then `git pull` on Windows to test against the game. You can also run Claude Code on the Windows side directly.
 
 **Testing auto mode later:** if Wuthering Waves runs as administrator, start your terminal as administrator too. Otherwise Windows blocks the scanner's clicks ([ADR 0006](adr/0006-watch-and-auto-modes-and-fair-play-risk.md)).

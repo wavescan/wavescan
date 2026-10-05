@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-auto-focus-game"
+description = "Enables the auto_focus_game command without any pre-configured scope."
+commands.allow = ["auto_focus_game"]
+
+[[permission]]
+identifier = "deny-auto-focus-game"
+description = "Denies the auto_focus_game command without any pre-configured scope."
+commands.deny = ["auto_focus_game"]

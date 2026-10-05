@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref } from "vue";
 import {
+  armAutoMode,
+  autoClick,
+  autoFocusGame,
+  disarmAutoMode,
   errorKind,
   errorMessage,
   findGameWindow,
@@ -13,7 +17,8 @@ import {
 } from "@/ipc/commands";
 import type { AppInfo } from "@/ipc/types";
 import { decodePreview } from "@/diagnostics/preview";
-import { OCR_TEST_REGIONS } from "@/diagnostics/regions";
+import { INPUT_TEST_TARGETS, OCR_TEST_REGIONS } from "@/diagnostics/regions";
+import { CONFIRMATION_PHRASE, runInputTest } from "@/diagnostics/inputTest";
 import {
   buildReport,
   formatReport,
@@ -31,6 +36,10 @@ const checks = ref<Check[]>([]);
 const reportText = ref("");
 const copied = ref(false);
 const canvas = ref<HTMLCanvasElement | null>(null);
+const confirmation = ref("");
+const inputRunning = ref(false);
+/** The last diagnostics run, so the input test can add to the same report. */
+let lastInput: DiagnosticsInput | null = null;
 
 /** Capture frame rate requested while diagnosing (enough to measure, light on the GPU). */
 const DIAGNOSTIC_FPS = 30;
@@ -45,7 +54,7 @@ async function attempt<T>(work: () => Promise<T>): Promise<Outcome<T>> {
   }
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 async function drawPreview() {
   const target = canvas.value;
@@ -58,6 +67,13 @@ async function drawPreview() {
     ?.putImageData(new ImageData(preview.rgba, preview.width, preview.height), 0, 0);
 }
 
+function publish(input: DiagnosticsInput) {
+  lastInput = input;
+  const report = buildReport(input);
+  checks.value = report.checks;
+  reportText.value = formatReport(report);
+}
+
 async function run() {
   running.value = true;
   copied.value = false;
@@ -68,6 +84,7 @@ async function run() {
     candidates: [],
     capture: null,
     ocr: [],
+    input: lastInput?.input ?? null,
   };
   try {
     step.value = "Looking for the game window…";
@@ -97,11 +114,41 @@ async function run() {
     }
   } finally {
     await attempt(stopCapture);
-    const report = buildReport(input);
-    checks.value = report.checks;
-    reportText.value = formatReport(report);
+    publish(input);
     step.value = "";
     running.value = false;
+  }
+}
+
+const PANEL = OCR_TEST_REGIONS.find((r) => r.id === "echo-panel")?.region;
+
+async function runClickTest() {
+  if (!lastInput || !PANEL) return;
+  const panel = PANEL;
+  inputRunning.value = true;
+  copied.value = false;
+  try {
+    const started = await attempt(() => startCapture(DIAGNOSTIC_FPS));
+    const result = started.ok
+      ? await runInputTest(
+          {
+            arm: armAutoMode,
+            focusGame: autoFocusGame,
+            click: autoClick,
+            disarm: disarmAutoMode,
+            readPanel: async () => (await ocrRegion(panel)).lines.map((l) => l.text).join("\n"),
+            sleep,
+            errorMessage,
+          },
+          confirmation.value,
+          INPUT_TEST_TARGETS,
+        )
+      : { outcome: "error" as const, detail: started.error, clicks: 0 };
+    publish({ ...lastInput, input: result });
+  } finally {
+    await attempt(stopCapture);
+    confirmation.value = "";
+    inputRunning.value = false;
   }
 }
 
@@ -188,6 +235,45 @@ const badge: Record<Check["status"], string> = {
         class="w-full rounded border border-base-300 bg-base-200"
         :class="{ hidden: !checks.length }"
       />
+
+      <div
+        v-if="checks.length"
+        class="rounded-box border border-warning/40 bg-warning/10 p-4 space-y-3"
+      >
+        <h2 class="font-semibold">
+          Optional: click test (for auto mode)
+        </h2>
+        <p class="text-sm">
+          This checks whether Wavescan's clicks reach the game. It brings the game to the
+          front and clicks two echoes in your Bag grid. That only selects them; nothing is
+          changed, upgraded or discarded.
+        </p>
+        <p class="text-sm">
+          <strong>Fair Play:</strong> Kuro Games' Fair Play Policy prohibits third-party tools
+          and macros. Clicking for you could be seen as a macro, so there is some risk to your
+          account. Watch mode never clicks. Only continue if you accept that risk.
+        </p>
+        <label class="form-control w-full max-w-xs">
+          <span class="label-text text-sm">Type <strong>{{ CONFIRMATION_PHRASE }}</strong> to continue</span>
+          <input
+            v-model="confirmation"
+            type="text"
+            class="input input-bordered input-sm"
+            autocomplete="off"
+            :disabled="inputRunning || running"
+          >
+        </label>
+        <p class="text-xs opacity-70">
+          Don't touch the mouse during the test: moving it stops Wavescan immediately.
+        </p>
+        <button
+          class="btn btn-warning btn-sm"
+          :disabled="inputRunning || running || confirmation.trim().toLowerCase() !== CONFIRMATION_PHRASE.toLowerCase()"
+          @click="runClickTest"
+        >
+          {{ inputRunning ? "Testing…" : "Run click test" }}
+        </button>
+      </div>
 
       <div
         v-if="reportText"

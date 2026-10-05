@@ -37,6 +37,7 @@ function healthy(): DiagnosticsInput {
         },
       },
     ],
+    input: null,
   };
 }
 
@@ -97,6 +98,22 @@ describe("diagnostics checks", () => {
     const failed = healthy();
     failed.ocr = [{ id: "x", label: "x", outcome: { ok: false, error: "no language", kind: "OcrUnavailable" } }];
     expect(statusOf(failed, "ocr")).toBe("fail");
+  });
+});
+
+describe("input check", () => {
+  it("is absent unless the click test ran", () => {
+    expect(statusOf(healthy(), "input")).toBeUndefined();
+  });
+
+  it("passes when the panel changed and fails otherwise", () => {
+    const ok = healthy();
+    ok.input = { outcome: "panel-changed", detail: "ok", clicks: 2 };
+    expect(statusOf(ok, "input")).toBe("pass");
+
+    const blocked = healthy();
+    blocked.input = { outcome: "no-change", detail: "admin?", clicks: 2 };
+    expect(statusOf(blocked, "input")).toBe("fail");
   });
 });
 

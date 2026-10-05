@@ -5,8 +5,9 @@ use std::sync::Arc;
 
 use crate::error::Error;
 use crate::frame::Frame;
+use crate::geometry::ScreenPoint;
 use crate::platform::Platform;
-use crate::traits::{FrameSource, GameWindow, OcrEngine, OcrLine, WindowFinder};
+use crate::traits::{FrameSource, GameWindow, InputDriver, Key, OcrEngine, OcrLine, WindowFinder};
 
 /// Adapter that reports [`Error::Unsupported`] for everything.
 struct Unsupported;
@@ -16,6 +17,7 @@ pub(super) fn create() -> Platform {
         finder: Box::new(Unsupported),
         capture: Box::new(Unsupported),
         ocr: Box::new(Unsupported),
+        input: Box::new(Unsupported),
     }
 }
 
@@ -43,6 +45,28 @@ impl FrameSource for Unsupported {
 
 impl OcrEngine for Unsupported {
     fn recognize(&self, _image: &Frame) -> Result<Vec<OcrLine>, Error> {
+        Err(Error::Unsupported)
+    }
+}
+
+impl InputDriver for Unsupported {
+    fn focus(&self, _window: &GameWindow) -> Result<(), Error> {
+        Err(Error::Unsupported)
+    }
+
+    fn click(&self, _point: ScreenPoint) -> Result<(), Error> {
+        Err(Error::Unsupported)
+    }
+
+    fn scroll(&self, _point: ScreenPoint, _ticks: i32) -> Result<(), Error> {
+        Err(Error::Unsupported)
+    }
+
+    fn press(&self, _key: Key) -> Result<(), Error> {
+        Err(Error::Unsupported)
+    }
+
+    fn cursor_position(&self) -> Result<ScreenPoint, Error> {
         Err(Error::Unsupported)
     }
 }

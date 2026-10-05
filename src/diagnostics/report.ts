@@ -6,6 +6,7 @@ import type {
   WindowCandidate,
 } from "@/ipc/types";
 import { isSupportedAspect } from "./regions";
+import type { InputTestResult } from "./inputTest";
 
 // Builds the Diagnostics report testers paste back to us. It contains facts about the
 // app, window, capture and OCR only. No images, no User ID, no other apps' window titles
@@ -14,7 +15,7 @@ import { isSupportedAspect } from "./regions";
 export type CheckStatus = "pass" | "warn" | "fail" | "skipped";
 
 export interface Check {
-  id: "window" | "capture" | "aspect" | "frame-size" | "ocr";
+  id: "window" | "capture" | "aspect" | "frame-size" | "ocr" | "input";
   label: string;
   status: CheckStatus;
   detail: string;
@@ -35,6 +36,8 @@ export interface DiagnosticsInput {
   candidates: WindowCandidate[];
   capture: Outcome<CaptureStatus> | null;
   ocr: OcrTest[];
+  /** Optional auto-mode input test; null if the tester didn't run it. */
+  input: InputTestResult | null;
 }
 
 export interface DiagnosticsReport {
@@ -48,6 +51,7 @@ export interface DiagnosticsReport {
   candidates: WindowCandidate[];
   capture: Outcome<CaptureStatus> | null;
   ocr: { id: string; label: string; ms?: number; size?: string; text?: string[]; error?: string }[];
+  input: InputTestResult | null;
 }
 
 /** Frame rate below this is flagged: the game may be paused, minimised or throttled. */
@@ -142,6 +146,15 @@ export function buildChecks(input: DiagnosticsInput): Check[] {
     });
   }
 
+  if (input.input) {
+    checks.push({
+      id: "input",
+      label: "Clicks reach the game",
+      status: input.input.outcome === "panel-changed" ? "pass" : "fail",
+      detail: input.input.detail,
+    });
+  }
+
   return checks;
 }
 
@@ -167,6 +180,7 @@ export function buildReport(input: DiagnosticsInput, now: Date = new Date()): Di
           }
         : { id, label, error: outcome.error },
     ),
+    input: input.input,
   };
 }
 

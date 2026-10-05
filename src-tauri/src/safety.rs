@@ -184,6 +184,21 @@ impl AutoMode {
         }
     }
 
+    /// Brings the game to the front so it receives input. Needs auto mode armed and the
+    /// game window present and not minimised, but (unlike the other actions) not focused.
+    ///
+    /// # Errors
+    ///
+    /// Same as [`AutoMode::click`], except focus isn't required.
+    pub fn focus_game(
+        &mut self,
+        finder: &dyn WindowFinder,
+        driver: &dyn InputDriver,
+    ) -> Result<(), Error> {
+        let window = self.check(finder, driver, Focus::NotRequired)?;
+        self.send(|| driver.focus(&window))
+    }
+
     /// Clicks at `target` (fractions of the game's client area) if every check passes.
     ///
     /// # Errors
@@ -198,7 +213,7 @@ impl AutoMode {
         driver: &dyn InputDriver,
         target: FracPoint,
     ) -> Result<(), Error> {
-        let window = self.check(finder, driver)?;
+        let window = self.check(finder, driver, Focus::Required)?;
         let point = self.resolve(&window, target)?;
         self.send(|| driver.click(point))?;
         self.last_cursor = Some(point);
@@ -218,7 +233,7 @@ impl AutoMode {
         target: FracPoint,
         ticks: i32,
     ) -> Result<(), Error> {
-        let window = self.check(finder, driver)?;
+        let window = self.check(finder, driver, Focus::Required)?;
         let point = self.resolve(&window, target)?;
         self.send(|| driver.scroll(point, ticks))?;
         self.last_cursor = Some(point);
@@ -236,7 +251,7 @@ impl AutoMode {
         driver: &dyn InputDriver,
         key: Key,
     ) -> Result<(), Error> {
-        self.check(finder, driver)?;
+        self.check(finder, driver, Focus::Required)?;
         self.send(|| driver.press(key))
     }
 
@@ -245,6 +260,7 @@ impl AutoMode {
         &mut self,
         finder: &dyn WindowFinder,
         driver: &dyn InputDriver,
+        focus: Focus,
     ) -> Result<GameWindow, Error> {
         match self.state {
             AutoModeState::Armed => {}
@@ -261,7 +277,7 @@ impl AutoMode {
             Err(Error::WindowNotFound) => return Err(self.stop(AbortReason::WindowGone)),
             Err(_) => return Err(self.stop(AbortReason::CheckFailed)),
         };
-        if window.minimized || !window.focused {
+        if window.minimized || (focus == Focus::Required && !window.focused) {
             return Err(self.stop(AbortReason::FocusLost));
         }
 
@@ -300,6 +316,13 @@ impl AutoMode {
         self.abort(reason);
         Error::AutoModeAborted(reason)
     }
+}
+
+/// Whether an action needs the game to already have focus.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Focus {
+    Required,
+    NotRequired,
 }
 
 /// True if `region` (fractions of the client area) touches the User ID area.
@@ -503,6 +526,36 @@ mod tests {
         guard.arm(CONFIRMATION_PHRASE).unwrap();
         guard.click(&finder, &input, CENTER).unwrap();
         assert_eq!(input.events().len(), 1);
+    }
+
+    #[test]
+    fn focus_game_works_when_unfocused_but_needs_arming() {
+        let (finder, input) = (FakeWindowFinder::focused(), FakeInput::default());
+        finder.set_focused(false);
+
+        let mut disarmed = AutoMode::default();
+        assert!(matches!(
+            disarmed.focus_game(&finder, &input),
+            Err(Error::AutoModeNotArmed)
+        ));
+        assert_nothing_sent(&input);
+
+        let mut guard = armed();
+        guard.focus_game(&finder, &input).unwrap();
+        assert_eq!(input.events(), vec![InputEvent::Focus]);
+        assert_eq!(guard.actions_used(), 1);
+    }
+
+    #[test]
+    fn focus_game_refuses_a_minimized_window() {
+        let (finder, input) = (FakeWindowFinder::focused(), FakeInput::default());
+        finder.set_minimized(true);
+        let mut guard = armed();
+        assert!(matches!(
+            guard.focus_game(&finder, &input),
+            Err(Error::AutoModeAborted(AbortReason::FocusLost))
+        ));
+        assert_nothing_sent(&input);
     }
 
     #[test]

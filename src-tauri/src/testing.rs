@@ -2,7 +2,6 @@
 //! ways our logic depends on (e.g. a click moves the cursor) and let tests simulate the
 //! user, the game window and OS failures.
 
-use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 
@@ -75,6 +74,8 @@ impl WindowFinder for FakeWindowFinder {
 /// An input action recorded by [`FakeInput`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InputEvent {
+    /// The game was brought to the front.
+    Focus,
     /// A left click at a screen point.
     Click(ScreenPoint),
     /// A wheel scroll at a screen point.
@@ -83,51 +84,62 @@ pub enum InputEvent {
     Press(Key),
 }
 
-/// Records input instead of sending it, and simulates the cursor.
+/// Records input instead of sending it, and simulates the cursor. Thread-safe so it can
+/// sit inside `AppState` like the real driver.
 #[derive(Default)]
 pub struct FakeInput {
-    events: RefCell<Vec<InputEvent>>,
-    cursor: Cell<Option<ScreenPoint>>,
-    reject: Cell<bool>,
-    cursor_query_fails: Cell<bool>,
+    state: Mutex<FakeInputState>,
+}
+
+#[derive(Default)]
+struct FakeInputState {
+    events: Vec<InputEvent>,
+    cursor: Option<ScreenPoint>,
+    reject: bool,
+    cursor_query_fails: bool,
 }
 
 impl FakeInput {
     /// Everything sent so far, in order.
     pub fn events(&self) -> Vec<InputEvent> {
-        self.events.borrow().clone()
+        self.state.lock().unwrap().events.clone()
     }
 
     /// Simulates the user moving the mouse.
     pub fn user_moves_cursor_by(&self, dx: i32, dy: i32) {
-        let current = self.cursor.get().unwrap_or(ScreenPoint::new(0, 0));
-        self.cursor
-            .set(Some(ScreenPoint::new(current.x + dx, current.y + dy)));
+        let mut state = self.state.lock().unwrap();
+        let current = state.cursor.unwrap_or(ScreenPoint::new(0, 0));
+        state.cursor = Some(ScreenPoint::new(current.x + dx, current.y + dy));
     }
 
     /// Makes every input call fail like Windows UIPI blocking an elevated game.
     pub fn reject_input(&self) {
-        self.reject.set(true);
+        self.state.lock().unwrap().reject = true;
     }
 
     /// Makes cursor queries fail.
     pub fn fail_cursor_queries(&self) {
-        self.cursor_query_fails.set(true);
+        self.state.lock().unwrap().cursor_query_fails = true;
     }
 
     fn record(&self, event: InputEvent, moves_to: Option<ScreenPoint>) -> Result<(), Error> {
-        if self.reject.get() {
+        let mut state = self.state.lock().unwrap();
+        if state.reject {
             return Err(Error::InputBlocked("fake: input rejected".into()));
         }
         if let Some(point) = moves_to {
-            self.cursor.set(Some(point));
+            state.cursor = Some(point);
         }
-        self.events.borrow_mut().push(event);
+        state.events.push(event);
         Ok(())
     }
 }
 
 impl InputDriver for FakeInput {
+    fn focus(&self, _window: &GameWindow) -> Result<(), Error> {
+        self.record(InputEvent::Focus, None)
+    }
+
     fn click(&self, point: ScreenPoint) -> Result<(), Error> {
         self.record(InputEvent::Click(point), Some(point))
     }
@@ -141,10 +153,11 @@ impl InputDriver for FakeInput {
     }
 
     fn cursor_position(&self) -> Result<ScreenPoint, Error> {
-        if self.cursor_query_fails.get() {
+        let state = self.state.lock().unwrap();
+        if state.cursor_query_fails {
             return Err(Error::CaptureFailed("fake: cursor query failed".into()));
         }
-        Ok(self.cursor.get().unwrap_or(ScreenPoint::new(0, 0)))
+        Ok(state.cursor.unwrap_or(ScreenPoint::new(0, 0)))
     }
 }
 
