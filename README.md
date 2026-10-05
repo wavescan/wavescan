@@ -16,6 +16,7 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 - [Is it safe?](#is-it-safe)
 - [Importing into Wuthering Tools](#importing-into-wuthering-tools)
 - [Troubleshooting](#troubleshooting)
+- [Check your setup (Diagnostics)](#check-your-setup-diagnostics)
 - [Reporting a bug](#reporting-a-bug)
 - [What's coming](#whats-coming)
 
@@ -145,6 +146,16 @@ The game is probably running as administrator. Accept the scanner's offer to res
 
 **Some values are wrong**
 Fix them in the review screen before exporting, and please [report it](#reporting-a-bug) so we can improve the reader.
+
+## Check your setup (Diagnostics)
+
+On the home screen, press **Run diagnostics**. With the game open on **Bag → Echoes** and an echo selected, Wavescan checks that it can:
+
+- find the game window
+- capture it smoothly
+- read the echo text
+
+It shows a preview with your User ID blacked out and gives you a report you can copy. The report contains no pictures. Diagnostics never clicks anything in the game.
 
 ## Reporting a bug
 

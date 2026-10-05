@@ -93,7 +93,7 @@ stateDiagram-v2
 
 ## 4. Rust trait seams
 
-Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs`. Tests use the fakes in `src-tauri/src/testing.rs`, which simulate the window (focus, minimise, close), the cursor and user mouse movement, OS input rejection, and replayed frames. The Windows/macOS implementations are *(planned)* in `platform/`.
+Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs`. Tests use the fakes in `src-tauri/src/testing.rs`, which simulate the window (focus, minimise, close), the cursor and user mouse movement, OS input rejection, and replayed frames. Platform implementations live in `platform/` (`platform::create()` picks one per OS). **Windows** is implemented: Win32 window enumeration, `windows-capture` (WGC, cursor off, border off on Windows 11, title bar cropped), and `Windows.Media.Ocr` (en-US). **macOS** is *(planned, milestone 4)*. Until then `platform/unsupported.rs` returns `Unsupported`.
 
 Key types:
 
@@ -111,19 +111,23 @@ Key types:
 
 ([ADR 0004](adr/0004-native-os-ocr-with-tesseract-fallback.md), [ADR 0005](adr/0005-window-capture-wgc-and-screencapturekit.md))
 
-## 5. IPC commands *(planned)*
+## 5. IPC commands
+
+Implemented (milestone 3). Each one is listed in `build.rs` and granted in `capabilities/default.json` ([ADR 0016](adr/0016-diagnostics-screen-and-capture-commands.md)):
 
 | Command | Args → Result | Notes |
 |---|---|---|
-| `find_game_window` | `()` → `GameWindow { id, rect, scale, focused }` | |
-| `start_capture` / `stop_capture` | `{ fps }` → `()` | Emits `frame-tick { seq, fingerprints, ts }` events |
-| `crop_regions` | `{ seq, regions: RoiFraction[], ocr: bool }` → `CropResult[]` | Returns text + boxes and/or small RGBA bytes (`ipc::Response`) |
-| `layout_check` | `{ seq }` → `LayoutReport` | Aspect, content rect, anchor hits |
-| `arm_auto_mode` / `disarm_auto_mode` | `{ confirmation }` → `()` | Arming requires the typed confirmation from the UI |
-| `click` / `scroll` / `key` | `{ x_frac, y_frac }` … → `()` | All go through `safety::AutoMode` |
-| `save_debug_frame` | `{ seq }` → `path` | Only when the setting is on, and always masked |
+| `app_info` | `()` → `AppInfo { name, version, platform }` | |
+| `find_game_window` | `()` → `GameWindow` | Matches window class `UnrealWindow` + title; never opens the game process |
+| `window_candidates` | `()` → `WindowCandidate[]` | Only titles containing "Wuthering" |
+| `start_capture` / `stop_capture` | `{ maxFps }` → `GameWindow` / `()` | fps clamped 1–60 |
+| `capture_status` | `()` → `CaptureStatus { running, fps, frame }` | |
+| `capture_preview` | `{ maxWidth }` → raw bytes `[w u32][h u32][RGBA]` | Downscaled, **User ID masked in Rust** |
+| `ocr_region` | `{ region: FracRect }` → `OcrResult { lines, elapsed_ms, width, height }` | Crops via `crop_outside_user_id`; runs on a blocking worker thread |
 
-Errors cross IPC as `{ kind: "WindowNotFound" | "PermissionDenied" | "InputBlocked" | ..., message }`. TS mirrors live in `src/ipc/types.ts`.
+*(Planned)*: `crop_regions` (batched ROIs for the scanner), `layout_check`, `arm_auto_mode` / `disarm_auto_mode`, `click` / `scroll` / `key` (all through `safety::AutoMode`), `save_debug_frame` (setting-gated, masked).
+
+Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `src/ipc/commands.ts` has one typed wrapper per command, plus `errorMessage` / `errorKind`.
 
 ## 6. Threads
 

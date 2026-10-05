@@ -22,6 +22,24 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
 
+# Windows-only OS adapters (src/platform/windows/). See ADR 0004 (OCR) and ADR 0005 (capture).
+[target.'cfg(windows)'.dependencies]
+windows-capture = "2"
+windows = { version = "0.62", features = [
+  "Foundation",
+  "Foundation_Collections",
+  "Globalization",
+  "Graphics_Imaging",
+  "Media_Ocr",
+  "Storage_Streams",
+  "Win32_Foundation",
+  "Win32_Graphics_Gdi",
+  "Win32_System_WinRT",
+  "Win32_UI_HiDpi",
+  "Win32_UI_Input_KeyboardAndMouse",
+  "Win32_UI_WindowsAndMessaging",
+] }
+
 # Lint policy: docs/adr/0015-rust-code-standards.md. CI runs clippy with `-D warnings`,
 # so every "warn" below fails the build. Allow a lint only on a specific item, with a reason.
 [lints.rust]

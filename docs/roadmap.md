@@ -10,6 +10,9 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] CI (`ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc on `windows-latest` + `macos-14` (actions pinned by SHA, Dependabot)
 - [x] Trait seams + fakes (`traits.rs`, `testing.rs`) and the `safety` module with tests
 - [ ] **Spike, Windows:** find the window, WGC capture of the live game (borderless + fullscreen) at ≥30 fps, WinRT OCR on an echo panel crop, `SendInput` click lands in the game (with and without elevation)
+  - [x] Window finder, WGC capture, WinRT OCR, and the Diagnostics screen are implemented (milestone 3)
+  - [ ] Verified against the live game on Boot Camp (paste the Diagnostics report into the PR)
+  - [ ] `SendInput` spike (milestone 4)
 - [ ] **Spike, macOS (Apple Silicon):** SCK window capture, Vision OCR, `CGEventPost` click lands in the game. No Apple Silicon Mac in-house, so this is validated by **Discord community testers**:
   - CI builds an arm64 `.dmg` (ad-hoc signed until the Developer ID is set up; testers right-click → Open)
   - the app's **Diagnostics** screen runs a self-test (window found? capture fps? OCR on a sample crop? test click registered?) and exports a masked report the tester posts back

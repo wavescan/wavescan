@@ -4,6 +4,7 @@
 
 use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
+use std::sync::{Arc, Mutex};
 
 use crate::error::Error;
 use crate::frame::Frame;
@@ -12,16 +13,17 @@ use crate::traits::{
     FrameSource, GameWindow, InputDriver, Key, OcrEngine, OcrLine, WindowFinder, WindowId,
 };
 
-/// A fake game window that tests can focus, minimise or close.
+/// A fake game window that tests can focus, minimise or close. Thread-safe so it can sit
+/// inside `AppState` like the real finder.
 pub struct FakeWindowFinder {
-    window: RefCell<Option<GameWindow>>,
+    window: Mutex<Option<GameWindow>>,
 }
 
 impl FakeWindowFinder {
     /// A focused 2880×1800 game window at screen position (100, 50).
     pub fn focused() -> Self {
         Self {
-            window: RefCell::new(Some(GameWindow {
+            window: Mutex::new(Some(GameWindow {
                 id: WindowId(42),
                 client_rect: Rect::new(100, 50, 2880, 1800),
                 scale_factor: 2.0,
@@ -33,32 +35,40 @@ impl FakeWindowFinder {
 
     /// The current window state (panics if closed, test-only).
     pub fn window(&self) -> GameWindow {
-        self.window.borrow().clone().expect("window was closed")
+        self.window
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("window was closed")
     }
 
     /// Simulates the user clicking another app (or back into the game).
     pub fn set_focused(&self, focused: bool) {
-        if let Some(window) = self.window.borrow_mut().as_mut() {
+        if let Some(window) = self.window.lock().unwrap().as_mut() {
             window.focused = focused;
         }
     }
 
     /// Simulates minimising or restoring the game.
     pub fn set_minimized(&self, minimized: bool) {
-        if let Some(window) = self.window.borrow_mut().as_mut() {
+        if let Some(window) = self.window.lock().unwrap().as_mut() {
             window.minimized = minimized;
         }
     }
 
     /// Simulates the game closing.
     pub fn close(&self) {
-        *self.window.borrow_mut() = None;
+        *self.window.lock().unwrap() = None;
     }
 }
 
 impl WindowFinder for FakeWindowFinder {
     fn find_game_window(&self) -> Result<GameWindow, Error> {
-        self.window.borrow().clone().ok_or(Error::WindowNotFound)
+        self.window
+            .lock()
+            .unwrap()
+            .clone()
+            .ok_or(Error::WindowNotFound)
     }
 }
 
@@ -168,12 +178,16 @@ impl FrameSource for FakeFrames {
         Ok(())
     }
 
-    fn latest_frame(&self) -> Option<Frame> {
+    fn latest_frame(&self) -> Option<Arc<Frame>> {
         if self.running {
-            self.queue.front().cloned()
+            self.queue.front().cloned().map(Arc::new)
         } else {
             None
         }
+    }
+
+    fn fps(&self) -> f64 {
+        if self.running { 30.0 } else { 0.0 }
     }
 
     fn stop(&mut self) {
