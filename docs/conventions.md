@@ -37,22 +37,12 @@ e.g. `feat/tauri-skeleton`, `feat/12-echo-grid-navigator`, `fix/user-id-mask-16x
 
 ## PR size and contents
 
-- **One concern per PR.** Aim for a reviewable diff (roughly under 400 changed lines, excluding lockfiles and fixtures).
+- **Phase 0 (bootstrap): milestone PRs, no size limit.** While the app shell, build and CI are being stood up, nearly every change touches everything, so we use a few larger PRs that each leave `main` working:
+  1. `build: scaffold tauri app, docker checks, and ci` (Tauri 2 + Vue 3 + TS shell, Tailwind/DaisyUI, lint configs, Cargo `[lints]`, `deny.toml`, `docker compose run check`, the Windows + macOS CI workflow)
+  2. `feat: add platform trait seams, fakes, and safety module`
+  3. `feat: add windows capture and ocr adapters with diagnostics screen`
+  4. `feat: add macos adapters and input spike`
+- **Exception, even in Phase 0:** safety and input code (`safety.rs`, `platform/*/input.rs`, `capabilities/`) stays in a clearly separated commit or PR with its own tests and a description of why it is safe. That is the code that protects users' accounts.
+- **From Phase 1 on: one concern per PR.** Aim for a reviewable diff (roughly under 400 changed lines, excluding lockfiles and fixtures), e.g. one adapter, extractor or screen per PR.
 - Each PR includes its tests and its docs: an ADR, an `architecture.md` change, or a README change when relevant (CLAUDE.md "Docs").
 - **Security-sensitive PRs** say so in the description and explain why. These are changes to `src-tauri/capabilities/`, `safety.rs`, `platform/*/input.rs`, network code, or dependencies.
-
-## Phase → PR plan (Phase 0)
-
-Phase 0 ([roadmap](roadmap.md)) is split into these PRs, in order:
-
-1. `build: scaffold tauri 2 + vue 3 + typescript app` (app shell, Tailwind/DaisyUI, lint configs, Cargo `[lints]`, `deny.toml`)
-2. `build: add docker compose for local checks` (Linux container running TS + OS-independent Rust checks)
-3. `ci: run lint and tests on windows and macos`
-4. `feat: add platform trait seams and test fakes`
-5. `feat: add safety module (arming, clamp, abort, user id mask)`
-6. `feat: add windows window finder and capture adapter`, then `feat: add windows native ocr adapter`
-7. `feat: add macos window finder and capture adapter`, then `feat: add macos native ocr adapter`
-8. `feat: add diagnostics screen and masked report export` (for the Discord Mac testers)
-9. `feat: add input adapters behind safety gate` (spike: does a click reach the game?)
-
-Later phases follow the same pattern: one adapter, extractor or screen per PR.

@@ -1,0 +1,4 @@
+# Pinned so local, Docker and CI builds use the same compiler and lints.
+[toolchain]
+channel = "1.99.0"
+components = ["rustfmt", "clippy"]

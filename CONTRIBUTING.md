@@ -4,25 +4,17 @@ Thanks for helping! Please read [CLAUDE.md](CLAUDE.md) first. Its rules apply to
 
 ## Setup
 
-| Tool | Install |
-|---|---|
-| Node 24 + npm | <https://nodejs.org> (or `nvm use`) |
-| Rust (stable) | <https://rustup.rs> |
-| Tauri prerequisites | <https://v2.tauri.app/start/prerequisites/> (Windows: MSVC Build Tools + WebView2; macOS: Xcode Command Line Tools) |
-| Test/lint helpers | `cargo install cargo-nextest cargo-deny --locked` |
+Full instructions are in [docs/development.md](docs/development.md). In short:
 
-```bash
-npm i
-npm run tauri dev
-```
+- **Checks only:** install Docker, then run `docker compose run --rm check` (or `npm run check`). No Rust install needed.
+- **Running the app:** you need Windows or an Apple Silicon Mac with Node 24, Rust and the Tauri prerequisites. Then `npm ci && npm run tauri dev`.
 
 To test against the real game you need Windows or an **Apple Silicon** Mac, since the Mac version of Wuthering Waves doesn't run on Intel Macs. Most tests run without the game, using `fixtures/`.
 
 ## Before opening a PR
 
 ```bash
-npm run lint && npm run test
-cd src-tauri && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo nextest run && cargo deny check
+npm run check        # Docker: runs everything CI runs (except the Windows/macOS-only code)
 ```
 
 - Branch from `main`, open a PR, and squash-merge. Naming rules are in [docs/conventions.md](docs/conventions.md).
