@@ -141,6 +141,9 @@ Go to **System Settings → Privacy & Security → Screen Recording**, turn on *
 **Windows: "Windows protected your PC"**
 This shouldn't appear for signed releases. If it does, check that you downloaded from this repository's Releases page, then click **More info → Run anyway**.
 
+**Mac: auto mode or the click test says "permission needed: Accessibility"**
+Go to **System Settings → Privacy & Security → Accessibility**, turn on *Wavescan*, then try again.
+
 **Auto mode doesn't click anything (Windows)**
 The game is probably running as administrator. Accept the scanner's offer to restart as administrator.
 

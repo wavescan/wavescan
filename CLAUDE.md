@@ -34,7 +34,9 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 
 | Path | Role |
 |---|---|
-| `src-tauri/src/platform/{windows,macos}/` | **Only** place with OS APIs: `window.rs`, `capture.rs`, `ocr.rs`, `input.rs` |
+| `src-tauri/src/platform/{windows,macos}/` | **Only** place with OS APIs: `window.rs`, `capture.rs`, `ocr.rs`, `input.rs` (+ `macos/app.rs`) |
+| `src-tauri/src/platform/helpers.rs` | OS-independent helpers for the adapters (unit-tested everywhere) |
+| `scripts/macos-probe/` | Type-checks macOS OCR/input from Linux (ADR 0018); keep its objc2 features in sync |
 | `src-tauri/src/traits.rs` | `WindowFinder`, `FrameSource`, `OcrEngine`, `InputDriver`: the seams everything is tested through |
 | `src-tauri/src/commands.rs` | Tauri IPC commands (thin: validate → call trait → map error) |
 | `src-tauri/src/safety.rs` | `AutoMode` input guard (arming, bounds, abort detection, action cap), User ID mask + crop guard |

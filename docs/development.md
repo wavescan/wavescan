@@ -37,7 +37,8 @@ docker compose run --rm shell
 Notes:
 
 - `node_modules` and the Rust `target/` dir live in Docker volumes, not your checkout, so the Linux builds never clash with anything on the host. To reset them: `docker compose down -v`.
-- Windows-only code is **type-checked and linted** in the container (`cargo clippy --target x86_64-pc-windows-msvc`), but its tests only run on CI's Windows runner. macOS-only code needs Apple's SDK, so it's checked on CI's macOS runner only.
+- Windows-only code is **type-checked and linted** in the container (`cargo clippy --target x86_64-pc-windows-msvc`), but its tests only run on CI's Windows runner.
+- Most macOS-only code (Vision OCR, input) is type-checked through `scripts/macos-probe/` for `aarch64-apple-darwin`. The `ScreenCaptureKit` files need Apple's SDK and are compiled on CI's macOS runner only.
 
 ## 2. Running the app on Windows (including Boot Camp)
 
@@ -76,11 +77,11 @@ Paste the report into the PR or issue you're testing.
 
 ## 3. Running the app on macOS (Apple Silicon)
 
-1. Xcode Command Line Tools: `xcode-select --install`
+1. Xcode Command Line Tools: `xcode-select --install` (includes Swift, needed by the `screencapturekit` crate)
 2. Node 24 and Rust (<https://rustup.rs>)
 3. `npm ci && npm run tauri dev`
 
-macOS asks for **Screen Recording** permission the first time capture starts. Grant it to your terminal app in dev, or to Wavescan.app in a built bundle, then restart it.
+macOS asks for **Screen Recording** permission the first time Wavescan looks for the game. Grant it to your terminal app in dev, or to Wavescan.app in a built bundle, then restart it. The click test (auto mode) also needs **Accessibility**. macOS shows the prompt the first time; turn Wavescan (or your terminal) on under System Settings → Privacy & Security → Accessibility.
 
 Intel Macs can build and run the app, but can't run Wuthering Waves, so real-game testing needs Apple Silicon. Until we have one, macOS testing relies on community testers and the Diagnostics screen ([roadmap](roadmap.md)).
 

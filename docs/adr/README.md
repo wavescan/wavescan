@@ -49,3 +49,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0015](./0015-rust-code-standards.md) | Rust code standards for a non-Rust maintainer | accepted | | rust, process, testing |
 | [0016](./0016-diagnostics-screen-and-capture-commands.md) | Diagnostics screen, capture/OCR commands, and window matching without touching the game | accepted | | capture, ocr, privacy, testing |
 | [0017](./0017-input-spike-and-auto-mode-commands.md) | Input spike: auto-mode commands, Windows `SendInput`, and verifying clicks by their effect | accepted | | input, security, testing |
+| [0018](./0018-macos-adapters.md) | macOS adapters: ScreenCaptureKit, Vision, Core Graphics events, and a type-check probe | accepted | | capture, ocr, input, macos, testing |
