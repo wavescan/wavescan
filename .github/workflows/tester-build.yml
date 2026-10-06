@@ -44,10 +44,22 @@ jobs:
         with:
           workspaces: src-tauri
       - run: npm ci --no-audit --no-fund
+      # Surface compiler/bundler errors as annotations (readable without logging in).
+      - run: echo "::add-matcher::.github/rust-problem-matcher.json"
       - name: Build app
-        # Short commit id shown in the app and Diagnostics report.
+        # Short commit id shown in the app and Diagnostics report. Retried because macOS
+        # .dmg packaging (hdiutil) fails intermittently on hosted runners; a retry reuses
+        # the compiled app, so it only repeats the packaging.
         shell: bash
-        run: WAVESCAN_BUILD="${GITHUB_SHA::7}" npm run tauri build -- --bundles ${{ matrix.bundles }}
+        run: |
+          for attempt in 1 2 3; do
+            if WAVESCAN_BUILD="${GITHUB_SHA::7}" npm run tauri build -- --bundles ${{ matrix.bundles }}; then
+              exit 0
+            fi
+            echo "::warning::Build attempt ${attempt} failed; retrying"
+            sleep 15
+          done
+          exit 1
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ matrix.os }}
