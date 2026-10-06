@@ -29,6 +29,8 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 | Windows 10/11 (64-bit) | `Wavescan_x.y.z_x64-setup.exe` *(coming soon)* |
 | macOS 13+ (Apple Silicon) | `Wavescan_x.y.z_aarch64.dmg` *(coming soon)* |
 
+On Windows 10, Windows draws a yellow border around the game while Wavescan is reading it. That's normal and doesn't affect the scan. Windows 11 lets Wavescan hide it.
+
 Get Wavescan from **[wavescan.app](https://wavescan.app)** or this repository's **[Releases](https://github.com/wavescan/wavescan/releases)** page. The website links to the same Releases files. Every file is:
 
 - **signed** with a Microsoft/Apple-verified certificate, so Windows and macOS know who made it, and
