@@ -52,7 +52,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `fixtures/` | Real captures + golden JSON ([docs/fixtures.md](docs/fixtures.md)) |
 | `docs/screens/` | Measured layout notes per game screen |
 
-Parsing, fuzzy matching, ROI layouts and game data tables come from **`@wuthering-tools/scanner-core`**, extracted from the optimizer ([ADR 0007](docs/adr/0007-shared-scanner-core-package.md)). Don't fork that logic here; fix it in the core.
+Parsing, fuzzy matching and ROI layouts come from **`@wutheringtools/scanner-core`** (npm, pinned exact), whose source lives in WT's `packages/scanner-core/` ([ADR 0019](docs/adr/0019-consume-scanner-core-with-injected-data.md)). Wavescan supplies the game data with `setScannerGameData()`. Don't fork that logic here; fix it in WT, release, then bump the version.
 
 ## Hard rules
 

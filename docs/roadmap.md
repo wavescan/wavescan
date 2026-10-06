@@ -26,9 +26,11 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 
 ## Phase 1: `scanner-core` extraction (optimizer repo)
 
-- [ ] `packages/scanner-core` workspace package, made of the modules listed in ADR 0007
-- [ ] The optimizer imports from the package, with no behaviour change
-- [ ] Publish `@wuthering-tools/scanner-core` (or a git dependency until then)
+- [x] `packages/scanner-core` package in WT (WT ADR 0034, PR #595)
+- [x] WT imports from the package via re-export shims, with no behaviour change (1342 tests unchanged, all 50 Cypress specs)
+- [x] Published `@wutheringtools/scanner-core` (0.1.0 by hand; Trusted Publishing + staged releases from then on)
+- [x] 0.1.1 (Node-compatible ESM) released with provenance via staged Trusted Publishing; Wavescan pinned to it (ADR 0019)
+- [ ] WT: `scanner-data.json` export (CLI) for Wavescan's bundled/refreshable game data
 
 **Exit:** the optimizer's Vitest + Cypress suites are green, and the scanner repo imports the package.
 

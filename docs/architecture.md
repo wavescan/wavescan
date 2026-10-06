@@ -26,7 +26,7 @@ flowchart LR
     CL[classifyScreen]
     EX[extractors]
     NAV[auto navigator]
-    CORE["@wuthering-tools/scanner-core<br/>parse · match · layouts · data"]
+    CORE["@wutheringtools/scanner-core<br/>parse · match · layouts"]
   end
 
   OUT[(WutheringToolsScan<br/>JSON)]
@@ -49,7 +49,7 @@ flowchart LR
 | Rust `safety` | Whether input is allowed right now, clamping, abort, User ID masking | Deciding *what* to click |
 | TS `session/` | Screen classification, extraction, confidence, dedupe, output | OS calls |
 | TS `auto/` | What to click next and when the screen has settled | How a click is delivered |
-| `scanner-core` (shared with the web app) | Parsing, fuzzy matching, ROI fractions, game data tables | Anything desktop-specific |
+| `scanner-core` (npm, shared with the web app) | Parsing, fuzzy matching, ROI fractions. Game data is supplied by Wavescan ([ADR 0019](adr/0019-consume-scanner-core-with-injected-data.md)) | Anything desktop-specific |
 
 ## 2. One frame, end to end (watch mode)
 
