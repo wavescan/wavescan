@@ -19,6 +19,8 @@ fn main() {
             "disarm_auto_mode",
             "auto_focus_game",
             "auto_click",
+            "sample_regions",
+            "read_regions",
         ]));
     if let Err(error) = tauri_build::try_build(attributes) {
         eprintln!("tauri build step failed: {error:#}");

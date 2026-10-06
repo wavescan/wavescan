@@ -129,7 +129,10 @@ Implemented (milestone 3). Each one is listed in `build.rs` and granted in `capa
 | `auto_focus_game` | `()` → `AutoModeStatus` | Guarded; needs arming, not focus ([ADR 0017](adr/0017-input-spike-and-auto-mode-commands.md)) |
 | `auto_click` | `{ target: FracPoint }` → `AutoModeStatus` | Every `AutoMode` check; Windows: `SetCursorPos` + `SendInput` |
 
-*(Planned)*: `crop_regions` (batched ROIs for the scanner), `layout_check`, scroll/key commands (driver already supports them), F8 stop hotkey, `save_debug_frame` (setting-gated, masked).
+| `sample_regions` | `{ regions: FracRect[], maxWidth }` → raw bytes `[seq u64][count u32]` + per region `[w u32][h u32][RGBA]` | Small images for change detection (fingerprints computed in TS by scanner-core). **Pins** the sampled frame |
+| `read_regions` | `{ seq, regions: RegionRead[] }` → `RegionText[]` | OCRs the **pinned** frame `seq` (so text matches the frame judged stable), one thread per region; `FrameExpired` if `seq` isn't pinned |
+
+*(Planned)*: `layout_check`, scroll/key commands (driver already supports them), F8 stop hotkey, `save_debug_frame` (setting-gated, masked).
 
 Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `src/ipc/commands.ts` has one typed wrapper per command, plus `errorMessage` / `errorKind`.
 

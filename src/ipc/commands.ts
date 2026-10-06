@@ -8,6 +8,8 @@ import type {
   GameWindow,
   IpcError,
   OcrResult,
+  RegionRead,
+  RegionText,
   WindowCandidate,
 } from "./types";
 
@@ -66,6 +68,19 @@ export function autoFocusGame(): Promise<AutoModeStatus> {
 
 export function autoClick(target: FracPoint): Promise<AutoModeStatus> {
   return invoke<AutoModeStatus>("auto_click", { target });
+}
+
+/**
+ * Small RGBA images of `regions` from the latest frame (for change detection), and pins
+ * that frame for `readRegions`. Decode with `decodeSamples`.
+ */
+export function sampleRegions(regions: FracRect[], maxWidth: number): Promise<ArrayBuffer> {
+  return invoke<ArrayBuffer>("sample_regions", { regions, maxWidth });
+}
+
+/** OCRs `regions` of the frame pinned by the last `sampleRegions` call (`seq`). */
+export function readRegions(seq: number, regions: RegionRead[]): Promise<RegionText[]> {
+  return invoke<RegionText[]>("read_regions", { seq, regions });
 }
 
 /** Turns whatever a failed command rejected with into a readable message. */

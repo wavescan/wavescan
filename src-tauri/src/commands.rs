@@ -19,6 +19,7 @@ use crate::error::Error;
 use crate::frame::Frame;
 use crate::geometry::{FracPoint, FracRect};
 use crate::platform::Platform;
+use crate::regions::{self, RegionRead, RegionText};
 use crate::safety::{self, AutoMode, AutoModeState};
 use crate::traits::{
     FrameSource, GameWindow, InputDriver, OcrEngine, OcrLine, WindowCandidate, WindowFinder,
@@ -93,6 +94,10 @@ pub struct AppState {
     /// Starts disarmed on every launch; never persisted (ADR 0006).
     auto: Mutex<AutoMode>,
     capturing: AtomicBool,
+    /// The frame the last `sample_regions` call looked at. `read_regions` reads this exact
+    /// frame, so text always comes from the frame that was judged stable, even if the
+    /// game has moved on since.
+    pinned: Mutex<Option<Arc<Frame>>>,
 }
 
 impl AppState {
@@ -106,6 +111,7 @@ impl AppState {
             input: platform.input,
             auto: Mutex::new(AutoMode::default()),
             capturing: AtomicBool::new(false),
+            pinned: Mutex::new(None),
         }
     }
 
@@ -249,6 +255,39 @@ impl AppState {
         self.lock_auto()
             .click(self.finder.as_ref(), self.input.as_ref(), target)?;
         Ok(self.auto_mode_status())
+    }
+
+    /// See [`sample_regions`]. Pins the sampled frame for [`AppState::read_regions`].
+    ///
+    /// # Errors
+    ///
+    /// [`Error::CaptureFailed`] if no frame has arrived, or [`Error::InvalidRegion`].
+    pub fn sample_regions(&self, regions: &[FracRect], max_width: u32) -> Result<Vec<u8>, Error> {
+        let frame = self.latest_frame()?;
+        let bytes = regions::sample(&frame, regions, max_width)?;
+        *self.pinned.lock().unwrap_or_else(PoisonError::into_inner) = Some(frame);
+        Ok(bytes)
+    }
+
+    /// The pinned frame, if its sequence number is `seq`.
+    fn pinned_frame(&self, seq: u64) -> Result<Arc<Frame>, Error> {
+        self.pinned
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone()
+            .filter(|frame| frame.seq() == seq)
+            .ok_or(Error::FrameExpired)
+    }
+
+    /// See [`read_regions`]. Blocking: call from a worker thread.
+    ///
+    /// # Errors
+    ///
+    /// [`Error::FrameExpired`] if `seq` isn't the pinned frame, [`Error::InvalidRegion`],
+    /// or an OCR error.
+    pub fn read_regions(&self, seq: u64, regions: &[RegionRead]) -> Result<Vec<RegionText>, Error> {
+        let frame = self.pinned_frame(seq)?;
+        regions::read(&frame, regions, self.ocr.as_ref())
     }
 
     fn lock_auto(&self) -> std::sync::MutexGuard<'_, AutoMode> {
@@ -404,6 +443,41 @@ pub fn auto_click(
     state.auto_click(target)
 }
 
+/// Small images of `regions` from the latest frame, for change detection; pins that frame.
+/// Returns binary data (see [`regions::sample`] for the layout).
+///
+/// # Errors
+///
+/// See [`AppState::sample_regions`].
+#[tauri::command]
+pub fn sample_regions(
+    state: tauri::State<'_, AppState>,
+    regions: Vec<FracRect>,
+    max_width: u32,
+) -> Result<tauri::ipc::Response, Error> {
+    state
+        .sample_regions(&regions, max_width)
+        .map(tauri::ipc::Response::new)
+}
+
+/// OCRs `regions` of the frame pinned by the last `sample_regions` call (sequence `seq`).
+///
+/// # Errors
+///
+/// See [`AppState::read_regions`].
+#[tauri::command]
+pub async fn read_regions(
+    state: tauri::State<'_, AppState>,
+    seq: u64,
+    regions: Vec<RegionRead>,
+) -> Result<Vec<RegionText>, Error> {
+    let frame = state.pinned_frame(seq)?;
+    let ocr = Arc::clone(&state.ocr);
+    tauri::async_runtime::spawn_blocking(move || regions::read(&frame, &regions, ocr.as_ref()))
+        .await
+        .map_err(|e| Error::OcrFailed(format!("OCR task failed: {e}")))?
+}
+
 /// Recognises text in `crop` and times it.
 fn run_ocr(crop: &Frame, ocr: &(dyn OcrEngine + Send + Sync)) -> Result<OcrResult, Error> {
     let started = Instant::now();
@@ -551,6 +625,40 @@ mod tests {
         assert_eq!(status.actions_used, 1);
 
         assert_eq!(state.disarm_auto_mode().state, AutoModeState::Disarmed);
+    }
+
+    #[test]
+    fn read_regions_uses_the_frame_pinned_by_sample_and_expires_it() {
+        let line = OcrLine {
+            text: "Hecate".into(),
+            bounds: Rect::new(0, 0, 10, 10),
+        };
+        let frames = vec![white_frame(), Frame::solid(2880, 1800, 2, [0; 4]).unwrap()];
+        let state = state_with(frames, vec![line]);
+        state.start_capture(30).unwrap();
+        let name = FracRect::new(0.685, 0.104, 0.27, 0.034);
+
+        // Reading before any sample: nothing pinned.
+        let request = vec![RegionRead {
+            id: "name".into(),
+            region: name,
+        }];
+        assert!(matches!(
+            state.read_regions(1, &request),
+            Err(Error::FrameExpired)
+        ));
+
+        let bytes = state.sample_regions(&[name], 32).unwrap();
+        let seq = u64::from_le_bytes(bytes[0..8].try_into().unwrap());
+        assert_eq!(seq, 1);
+        let text = state.read_regions(seq, &request).unwrap();
+        assert_eq!(text[0].lines[0].text, "Hecate");
+
+        // A stale sequence number is refused rather than reading a different frame.
+        assert!(matches!(
+            state.read_regions(seq + 1, &request),
+            Err(Error::FrameExpired)
+        ));
     }
 
     #[test]
