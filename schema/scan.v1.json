@@ -5,21 +5,41 @@
   "description": "Output of Wavescan, imported by the Wuthering Tools web app. See docs/adr/0008-scan-json-schema-v1.md. Keys are the web app's PascalCase keys. Contains no account identifiers.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "version", "meta", "echoes"],
+  "required": [
+    "format",
+    "version",
+    "meta",
+    "echoes"
+  ],
   "properties": {
-    "format": { "const": "WutheringToolsScan" },
-    "version": { "const": 1 },
-    "meta": { "$ref": "#/$defs/meta" },
-    "echoes": { "type": "array", "items": { "$ref": "#/$defs/echo" } },
+    "format": {
+      "const": "WutheringToolsScan"
+    },
+    "version": {
+      "const": 1
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "echoes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/echo"
+      }
+    },
     "characters": {
       "description": "Reserved for v0.2. Omitted by v0.1 scanners.",
       "type": "array",
-      "items": { "$ref": "#/$defs/character" }
+      "items": {
+        "$ref": "#/$defs/character"
+      }
     },
     "weapons": {
       "description": "Reserved for v0.3. Omitted by v0.1 scanners.",
       "type": "array",
-      "items": { "$ref": "#/$defs/weapon" }
+      "items": {
+        "$ref": "#/$defs/weapon"
+      }
     }
   },
   "$defs": {
@@ -30,15 +50,36 @@
     },
     "mainStat": {
       "enum": [
-        "HP", "ATK", "DEF", "EnergyRegen", "CritRate", "CritDMG", "HealingBonus",
-        "Glacio", "Fusion", "Electro", "Aero", "Spectro", "Havoc"
+        "HP",
+        "ATK",
+        "DEF",
+        "EnergyRegen",
+        "CritRate",
+        "CritDMG",
+        "HealingBonus",
+        "Glacio",
+        "Fusion",
+        "Electro",
+        "Aero",
+        "Spectro",
+        "Havoc"
       ]
     },
     "subStat": {
       "enum": [
-        "HP_FLAT", "ATK_FLAT", "DEF_FLAT", "HP", "ATK", "DEF", "EnergyRegen",
-        "CritRate", "CritDMG", "BasicAttackDMGBonus", "HeavyAttackDMGBonus",
-        "ResonanceSkillDMGBonus", "ResonanceLiberationDMGBonus"
+        "HP_FLAT",
+        "ATK_FLAT",
+        "DEF_FLAT",
+        "HP",
+        "ATK",
+        "DEF",
+        "EnergyRegen",
+        "CritRate",
+        "CritDMG",
+        "BasicAttackDMGBonus",
+        "HeavyAttackDMGBonus",
+        "ResonanceSkillDMGBonus",
+        "ResonanceLiberationDMGBonus"
       ]
     },
     "fieldPath": {
@@ -49,41 +90,132 @@
     "meta": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["scannerVersion", "scannedAt", "platform", "resolution", "language", "mode"],
+      "required": [
+        "scannerVersion",
+        "scannedAt",
+        "platform",
+        "resolution",
+        "language",
+        "mode"
+      ],
       "properties": {
-        "scannerVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+" },
-        "scannedAt": { "type": "string", "format": "date-time" },
-        "platform": { "enum": ["windows", "macos"] },
+        "scannerVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+"
+        },
+        "scannedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "platform": {
+          "enum": [
+            "windows",
+            "macos"
+          ]
+        },
         "resolution": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["width", "height"],
+          "required": [
+            "width",
+            "height"
+          ],
           "properties": {
-            "width": { "type": "integer", "minimum": 1 },
-            "height": { "type": "integer", "minimum": 1 }
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            }
           }
         },
-        "language": { "const": "en" },
-        "mode": { "enum": ["watch", "auto"] },
-        "gameVersion": { "type": "string" }
+        "language": {
+          "const": "en"
+        },
+        "mode": {
+          "enum": [
+            "watch",
+            "auto"
+          ]
+        },
+        "gameVersion": {
+          "type": "string"
+        }
       }
     },
     "echo": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["scanId", "echo", "echoSet", "cost", "rank", "level", "stat", "substats", "equippedBy"],
+      "required": [
+        "scanId",
+        "echo",
+        "echoSet",
+        "cost",
+        "rank",
+        "level",
+        "stat",
+        "substats",
+        "equippedBy"
+      ],
       "properties": {
         "scanId": {
           "description": "Unique within this file. Character entries reference echoes by scanId.",
           "type": "string",
           "pattern": "^scan-echo-\\d+$"
         },
-        "echo": { "$ref": "#/$defs/key" },
-        "echoSet": { "$ref": "#/$defs/key" },
-        "cost": { "enum": [1, 3, 4] },
-        "rank": { "description": "Rarity, 1-5.", "type": "integer", "minimum": 1, "maximum": 5 },
-        "level": { "type": "integer", "minimum": 0, "maximum": 25 },
-        "stat": { "$ref": "#/$defs/mainStat" },
+        "echo": {
+          "$ref": "#/$defs/key"
+        },
+        "echoSet": {
+          "description": "Sonata set key, or null when the scanner couldn't tell (listed in lowConfidence).",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/key"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cost": {
+          "enum": [
+            1,
+            3,
+            4
+          ]
+        },
+        "rank": {
+          "description": "Rarity, 1-5.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "level": {
+          "description": "0-25, or null when it couldn't be read (listed in lowConfidence).",
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 25
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stat": {
+          "description": "Main stat key, or null when it couldn't be read (listed in lowConfidence).",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/mainStat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "substats": {
           "description": "Only the substats revealed at this level (0-5), in on-screen order.",
           "type": "array",
@@ -91,22 +223,41 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["type", "value"],
+            "required": [
+              "type",
+              "value"
+            ],
             "properties": {
-              "type": { "$ref": "#/$defs/subStat" },
-              "value": { "type": "number", "exclusiveMinimum": 0 }
+              "type": {
+                "$ref": "#/$defs/subStat"
+              },
+              "value": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
             }
           }
         },
         "equippedBy": {
           "description": "Character key, or null when unequipped.",
-          "oneOf": [{ "$ref": "#/$defs/key" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "$ref": "#/$defs/key"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
-        "locked": { "type": "boolean" },
+        "locked": {
+          "type": "boolean"
+        },
         "lowConfidence": {
           "description": "Fields the scanner was unsure about; the import UI highlights them.",
           "type": "array",
-          "items": { "$ref": "#/$defs/fieldPath" },
+          "items": {
+            "$ref": "#/$defs/fieldPath"
+          },
           "uniqueItems": true
         }
       }
@@ -114,43 +265,112 @@
     "character": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["key", "level"],
+      "required": [
+        "key",
+        "level"
+      ],
       "properties": {
-        "key": { "$ref": "#/$defs/key" },
-        "level": { "type": "integer", "minimum": 1, "maximum": 90 },
-        "ascension": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 90
+        },
+        "ascension": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
         "talents": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["basic", "skill", "forte", "liberation", "intro"],
+          "required": [
+            "basic",
+            "skill",
+            "forte",
+            "liberation",
+            "intro"
+          ],
           "properties": {
-            "basic": { "type": "integer", "minimum": 1, "maximum": 10 },
-            "skill": { "type": "integer", "minimum": 1, "maximum": 10 },
-            "forte": { "type": "integer", "minimum": 1, "maximum": 10 },
-            "liberation": { "type": "integer", "minimum": 1, "maximum": 10 },
-            "intro": { "type": "integer", "minimum": 1, "maximum": 10 }
+            "basic": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "skill": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "forte": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "liberation": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "intro": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
           }
         },
-        "resonanceChain": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "resonanceChain": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
         "weapon": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["key", "level", "rank"],
+          "required": [
+            "key",
+            "level",
+            "rank"
+          ],
           "properties": {
-            "key": { "$ref": "#/$defs/key" },
-            "level": { "type": "integer", "minimum": 1, "maximum": 90 },
-            "rank": { "type": "integer", "minimum": 1, "maximum": 5 }
+            "key": {
+              "$ref": "#/$defs/key"
+            },
+            "level": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90
+            },
+            "rank": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
           }
         },
         "echoes": {
           "description": "scanIds of equipped echoes, slot order 1-5; null for an empty slot.",
           "type": "array",
           "maxItems": 5,
-          "items": { "oneOf": [{ "type": "string", "pattern": "^scan-echo-\\d+$" }, { "type": "null" }] }
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^scan-echo-\\d+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
         },
         "lowConfidence": {
           "type": "array",
-          "items": { "$ref": "#/$defs/fieldPath" },
+          "items": {
+            "$ref": "#/$defs/fieldPath"
+          },
           "uniqueItems": true
         }
       }
@@ -158,16 +378,44 @@
     "weapon": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["key", "level", "rank", "equippedBy"],
+      "required": [
+        "key",
+        "level",
+        "rank",
+        "equippedBy"
+      ],
       "properties": {
-        "key": { "$ref": "#/$defs/key" },
-        "level": { "type": "integer", "minimum": 1, "maximum": 90 },
-        "rank": { "type": "integer", "minimum": 1, "maximum": 5 },
-        "equippedBy": { "oneOf": [{ "$ref": "#/$defs/key" }, { "type": "null" }] },
-        "locked": { "type": "boolean" },
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 90
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "equippedBy": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/key"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "locked": {
+          "type": "boolean"
+        },
         "lowConfidence": {
           "type": "array",
-          "items": { "$ref": "#/$defs/fieldPath" },
+          "items": {
+            "$ref": "#/$defs/fieldPath"
+          },
           "uniqueItems": true
         }
       }

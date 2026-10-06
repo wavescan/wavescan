@@ -2,7 +2,7 @@ import type { InjectionKey } from "vue";
 import { setScannerGameData, type ScannerGameData } from "@wutheringtools/scanner-core";
 import bundled from "./scanner-data.json";
 
-// Game data from Wuthering Tools (`https://wutheringtools.com/scanner-data.json`, WT ADR
+// Game data from Wuthering Tools (`https://www.wutheringtools.com/scanner-data.json`, WT ADR
 // 0035). A snapshot is bundled with each build so scanning works offline and on first
 // launch; `npm run data:update` refreshes it. A signed runtime refresh comes later (ADR 0020).
 

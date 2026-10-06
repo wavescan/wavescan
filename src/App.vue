@@ -5,8 +5,9 @@ import type { AppInfo } from "@/ipc/types";
 import { GAME_DATA_KEY } from "@/data/scannerData";
 import HomeView from "@/views/HomeView.vue";
 import DiagnosticsView from "@/views/DiagnosticsView.vue";
+import ScanView from "@/views/ScanView.vue";
 
-type View = "home" | "diagnostics";
+type View = "home" | "diagnostics" | "scan";
 
 const view = ref<View>("home");
 const info = ref<AppInfo | null>(null);
@@ -30,6 +31,12 @@ onMounted(async () => {
       :error="error"
       :game-data="gameData"
       @diagnostics="view = 'diagnostics'"
+      @scan="view = 'scan'"
+    />
+    <ScanView
+      v-else-if="view === 'scan'"
+      :info="info"
+      @back="view = 'home'"
     />
     <DiagnosticsView
       v-else

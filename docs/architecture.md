@@ -3,6 +3,8 @@
 How the scanner is put together and why. For the reasoning behind each choice, follow the ADR links. For rules, see [CLAUDE.md](../CLAUDE.md). For a guided tour of the Rust code, see [rust-primer.md](rust-primer.md).
 
 > Status: design of record for v0.1 (echoes). Sections marked *(planned)* describe code that doesn't exist yet. Update this file in the same change that makes it true.
+>
+> Implemented so far: capture/OCR/input adapters (Windows, macOS), safety, Diagnostics, bundled game data, batched region reads, and the **watch-mode echo session** (`src/session/`: `echoSession.ts` → `echoExtract.ts` → `exportScan.ts`, UI in `ScanView.vue`).
 
 ## 1. The big picture
 
@@ -164,13 +166,13 @@ Only these outbound connections exist. Each can be turned off in Settings ([ADR 
 | Host | Purpose | Verified how |
 |---|---|---|
 | `github.com` / `objects.githubusercontent.com` | Updater manifest + signed update bundles | Tauri updater signature (minisign public key compiled in) |
-| `wutheringtools.com` | `scanner-data.json` (game data refresh, *planned*) | Detached signature checked against a compiled-in public key. Falls back to the bundled snapshot ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)) |
+| `www.wutheringtools.com` | `scanner-data.json` (game data refresh, *planned*) | Detached signature checked against a compiled-in public key. Falls back to the bundled snapshot ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)) |
 
 Adding a host means: ADR → this table → the README table → CSP `connect-src`.
 
 ## 8. Game data freshness
 
-Game data (echo names, sets, costs, stat tables, characters, weapons) comes from Wuthering Tools, which publishes it as `https://wutheringtools.com/scanner-data.json` on every deploy ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)).
+Game data (echo names, sets, costs, stat tables, characters, weapons) comes from Wuthering Tools, which publishes it as `https://www.wutheringtools.com/scanner-data.json` on every deploy ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)).
 
 - **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
 - **Runtime refresh** *(planned)*: opt-in, signed, and fails safe to the bundled snapshot, so new echoes are recognised without an app update.

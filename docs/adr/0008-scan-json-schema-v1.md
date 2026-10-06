@@ -26,6 +26,7 @@ The optimizer's internal `EchoObject` (`echoSubStatsType1..5` and so on) is a st
 - **Echoes:**
   - `scanId` (stable within the file), `echo`, `echoSet`, `cost`, `rank`, `level`, `stat`, plus `substats[]` holding **only the revealed** substats (0–5).
   - `equippedBy` is a character key or `null`, and `locked` is optional.
+  - **Amended 2026-10-06 (before any release):** `echoSet`, `stat` and `level` may also be `null` when the scanner couldn't read them, and they're then listed in `lowConfidence`. That beats dropping the echo or guessing. The web importer asks the user to fill these in.
   - `lowConfidence[]` lists JSON-pointer-ish field paths, e.g. `"substats.2.value"`.
 - **`characters` and `weapons`** are defined now as optional arrays, and v0.1 omits them. Adding them later is non-breaking.
 - **`meta`** has `scannerVersion`, `scannedAt` (ISO), `platform`, `resolution`, `language`, `mode` (`watch` | `auto`), and an optional `gameVersion`. It contains **no User ID or any account identifier**.

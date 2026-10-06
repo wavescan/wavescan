@@ -4,7 +4,7 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 
-const SOURCE = process.argv[2] ?? "https://wutheringtools.com/scanner-data.json";
+const SOURCE = process.argv[2] ?? "https://www.wutheringtools.com/scanner-data.json";
 const TARGET = new URL("../src/data/scanner-data.json", import.meta.url);
 const SUPPORTED_VERSION = 1;
 

@@ -46,7 +46,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src/data/` | Bundled `scanner-data.json` + loader/validator (ADR 0020). Refresh with `npm run data:update`; never hand-edit |
 | `src/diagnostics/` | Diagnostics checks + report builder (no images; ADR 0016) |
 | `src/ipc/` | Typed wrappers for every Rust command + mirrored types |
-| `src/session/` | `ScanSession`, `classifyScreen`, per-screen `extractors/` (TS "brain") *(planned)* |
+| `src/session/` | Watch-mode echo session: `echoRegions` (regions + `LEVEL_ROW`), `echoExtract` (scanner-core parsing), `echoSession` (stability loop, dedupe), `exportScan` (scan v1 JSON) |
 | `src/auto/` | Auto-mode navigator state machine, grid walking |
 | `src/views/` | Vue UI |
 | `schema/scan.v1.json` | Output contract with the web app ([ADR 0008](docs/adr/0008-scan-json-schema-v1.md)) |
