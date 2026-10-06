@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-10-05
 tags: [architecture, reuse]
+superseded_by: [19]
 ---
 
 # 7. Share scanning logic with the web app via `@wuthering-tools/scanner-core`
@@ -20,6 +21,8 @@ Copying it would fork it. The API proof-of-concept repo already shows that drift
 ## Decision
 
 Extract the DOM-free parts into a package, `@wuthering-tools/scanner-core`, built from the optimizer repo (a workspace package, `packages/scanner-core`). Both the web app and this desktop app consume it.
+
+**Superseded 2026-10-06:** the package is `@wutheringtools/scanner-core`. It holds logic only (game data is supplied by each app), and WT resolves it via a path alias rather than workspaces. See [ADR 0019](./0019-consume-scanner-core-with-injected-data.md).
 
 - **Contents:**
   - `scanner/` pure modules: `parse`, `layout`, `contentRect`, `layoutCheck`, `fingerprint`, `stability`, `queue`, `dedupe`, `review`, `levenshtein`, `types`
