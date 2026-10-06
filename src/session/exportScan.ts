@@ -1,0 +1,124 @@
+import { mapParsedEchoes, type MappedEcho } from "@wutheringtools/scanner-core";
+import type { EchoCandidate } from "./echoSession";
+
+// Builds the WutheringToolsScan v1 file (schema/scan.v1.json, ADR 0008) from candidates.
+
+export interface ScanMeta {
+  scannerVersion: string;
+  platform: "windows" | "macos";
+  resolution: { width: number; height: number };
+  mode: "watch" | "auto";
+  scannedAt?: Date;
+}
+
+export interface ScanEcho {
+  scanId: string;
+  echo: string;
+  echoSet: string | null;
+  cost: 1 | 3 | 4;
+  rank: number;
+  level: number | null;
+  stat: string | null;
+  substats: { type: string; value: number }[];
+  equippedBy: string | null;
+  lowConfidence?: string[];
+}
+
+export interface WutheringToolsScan {
+  format: "WutheringToolsScan";
+  version: 1;
+  meta: {
+    scannerVersion: string;
+    scannedAt: string;
+    platform: "windows" | "macos";
+    resolution: { width: number; height: number };
+    language: "en";
+    mode: "watch" | "auto";
+  };
+  echoes: ScanEcho[];
+}
+
+/** Result of building a scan: the file, plus how many candidates couldn't be exported. */
+export interface BuiltScan {
+  scan: WutheringToolsScan;
+  /** Candidates whose echo couldn't be identified (they need fixing before export). */
+  skippedUnknown: number;
+}
+
+const COSTS = new Set([1, 3, 4]);
+
+function substatsOf(mapped: MappedEcho): { type: string; value: number; slot: number }[] {
+  const out: { type: string; value: number; slot: number }[] = [];
+  for (let i = 1; i <= 5; i++) {
+    const type = mapped[`echoSubStatsType${i}` as keyof MappedEcho] as string | null;
+    const value = mapped[`echoSubStatsValue${i}` as keyof MappedEcho] as number | null;
+    if (type && value !== null && value > 0) out.push({ type, value, slot: i - 1 });
+  }
+  return out;
+}
+
+/**
+ * Converts one candidate. Returns null if the echo itself is unknown (the file requires
+ * a registry key). Unknown set / main stat / level are exported as null and listed in
+ * `lowConfidence` so the web app asks the user to check them.
+ *
+ * Rarity isn't read yet: `rank` is 5 for now (the Bag → Echoes scan is aimed at
+ * end-game echoes; reading rarity is planned).
+ */
+export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEcho | null {
+  const [mapped] = mapParsedEchoes([candidate.slot], false);
+  const cost = Number(candidate.slot.cost);
+  if (!mapped?.echo || !COSTS.has(cost)) return null;
+
+  const substats = substatsOf(mapped);
+  const low = new Set<string>();
+  const c = candidate.confidence;
+  if (c.name === "low") low.add("echo");
+  if (c.cost === "low") low.add("cost");
+  if (c.mainStat === "low" || !mapped.stat) low.add("stat");
+  if (c.set === "low" || !mapped.echoSet) low.add("echoSet");
+  if (c.level === "low" || candidate.level === null) low.add("level");
+  substats.forEach((s, i) => {
+    if (c.substats[s.slot] === "low") low.add(`substats.${i}.value`);
+  });
+
+  const echo: ScanEcho = {
+    scanId: `scan-echo-${scanIndex}`,
+    echo: mapped.echo,
+    echoSet: mapped.echoSet ?? null,
+    cost: cost as 1 | 3 | 4,
+    rank: 5,
+    level: candidate.level,
+    stat: mapped.stat,
+    substats: substats.map(({ type, value }) => ({ type, value })),
+    equippedBy: null,
+  };
+  if (low.size > 0) echo.lowConfidence = [...low];
+  return echo;
+}
+
+export function buildScan(candidates: EchoCandidate[], meta: ScanMeta): BuiltScan {
+  const echoes: ScanEcho[] = [];
+  let skippedUnknown = 0;
+  for (const candidate of candidates) {
+    const echo = toScanEcho(candidate, echoes.length + 1);
+    if (echo) echoes.push(echo);
+    else skippedUnknown += 1;
+  }
+  return {
+    scan: {
+      format: "WutheringToolsScan",
+      version: 1,
+      meta: {
+        scannerVersion: meta.scannerVersion,
+        scannedAt: (meta.scannedAt ?? new Date()).toISOString(),
+        platform: meta.platform,
+        resolution: meta.resolution,
+        language: "en",
+        mode: meta.mode,
+      },
+      echoes,
+    },
+    skippedUnknown,
+  };
+}

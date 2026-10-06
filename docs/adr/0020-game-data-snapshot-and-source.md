@@ -9,7 +9,7 @@ supersedes: [10]
 
 ## Context
 
-Wavescan supplies scanner-core with game data ([ADR 0019](./0019-consume-scanner-core-with-injected-data.md)). Wuthering Tools now publishes that data on every deploy as `https://wutheringtools.com/scanner-data.json` ([WT ADR 0035](https://github.com/ryanbenson/wuthering-waves-optimizer/blob/master/docs/adr/0035-publish-scanner-data-json.md)). [ADR 0010](./0010-no-telemetry-network-allowlist.md) had planned to fetch game data from `ryanbenson.github.io`.
+Wavescan supplies scanner-core with game data ([ADR 0019](./0019-consume-scanner-core-with-injected-data.md)). Wuthering Tools now publishes that data on every deploy as `https://www.wutheringtools.com/scanner-data.json` ([WT ADR 0035](https://github.com/ryanbenson/wuthering-waves-optimizer/blob/master/docs/adr/0035-publish-scanner-data-json.md)). [ADR 0010](./0010-no-telemetry-network-allowlist.md) had planned to fetch game data from `ryanbenson.github.io`.
 
 ## Decision
 
@@ -17,7 +17,7 @@ Wavescan supplies scanner-core with game data ([ADR 0019](./0019-consume-scanner
   - `npm run data:update` refreshes it. Before writing, it checks the format, the version, and that the hash matches the content.
   - Every build bundles the snapshot, so scanning works offline and on first launch with no network at all.
 - `src/data/scannerData.ts` validates the file (`validateScannerData`) and hands it to scanner-core at startup, before any scanning code runs. The data hash is shown on the home screen and included in Diagnostics reports, so every report names its data version.
-- **The game-data host is `wutheringtools.com`**, replacing `ryanbenson.github.io` from ADR 0010. Today the app makes **no** game-data requests; only the dev-time script fetches.
+- **The game-data host is `www.wutheringtools.com`** (the canonical host; the bare domain redirects to it), replacing `ryanbenson.github.io` from ADR 0010. Today the app makes **no** game-data requests; only the dev-time script fetches.
 - The future runtime refresh will be:
   - opt-in under Settings → Network
   - signed (a detached signature checked against a public key built into the app)

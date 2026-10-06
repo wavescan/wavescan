@@ -3,7 +3,7 @@ import type { AppInfo } from "@/ipc/types";
 import type { GameDataInfo } from "@/data/scannerData";
 
 defineProps<{ info: AppInfo | null; error: string | null; gameData: GameDataInfo | null }>();
-defineEmits<{ diagnostics: [] }>();
+defineEmits<{ diagnostics: []; scan: [] }>();
 </script>
 
 <template>
@@ -14,8 +14,8 @@ defineEmits<{ diagnostics: [] }>();
       </h1>
       <p class="text-sm opacity-80">
         Reads your echoes from the Wuthering Waves window and exports them for Wuthering Tools.
-        Scanning isn't available yet. For now you can check that Wavescan can see and read your
-        game.
+        Early preview: watch mode reads echoes while you click through Bag → Echoes. Run
+        Diagnostics first to check Wavescan can see and read your game.
       </p>
       <div
         v-if="info"
@@ -44,10 +44,16 @@ defineEmits<{ diagnostics: [] }>();
       </div>
       <div class="card-actions justify-end">
         <button
-          class="btn btn-primary"
+          class="btn"
           @click="$emit('diagnostics')"
         >
           Run diagnostics
+        </button>
+        <button
+          class="btn btn-primary"
+          @click="$emit('scan')"
+        >
+          Scan echoes
         </button>
       </div>
     </div>

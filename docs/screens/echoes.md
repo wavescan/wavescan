@@ -43,8 +43,8 @@ These match the optimizer's 16:10 `layout.ts` ROIs (measured from the same accou
 | Field | Method | Gotchas |
 |---|---|---|
 | name | OCR → `matchEchoName` (Levenshtein, threshold 0.68) | Collab/"Reminiscence" names must be in the name list. Narrow by set + cost first |
-| level | OCR of `+NN`, digits whitelist | Values 0–25 |
-| set | Set-icon template match | No text fallback exists. Low match score → `lowConfidence: ["echoSet"]` |
+| level | OCR of `+NN` in **`LEVEL_ROW`** (`src/session/echoRegions.ts`: x 0.69, y 0.16, w 0.0355, h 0.035 on the 16:10 reference) | Measured text span x 0.696–0.721, y 0.168–0.187 on every fixture at 2880×1800 and 2800×1752; ends before `SET_ICON_BOX`. Values 0–25, otherwise null + low confidence |
+| set | Taken from the echo when it can only belong to one set; otherwise set-icon matching *(planned, PR D)* | Until then multi-set echoes export `echoSet: null` + `lowConfidence: ["echoSet"]` |
 | cost | OCR `COST n`, cross-checked with `inferCostFromSecondaryStat` | The secondary value is level-dependent, so only use the inference at +25 |
 | main stat | OCR label → `normalizeStatLabel` | The value is level-dependent. Store the key, and let the app compute the value from cost/rank/level |
 | substats | Label column + value column paired by line y (`parseSubstatColumns`) | 0–5 rows, wrapped labels, snap to `subStatsTable` |
