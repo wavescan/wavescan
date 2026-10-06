@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { AppInfo } from "@/ipc/types";
+import type { GameDataInfo } from "@/data/scannerData";
 
-defineProps<{ info: AppInfo | null; error: string | null }>();
+defineProps<{ info: AppInfo | null; error: string | null; gameData: GameDataInfo | null }>();
 defineEmits<{ diagnostics: [] }>();
 </script>
 
@@ -27,6 +28,13 @@ defineEmits<{ diagnostics: [] }>();
           class="badge badge-ghost ml-2"
         >build {{ info.build }}</span>
       </div>
+      <p
+        v-if="gameData"
+        class="text-xs opacity-70"
+      >
+        Game data: {{ gameData.echoes }} echoes, {{ gameData.characters }} characters
+        <span class="font-mono">({{ gameData.hash.slice(0, 8) }})</span>
+      </p>
       <div
         v-else-if="error"
         role="alert"

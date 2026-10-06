@@ -7,6 +7,7 @@ import type {
 } from "@/ipc/types";
 import { isSupportedAspect } from "./regions";
 import type { InputTestResult } from "./inputTest";
+import type { GameDataInfo } from "@/data/scannerData";
 
 // Builds the Diagnostics report testers paste back to us. It contains facts about the
 // app, window, capture and OCR only. No images, no User ID, no other apps' window titles
@@ -31,6 +32,8 @@ export interface OcrTest {
 
 export interface DiagnosticsInput {
   app: AppInfo | null;
+  /** Which game data snapshot is loaded (hash identifies the exact version). */
+  gameData: GameDataInfo | null;
   userAgent: string;
   window: Outcome<GameWindow> | null;
   candidates: WindowCandidate[];
@@ -45,6 +48,7 @@ export interface DiagnosticsReport {
   version: 1;
   generatedAt: string;
   app: AppInfo | null;
+  gameData: GameDataInfo | null;
   userAgent: string;
   checks: Check[];
   window: Outcome<GameWindow> | null;
@@ -164,6 +168,7 @@ export function buildReport(input: DiagnosticsInput, now: Date = new Date()): Di
     version: 1,
     generatedAt: now.toISOString(),
     app: input.app,
+    gameData: input.gameData,
     userAgent: input.userAgent,
     checks: buildChecks(input),
     window: input.window,

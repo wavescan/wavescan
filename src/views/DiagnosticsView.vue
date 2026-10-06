@@ -16,6 +16,7 @@ import {
   stopCapture,
 } from "@/ipc/commands";
 import type { AppInfo } from "@/ipc/types";
+import type { GameDataInfo } from "@/data/scannerData";
 import { decodePreview } from "@/diagnostics/preview";
 import { INPUT_TEST_TARGETS, OCR_TEST_REGIONS } from "@/diagnostics/regions";
 import { CONFIRMATION_PHRASE, runInputTest } from "@/diagnostics/inputTest";
@@ -27,7 +28,7 @@ import {
   type Outcome,
 } from "@/diagnostics/report";
 
-const props = defineProps<{ info: AppInfo | null }>();
+const props = defineProps<{ info: AppInfo | null; gameData: GameDataInfo | null }>();
 defineEmits<{ back: [] }>();
 
 const running = ref(false);
@@ -79,6 +80,7 @@ async function run() {
   copied.value = false;
   const input: DiagnosticsInput = {
     app: props.info,
+    gameData: props.gameData,
     userAgent: navigator.userAgent,
     window: null,
     candidates: [],

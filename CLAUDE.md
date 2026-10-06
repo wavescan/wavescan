@@ -43,6 +43,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src-tauri/src/frame.rs`, `geometry.rs` | Captured images (crop/fill) and pixel ↔ fraction geometry |
 | `src-tauri/src/testing.rs` | Fakes for the four traits (test-only) |
 | `src-tauri/capabilities/` | Tauri permission allow-list (keep minimal) |
+| `src/data/` | Bundled `scanner-data.json` + loader/validator (ADR 0020). Refresh with `npm run data:update`; never hand-edit |
 | `src/diagnostics/` | Diagnostics checks + report builder (no images; ADR 0016) |
 | `src/ipc/` | Typed wrappers for every Rust command + mirrored types |
 | `src/session/` | `ScanSession`, `classifyScreen`, per-screen `extractors/` (TS "brain") *(planned)* |
