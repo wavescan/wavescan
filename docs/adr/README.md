@@ -41,7 +41,7 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0007](./0007-shared-scanner-core-package.md) | Share scanning logic with the web app via `@wuthering-tools/scanner-core` | accepted | 0019 (name, data injection) | architecture, reuse |
 | [0008](./0008-scan-json-schema-v1.md) | `WutheringToolsScan` JSON schema v1 | accepted | | schema, interop |
 | [0009](./0009-handoff-via-file-and-clipboard-no-server.md) | Hand off via file or clipboard, never a server | accepted | | interop, privacy |
-| [0010](./0010-no-telemetry-network-allowlist.md) | No telemetry, explicit network allow-list | accepted | | privacy, network |
+| [0010](./0010-no-telemetry-network-allowlist.md) | No telemetry, explicit network allow-list | accepted | 0020 (game-data host) | privacy, network |
 | [0011](./0011-signing-provenance-and-updater.md) | Signed builds, provenance attestations, signed updater | accepted | | distribution, supply-chain |
 | [0012](./0012-echoes-first-release-strategy.md) | Ship echoes first, then characters and weapons | accepted | | product, roadmap |
 | [0013](./0013-user-id-masking.md) | Never read the User ID, and mask it in any saved frame | accepted | | privacy |
@@ -51,3 +51,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0017](./0017-input-spike-and-auto-mode-commands.md) | Input spike: auto-mode commands, Windows `SendInput`, and verifying clicks by their effect | accepted | | input, security, testing |
 | [0018](./0018-macos-adapters.md) | macOS adapters: ScreenCaptureKit (via objc2), Vision, Core Graphics events, and a type-check probe | accepted | | capture, ocr, input, macos, testing |
 | [0019](./0019-consume-scanner-core-with-injected-data.md) | Consume `@wutheringtools/scanner-core` from npm, with game data supplied by Wavescan | accepted | | architecture, reuse, data |
+| [0020](./0020-game-data-snapshot-and-source.md) | Bundle a game-data snapshot; refresh it from wutheringtools.com | accepted | | data, network, privacy |

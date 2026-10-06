@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-10-05
 tags: [privacy, network]
+superseded_by: [20]
 ---
 
 # 10. No telemetry, explicit network allow-list
@@ -16,6 +17,7 @@ tags: [privacy, network]
 - **Allowed outbound hosts** (also enforced via CSP `connect-src` for the webview):
   1. GitHub Releases: updater manifest + signed bundles ([ADR 0011](./0011-signing-provenance-and-updater.md)).
   2. `ryanbenson.github.io`: signed `scanner-data.json` + icon templates.
+     **Superseded 2026-10-06:** the game-data host is `wutheringtools.com`; see [ADR 0020](./0020-game-data-snapshot-and-source.md).
 - Each is **toggleable** in Settings → Network. With both off, the app is fully offline.
 - The README and `architecture.md#network` list these hosts and show users how to verify with a firewall.
 

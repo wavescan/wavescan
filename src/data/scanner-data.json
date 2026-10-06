@@ -1,0 +1,3637 @@
+{
+ "format": "WutheringToolsScannerData",
+ "version": 1,
+ "hash": "21f335e9181373c558f0e136325ec7351baebe7eb8dda6c5b3c2bdfd047ce91e",
+ "data": {
+  "echoes": {
+   "AbyssalGladius": {
+    "key": "AbyssalGladius",
+    "name": "Abyssal Gladius",
+    "class": "Elite",
+    "sets": [
+     "TidebreakingCourage",
+     "MidnightVeil",
+     "ThreadofSeveredFate"
+    ]
+   },
+   "AbyssalMercator": {
+    "key": "AbyssalMercator",
+    "name": "Abyssal Mercator",
+    "class": "Elite",
+    "sets": [
+     "FrostyResolve",
+     "EternalRadiance"
+    ]
+   },
+   "AbyssalPatricius": {
+    "key": "AbyssalPatricius",
+    "name": "Abyssal Patricius",
+    "class": "Elite",
+    "sets": [
+     "EmpyreanAnthem",
+     "FrostyResolve"
+    ]
+   },
+   "AeroDrake": {
+    "key": "AeroDrake",
+    "name": "Aero Drake",
+    "class": "Common",
+    "sets": [
+     "GustsofWelkin",
+     "TidebreakingCourage",
+     "FlamingClawprint"
+    ]
+   },
+   "AeroPredator": {
+    "key": "AeroPredator",
+    "name": "Aero Predator",
+    "class": "Common",
+    "sets": [
+     "VoidThunder",
+     "SierraGale"
+    ]
+   },
+   "AeroPrism": {
+    "key": "AeroPrism",
+    "name": "Aero Prism",
+    "class": "Common",
+    "sets": [
+     "EternalRadiance",
+     "TidebreakingCourage"
+    ]
+   },
+   "AureatePicket": {
+    "key": "AureatePicket",
+    "name": "Aureate Picket",
+    "class": "Common",
+    "sets": [
+     "HeartofEvilsPurge",
+     "FlashofElectricReflection"
+    ]
+   },
+   "AutopuppetScout": {
+    "key": "AutopuppetScout",
+    "name": "Autopuppet Scout",
+    "class": "Elite",
+    "sets": [
+     "CelestialLight",
+     "FreezingFrost"
+    ]
+   },
+   "BabyViridblazeSaurian": {
+    "key": "BabyViridblazeSaurian",
+    "name": "Baby Viridblaze Saurian",
+    "class": "Common",
+    "sets": [
+     "LingeringTunes",
+     "VoidThunder",
+     "MoltenRift"
+    ]
+   },
+   "BellBorneGeochelone": {
+    "key": "BellBorneGeochelone",
+    "name": "Bell-Borne Geochelone",
+    "class": "Calamity",
+    "sets": [
+     "MoonlitClouds",
+     "RejuvenatingGlow"
+    ]
+   },
+   "BloomburstPuppet": {
+    "key": "BloomburstPuppet",
+    "name": "Bloomburst Puppet",
+    "class": "Common",
+    "sets": [
+     "HeartofSwornVigil"
+    ]
+   },
+   "CalamityEffigy": {
+    "key": "CalamityEffigy",
+    "name": "Calamity Effigy",
+    "class": "Overlord",
+    "sets": [
+     "HeartofEvilsPurge",
+     "LampofNetherRoad"
+    ]
+   },
+   "CalcifiedJunrock": {
+    "key": "CalcifiedJunrock",
+    "name": "Calcified Junrock",
+    "class": "Common",
+    "sets": [
+     "TidebreakingCourage",
+     "EmpyreanAnthem",
+     "CrownofValor"
+    ]
+   },
+   "Capitaneus": {
+    "key": "Capitaneus",
+    "name": "Capitaneus",
+    "class": "Elite",
+    "sets": [
+     "GustsofWelkin",
+     "EternalRadiance",
+     "WindwardPilgrimage"
+    ]
+   },
+   "Carapace": {
+    "key": "Carapace",
+    "name": "Carapace",
+    "class": "Elite",
+    "sets": [
+     "MoonlitClouds",
+     "SierraGale"
+    ]
+   },
+   "ChasmGuardian": {
+    "key": "ChasmGuardian",
+    "name": "Chasm Guardian",
+    "class": "Elite",
+    "sets": [
+     "LingeringTunes",
+     "RejuvenatingGlow"
+    ]
+   },
+   "ChestMimic": {
+    "key": "ChestMimic",
+    "name": "Chest Mimic",
+    "class": "Common",
+    "sets": [
+     "MidnightVeil",
+     "EmpyreanAnthem",
+     "FrostyResolve"
+    ]
+   },
+   "Chirpuff": {
+    "key": "Chirpuff",
+    "name": "Chirpuff",
+    "class": "Common",
+    "sets": [
+     "HavocEclipse",
+     "SierraGale"
+    ]
+   },
+   "ChopChop": {
+    "key": "ChopChop",
+    "name": "Chop Chop",
+    "class": "Elite",
+    "sets": [
+     "TidebreakingCourage",
+     "EmpyreanAnthem",
+     "DreamoftheLost"
+    ]
+   },
+   "ChopChopHeadless": {
+    "key": "ChopChopHeadless",
+    "name": "Chop Chop: Headless",
+    "class": "Common",
+    "sets": [
+     "EternalRadiance",
+     "TidebreakingCourage"
+    ]
+   },
+   "ChopChopLeftless": {
+    "key": "ChopChopLeftless",
+    "name": "Chop Chop: Leftless",
+    "class": "Common",
+    "sets": [
+     "FrostyResolve",
+     "TidebreakingCourage"
+    ]
+   },
+   "ChopChopRightless": {
+    "key": "ChopChopRightless",
+    "name": "Chop Chop: Rightless",
+    "class": "Common",
+    "sets": [
+     "TidebreakingCourage",
+     "FrostyResolve"
+    ]
+   },
+   "ClangBang": {
+    "key": "ClangBang",
+    "name": "Clang Bang",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "FreezingFrost"
+    ]
+   },
+   "Corrosaurus": {
+    "key": "Corrosaurus",
+    "name": "Corrosaurus",
+    "class": "Elite",
+    "sets": [
+     "FlamingClawprint",
+     "FlamewingsShadow"
+    ]
+   },
+   "Crownless": {
+    "key": "Crownless",
+    "name": "Crownless",
+    "class": "Overlord",
+    "sets": [
+     "HavocEclipse"
+    ]
+   },
+   "Cruisewing": {
+    "key": "Cruisewing",
+    "name": "Cruisewing",
+    "class": "Common",
+    "sets": [
+     "RejuvenatingGlow",
+     "MoonlitClouds",
+     "CelestialLight"
+    ]
+   },
+   "CuddleWuddle": {
+    "key": "CuddleWuddle",
+    "name": "Cuddle Wuddle",
+    "class": "Elite",
+    "sets": [
+     "FrostyResolve",
+     "MidnightVeil"
+    ]
+   },
+   "CyanFeatheredHeron": {
+    "key": "CyanFeatheredHeron",
+    "name": "Cyan-Feathered Heron",
+    "class": "Elite",
+    "sets": [
+     "SierraGale",
+     "CelestialLight"
+    ]
+   },
+   "DevoteesFlesh": {
+    "key": "DevoteesFlesh",
+    "name": "Devotee's Flesh",
+    "class": "Common",
+    "sets": [
+     "GustsofWelkin",
+     "WindwardPilgrimage",
+     "FlamingClawprint"
+    ]
+   },
+   "Diamondclaw": {
+    "key": "Diamondclaw",
+    "name": "Diamondclaw",
+    "class": "Common",
+    "sets": [
+     "MoonlitClouds",
+     "LingeringTunes"
+    ]
+   },
+   "DiggyDuggy": {
+    "key": "DiggyDuggy",
+    "name": "Diggy Duggy",
+    "class": "Common",
+    "sets": [
+     "EternalRadiance",
+     "TidebreakingCourage"
+    ]
+   },
+   "DiurnusKnight": {
+    "key": "DiurnusKnight",
+    "name": "Diurnus Knight",
+    "class": "Elite",
+    "sets": [
+     "EternalRadiance",
+     "TidebreakingCourage"
+    ]
+   },
+   "DragonofDirge": {
+    "key": "DragonofDirge",
+    "name": "Dragon of Dirge",
+    "class": "Overlord",
+    "sets": [
+     "TidebreakingCourage"
+    ]
+   },
+   "Dreamless": {
+    "key": "Dreamless",
+    "name": "Dreamless",
+    "class": "Calamity",
+    "sets": [
+     "HavocEclipse"
+    ]
+   },
+   "DwarfCassowary": {
+    "key": "DwarfCassowary",
+    "name": "Dwarf Cassowary",
+    "class": "Common",
+    "sets": [
+     "SierraGale",
+     "RejuvenatingGlow"
+    ]
+   },
+   "ElectroDrake": {
+    "key": "ElectroDrake",
+    "name": "Electro Drake",
+    "class": "Common",
+    "sets": [
+     "GustsofWelkin",
+     "MidnightVeil",
+     "FlamingClawprint"
+    ]
+   },
+   "ElectroPredator": {
+    "key": "ElectroPredator",
+    "name": "Electro Predator",
+    "class": "Common",
+    "sets": [
+     "MoltenRift",
+     "VoidThunder"
+    ]
+   },
+   "Excarat": {
+    "key": "Excarat",
+    "name": "Excarat",
+    "class": "Common",
+    "sets": [
+     "FreezingFrost",
+     "HavocEclipse"
+    ]
+   },
+   "FaeIgnis": {
+    "key": "FaeIgnis",
+    "name": "Fae Ignis",
+    "class": "Common",
+    "sets": [
+     "MidnightVeil",
+     "EternalRadiance",
+     "DreamoftheLost"
+    ]
+   },
+   "FallacyOfNoReturn": {
+    "key": "FallacyOfNoReturn",
+    "name": "Fallacy of No Return",
+    "class": "Overlord",
+    "sets": [
+     "RejuvenatingGlow"
+    ]
+   },
+   "FeilianBeringal": {
+    "key": "FeilianBeringal",
+    "name": "Feilian Beringal",
+    "class": "Overlord",
+    "sets": [
+     "SierraGale"
+    ]
+   },
+   "FissionJunrock": {
+    "key": "FissionJunrock",
+    "name": "Fission Junrock",
+    "class": "Common",
+    "sets": [
+     "MoonlitClouds",
+     "VoidThunder",
+     "RejuvenatingGlow"
+    ]
+   },
+   "Flautist": {
+    "key": "Flautist",
+    "name": "Flautist",
+    "class": "Elite",
+    "sets": [
+     "VoidThunder",
+     "LingeringTunes"
+    ]
+   },
+   "FloraDrone": {
+    "key": "FloraDrone",
+    "name": "Flora Drone",
+    "class": "Common",
+    "sets": [
+     "PactofNeonlightLeap",
+     "RiteofGildedRevelation",
+     "SoundofTrueName",
+     "ReelofSplicedMemories"
+    ]
+   },
+   "FloraReindeer": {
+    "key": "FloraReindeer",
+    "name": "Flora Reindeer",
+    "class": "Elite",
+    "sets": [
+     "RiteofGildedRevelation",
+     "ReelofSplicedMemories"
+    ]
+   },
+   "FogLionarch": {
+    "key": "FogLionarch",
+    "name": "Fog Lionarch",
+    "class": "Elite",
+    "sets": [
+     "SongofFeatheredTrace",
+     "HeartofEvilsPurge",
+     "LampofNetherRoad"
+    ]
+   },
+   "FogLionarchBody": {
+    "key": "FogLionarchBody",
+    "name": "Fog Lionarch: Body",
+    "class": "Common",
+    "sets": [
+     "SongofFeatheredTrace",
+     "HeartofSwornVigil"
+    ]
+   },
+   "FogLionarchHead": {
+    "key": "FogLionarchHead",
+    "name": "Fog Lionarch: Head",
+    "class": "Common",
+    "sets": [
+     "SongofFeatheredTrace",
+     "HeartofSwornVigil"
+    ]
+   },
+   "ForbiddenBastion": {
+    "key": "ForbiddenBastion",
+    "name": "Forbidden Bastion",
+    "class": "Elite",
+    "sets": [
+     "SongofFeatheredTrace",
+     "HeartofEvilsPurge",
+     "LampofNetherRoad"
+    ]
+   },
+   "Formrender": {
+    "key": "Formrender",
+    "name": "Formrender",
+    "class": "Elite",
+    "sets": [
+     "HeartofSwornVigil",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "FractsidusThruster": {
+    "key": "FractsidusThruster",
+    "name": "Fractsidus Thruster",
+    "class": "Elite",
+    "sets": [
+     "EternalRadiance",
+     "EmpyreanAnthem"
+    ]
+   },
+   "FrostbiteColeoid": {
+    "key": "FrostbiteColeoid",
+    "name": "Frostbite Coleoid",
+    "class": "Elite",
+    "sets": [
+     "HaloofStarryRadiance",
+     "WishesofQuietSnowfall"
+    ]
+   },
+   "FrostscourgeStalker": {
+    "key": "FrostscourgeStalker",
+    "name": "Frostscourge Stalker",
+    "class": "Common",
+    "sets": [
+     "MidnightVeil",
+     "EternalRadiance"
+    ]
+   },
+   "FusionDrake": {
+    "key": "FusionDrake",
+    "name": "Fusion Drake",
+    "class": "Common",
+    "sets": [
+     "FlamingClawprint",
+     "WindwardPilgrimage"
+    ]
+   },
+   "FusionDreadmane": {
+    "key": "FusionDreadmane",
+    "name": "Fusion Dreadmane",
+    "class": "Common",
+    "sets": [
+     "RejuvenatingGlow",
+     "MoltenRift"
+    ]
+   },
+   "FusionPrism": {
+    "key": "FusionPrism",
+    "name": "Fusion Prism",
+    "class": "Common",
+    "sets": [
+     "FreezingFrost",
+     "LingeringTunes",
+     "MoltenRift"
+    ]
+   },
+   "FusionWarrior": {
+    "key": "FusionWarrior",
+    "name": "Fusion Warrior",
+    "class": "Common",
+    "sets": [
+     "SierraGale",
+     "VoidThunder",
+     "MoltenRift"
+    ]
+   },
+   "GalescourgeStalker": {
+    "key": "GalescourgeStalker",
+    "name": "Galescourge Stalker",
+    "class": "Common",
+    "sets": [
+     "FrostyResolve",
+     "EmpyreanAnthem"
+    ]
+   },
+   "GeospiderS4": {
+    "key": "GeospiderS4",
+    "name": "Geospider S4",
+    "class": "Common",
+    "sets": [
+     "PactofNeonlightLeap",
+     "HaloofStarryRadiance",
+     "TrailblazingStar"
+    ]
+   },
+   "GlacioDrake": {
+    "key": "GlacioDrake",
+    "name": "Glacio Drake",
+    "class": "Common",
+    "sets": [
+     "GustsofWelkin",
+     "WindwardPilgrimage"
+    ]
+   },
+   "GlacioDreadmane": {
+    "key": "GlacioDreadmane",
+    "name": "Glacio Dreadmane",
+    "class": "Elite",
+    "sets": [
+     "MoonlitClouds",
+     "FreezingFrost"
+    ]
+   },
+   "GlacioPredator": {
+    "key": "GlacioPredator",
+    "name": "Glacio Predator",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "FreezingFrost"
+    ]
+   },
+   "GlacioPrism": {
+    "key": "GlacioPrism",
+    "name": "Glacio Prism",
+    "class": "Common",
+    "sets": [
+     "HavocEclipse",
+     "MoonlitClouds",
+     "FreezingFrost"
+    ]
+   },
+   "Glommoth": {
+    "key": "Glommoth",
+    "name": "Glommoth",
+    "class": "Elite",
+    "sets": [
+     "TrailblazingStar",
+     "WishesofQuietSnowfall"
+    ]
+   },
+   "GoldenJunrock": {
+    "key": "GoldenJunrock",
+    "name": "Golden Junrock",
+    "class": "Common",
+    "sets": [
+     "EternalRadiance",
+     "FrostyResolve",
+     "LawofHarmony"
+    ]
+   },
+   "Gulpuff": {
+    "key": "Gulpuff",
+    "name": "Gulpuff",
+    "class": "Common",
+    "sets": [
+     "FreezingFrost",
+     "CelestialLight"
+    ]
+   },
+   "HavocDrake": {
+    "key": "HavocDrake",
+    "name": "Havoc Drake",
+    "class": "Common",
+    "sets": [
+     "FlamingClawprint",
+     "WindwardPilgrimage",
+     "ThreadofSeveredFate"
+    ]
+   },
+   "HavocDreadmane": {
+    "key": "HavocDreadmane",
+    "name": "Havoc Dreadmane",
+    "class": "Elite",
+    "sets": [
+     "MoltenRift",
+     "HavocEclipse"
+    ]
+   },
+   "HavocPrism": {
+    "key": "HavocPrism",
+    "name": "Havoc Prism",
+    "class": "Common",
+    "sets": [
+     "VoidThunder",
+     "CelestialLight",
+     "HavocEclipse"
+    ]
+   },
+   "HavocWarrior": {
+    "key": "HavocWarrior",
+    "name": "Havoc Warrior",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "HavocEclipse"
+    ]
+   },
+   "Hecate": {
+    "key": "Hecate",
+    "name": "Hecate",
+    "class": "Calamity",
+    "sets": [
+     "EmpyreanAnthem",
+     "FreezingFrost",
+     "MoltenRift",
+     "VoidThunder",
+     "SierraGale",
+     "CelestialLight",
+     "HavocEclipse"
+    ]
+   },
+   "Hoartoise": {
+    "key": "Hoartoise",
+    "name": "Hoartoise",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "FreezingFrost"
+    ]
+   },
+   "HocusPocus": {
+    "key": "HocusPocus",
+    "name": "Hocus Pocus",
+    "class": "Common",
+    "sets": [
+     "FrostyResolve",
+     "EmpyreanAnthem"
+    ]
+   },
+   "Hoochief": {
+    "key": "Hoochief",
+    "name": "Hoochief",
+    "class": "Elite",
+    "sets": [
+     "RejuvenatingGlow",
+     "SierraGale"
+    ]
+   },
+   "Hooscamp": {
+    "key": "Hooscamp",
+    "name": "Hooscamp",
+    "class": "Common",
+    "sets": [
+     "LingeringTunes",
+     "SierraGale"
+    ]
+   },
+   "Hurriclaw": {
+    "key": "Hurriclaw",
+    "name": "Hurriclaw",
+    "class": "Elite",
+    "sets": [
+     "TidebreakingCourage",
+     "GustsofWelkin",
+     "CrownofValor"
+    ]
+   },
+   "Hyvatia": {
+    "key": "Hyvatia",
+    "name": "Hyvatia",
+    "class": "Overlord",
+    "sets": [
+     "PactofNeonlightLeap",
+     "RiteofGildedRevelation"
+    ]
+   },
+   "IceglintDancer": {
+    "key": "IceglintDancer",
+    "name": "Iceglint Dancer",
+    "class": "Common",
+    "sets": [
+     "TrailblazingStar",
+     "WishesofQuietSnowfall",
+     "ReelofSplicedMemories"
+    ]
+   },
+   "ImpermanenceHeron": {
+    "key": "ImpermanenceHeron",
+    "name": "Impermanence Heron",
+    "class": "Overlord",
+    "sets": [
+     "MoonlitClouds"
+    ]
+   },
+   "InfernoRider": {
+    "key": "InfernoRider",
+    "name": "Inferno Rider",
+    "class": "Overlord",
+    "sets": [
+     "MoltenRift"
+    ]
+   },
+   "Ironhoof": {
+    "key": "Ironhoof",
+    "name": "Ironhoof",
+    "class": "Elite",
+    "sets": [
+     "PactofNeonlightLeap",
+     "WishesofQuietSnowfall",
+     "ReelofSplicedMemories"
+    ]
+   },
+   "JadeNetherSerpent": {
+    "key": "JadeNetherSerpent",
+    "name": "Jade Nethe rSerpent",
+    "class": "Common",
+    "sets": [
+     "HeartofSwornVigil"
+    ]
+   },
+   "Jué": {
+    "key": "Jué",
+    "name": "Jué",
+    "class": "Calamity",
+    "sets": [
+     "CelestialLight"
+    ]
+   },
+   "Kerasaur": {
+    "key": "Kerasaur",
+    "name": "Kerasaur",
+    "class": "Elite",
+    "sets": [
+     "WindwardPilgrimage",
+     "FlamingClawprint",
+     "FlamewingsShadow"
+    ]
+   },
+   "KernelPuppetAnger": {
+    "key": "KernelPuppetAnger",
+    "name": "Kernel Puppet: Anger",
+    "class": "Common",
+    "sets": [
+     "HeartofEvilsPurge",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "KernelPuppetFright": {
+    "key": "KernelPuppetFright",
+    "name": "Kernel Puppet: Fright",
+    "class": "Common",
+    "sets": [
+     "LampofNetherRoad",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "KernelPuppetGrief": {
+    "key": "KernelPuppetGrief",
+    "name": "Kernel Puppet: Grief",
+    "class": "Common",
+    "sets": [
+     "LampofNetherRoad",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "KernelPuppetJoy": {
+    "key": "KernelPuppetJoy",
+    "name": "Kernel Puppet: Joy",
+    "class": "Common",
+    "sets": [
+     "SongofFeatheredTrace",
+     "HeartofSwornVigil"
+    ]
+   },
+   "KernelPuppetReflection": {
+    "key": "KernelPuppetReflection",
+    "name": "Kernel Puppet: Reflection",
+    "class": "Common",
+    "sets": [
+     "HeartofEvilsPurge",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "KernelPuppetWorry": {
+    "key": "KernelPuppetWorry",
+    "name": "Kernel Puppet: Worry",
+    "class": "Common",
+    "sets": [
+     "HeartofEvilsPurge",
+     "FlashofElectricReflection"
+    ]
+   },
+   "Kronablight": {
+    "key": "Kronablight",
+    "name": "Kronablight",
+    "class": "Elite",
+    "sets": [
+     "TrailblazingStar",
+     "ChromaticFoam"
+    ]
+   },
+   "LadyoftheSea": {
+    "key": "LadyoftheSea",
+    "name": "Lady of the Sea",
+    "class": "Overlord",
+    "sets": [
+     "CrownofValor"
+    ]
+   },
+   "LaGuardia": {
+    "key": "LaGuardia",
+    "name": "La Guardia",
+    "class": "Common",
+    "sets": [
+     "GustsofWelkin",
+     "MidnightVeil",
+     "FlamingClawprint"
+    ]
+   },
+   "LampylumenMyriad": {
+    "key": "LampylumenMyriad",
+    "name": "Lampylumen Myriad",
+    "class": "Overlord",
+    "sets": [
+     "FreezingFrost"
+    ]
+   },
+   "LavaLarva": {
+    "key": "LavaLarva",
+    "name": "Lava Larva",
+    "class": "Common",
+    "sets": [
+     "LingeringTunes",
+     "MoltenRift"
+    ]
+   },
+   "Lightcrusher": {
+    "key": "Lightcrusher",
+    "name": "Lightcrusher",
+    "class": "Elite",
+    "sets": [
+     "CelestialLight"
+    ]
+   },
+   "LionessofGlory": {
+    "key": "LionessofGlory",
+    "name": "Lioness of Glory",
+    "class": "Overlord",
+    "sets": [
+     "FlamingClawprint"
+    ]
+   },
+   "Lorelei": {
+    "key": "Lorelei",
+    "name": "Lorelei",
+    "class": "Overlord",
+    "sets": [
+     "MidnightVeil"
+    ]
+   },
+   "LottieLost": {
+    "key": "LottieLost",
+    "name": "Lottie Lost",
+    "class": "Common",
+    "sets": [
+     "TidebreakingCourage",
+     "FrostyResolve"
+    ]
+   },
+   "LumiscaleConstruct": {
+    "key": "LumiscaleConstruct",
+    "name": "Lumiscale Construct",
+    "class": "Elite",
+    "sets": [
+     "VoidThunder",
+     "FreezingFrost"
+    ]
+   },
+   "MechAbomination": {
+    "key": "MechAbomination",
+    "name": "Mech Abomination",
+    "class": "Overlord",
+    "sets": [
+     "LingeringTunes"
+    ]
+   },
+   "MiningDrone": {
+    "key": "MiningDrone",
+    "name": "Mining Drone",
+    "class": "Common",
+    "sets": [
+     "HaloofStarryRadiance",
+     "RiteofGildedRevelation",
+     "SoundofTrueName",
+     "ReelofSplicedMemories"
+    ]
+   },
+   "MiningReindeer": {
+    "key": "MiningReindeer",
+    "name": "Mining Reindeer",
+    "class": "Elite",
+    "sets": [
+     "PactofNeonlightLeap",
+     "ReelofSplicedMemories"
+    ]
+   },
+   "MourningAix": {
+    "key": "MourningAix",
+    "name": "Mourning Aix",
+    "class": "Overlord",
+    "sets": [
+     "CelestialLight"
+    ]
+   },
+   "MyriadSnareRustfireChassis": {
+    "key": "MyriadSnareRustfireChassis",
+    "name": "Myriad Snare: Rustfire Chassis",
+    "class": "Overlord",
+    "sets": [
+     "HeartofEvilsPurge",
+     "LampofNetherRoad"
+    ]
+   },
+   "NamelessExplorer": {
+    "key": "NamelessExplorer",
+    "name": "Nameless Explorer",
+    "class": "Overlord",
+    "sets": [
+     "SoundofTrueName",
+     "ReelofSplicedMemories"
+    ]
+   },
+   "NightmareAeroPredator": {
+    "key": "NightmareAeroPredator",
+    "name": "Nightmare: Aero Predator",
+    "class": "Common",
+    "sets": [
+     "CrownofValor"
+    ]
+   },
+   "NightmareBabyRoseshroom": {
+    "key": "NightmareBabyRoseshroom",
+    "name": "Nightmare: Baby Roseshroom",
+    "class": "Common",
+    "sets": [
+     "FlamewingsShadow"
+    ]
+   },
+   "NightmareBabyViridblazeSaurian": {
+    "key": "NightmareBabyViridblazeSaurian",
+    "name": "Nightmare: Baby Viridblaze Saurian",
+    "class": "Common",
+    "sets": [
+     "FlamewingsShadow"
+    ]
+   },
+   "NightmareChirpuff": {
+    "key": "NightmareChirpuff",
+    "name": "Nightmare: Chirpuff",
+    "class": "Common",
+    "sets": [
+     "LawofHarmony"
+    ]
+   },
+   "NightmareCrownless": {
+    "key": "NightmareCrownless",
+    "name": "Nightmare: Crownless",
+    "class": "Overlord",
+    "sets": [
+     "HavocEclipse"
+    ]
+   },
+   "NightmareCyanFeatheredHeron": {
+    "key": "NightmareCyanFeatheredHeron",
+    "name": "Nightmare: Cyan-Feathered Heron",
+    "class": "Elite",
+    "sets": [
+     "LawofHarmony"
+    ]
+   },
+   "NightmareDwarfCassowary": {
+    "key": "NightmareDwarfCassowary",
+    "name": "Nightmare: Dwarf Cassowary",
+    "class": "Common",
+    "sets": [
+     "ThreadofSeveredFate"
+    ]
+   },
+   "NightmareElectroPredator": {
+    "key": "NightmareElectroPredator",
+    "name": "Nightmare: Electro Predator",
+    "class": "Common",
+    "sets": [
+     "CrownofValor"
+    ]
+   },
+   "NightmareFeilianBeringal": {
+    "key": "NightmareFeilianBeringal",
+    "name": "Nightmare: Feilian Beringal",
+    "class": "Overlord",
+    "sets": [
+     "SierraGale"
+    ]
+   },
+   "NightmareGlacioPredator": {
+    "key": "NightmareGlacioPredator",
+    "name": "Nightmare: Glacio Predator",
+    "class": "Common",
+    "sets": [
+     "DreamoftheLost"
+    ]
+   },
+   "NightmareGulpuff": {
+    "key": "NightmareGulpuff",
+    "name": "Nightmare: Gulpuff",
+    "class": "Common",
+    "sets": [
+     "LawofHarmony"
+    ]
+   },
+   "NightmareHavocWarrior": {
+    "key": "NightmareHavocWarrior",
+    "name": "Nightmare: Havoc Warrior",
+    "class": "Common",
+    "sets": [
+     "DreamoftheLost"
+    ]
+   },
+   "NightmareHecate": {
+    "key": "NightmareHecate",
+    "name": "Nightmare: Hecate",
+    "class": "Calamity",
+    "sets": [
+     "DreamoftheLost"
+    ]
+   },
+   "NightmareImpermanenceHeron": {
+    "key": "NightmareImpermanenceHeron",
+    "name": "Nightmare: Impermanence Heron",
+    "class": "Overlord",
+    "sets": [
+     "MidnightVeil"
+    ]
+   },
+   "NightmareInfernoRider": {
+    "key": "NightmareInfernoRider",
+    "name": "Nightmare: Inferno Rider",
+    "class": "Overlord",
+    "sets": [
+     "MoltenRift"
+    ]
+   },
+   "NightmareKelpie": {
+    "key": "NightmareKelpie",
+    "name": "Nightmare: Kelpie",
+    "class": "Overlord",
+    "sets": [
+     "GustsofWelkin",
+     "WindwardPilgrimage"
+    ]
+   },
+   "NightmareLampylumenMyriad": {
+    "key": "NightmareLampylumenMyriad",
+    "name": "Nightmare: Lampylumen Myriad",
+    "class": "Overlord",
+    "sets": [
+     "FrostyResolve",
+     "EmpyreanAnthem"
+    ]
+   },
+   "NightmareMourningAix": {
+    "key": "NightmareMourningAix",
+    "name": "Nightmare: Mourning Aix",
+    "class": "Overlord",
+    "sets": [
+     "EternalRadiance"
+    ]
+   },
+   "NightmareRoseshroom": {
+    "key": "NightmareRoseshroom",
+    "name": "Nightmare: Roseshroom",
+    "class": "Elite",
+    "sets": [
+     "ThreadofSeveredFate"
+    ]
+   },
+   "NightmareTambourinist": {
+    "key": "NightmareTambourinist",
+    "name": "Nightmare: Tambourinist",
+    "class": "Elite",
+    "sets": [
+     "DreamoftheLost"
+    ]
+   },
+   "NightmareTempestMephis": {
+    "key": "NightmareTempestMephis",
+    "name": "Nightmare: Tempest Mephis",
+    "class": "Overlord",
+    "sets": [
+     "VoidThunder",
+     "EmpyreanAnthem"
+    ]
+   },
+   "NightmareThunderingMephis": {
+    "key": "NightmareThunderingMephis",
+    "name": "Nightmare: Thundering Mephis",
+    "class": "Overlord",
+    "sets": [
+     "VoidThunder"
+    ]
+   },
+   "NightmareTickTack": {
+    "key": "NightmareTickTack",
+    "name": "Nightmare: Tick Tack",
+    "class": "Common",
+    "sets": [
+     "ThreadofSeveredFate"
+    ]
+   },
+   "NightmareVioletFeatheredHeron": {
+    "key": "NightmareVioletFeatheredHeron",
+    "name": "Nightmare: Violet-Feathered Heron",
+    "class": "Elite",
+    "sets": [
+     "CrownofValor"
+    ]
+   },
+   "NightmareViridblazeSaurian": {
+    "key": "NightmareViridblazeSaurian",
+    "name": "Nightmare: Viridblaze Saurian",
+    "class": "Elite",
+    "sets": [
+     "FlamewingsShadow"
+    ]
+   },
+   "NimbusWraith": {
+    "key": "NimbusWraith",
+    "name": "Nimbus Wraith",
+    "class": "Common",
+    "sets": [
+     "EmpyreanAnthem",
+     "MidnightVeil",
+     "FlamewingsShadow"
+    ]
+   },
+   "NocturnusKnight": {
+    "key": "NocturnusKnight",
+    "name": "Nocturnus Knight",
+    "class": "Elite",
+    "sets": [
+     "MidnightVeil",
+     "EmpyreanAnthem"
+    ]
+   },
+   "PhantomCapitaneus": {
+    "key": "PhantomCapitaneus",
+    "name": "Phantom: Capitaneus",
+    "class": "Elite",
+    "sets": [
+     "GustsofWelkin",
+     "EternalRadiance"
+    ]
+   },
+   "PhantomChestMimic": {
+    "key": "PhantomChestMimic",
+    "name": "Phantom: Chest Mimic",
+    "class": "Common",
+    "sets": [
+     "MidnightVeil",
+     "EmpyreanAnthem",
+     "FrostyResolve"
+    ]
+   },
+   "PhantomChopChop": {
+    "key": "PhantomChopChop",
+    "name": "Phantom: Chop Chop",
+    "class": "Elite",
+    "sets": [
+     "TidebreakingCourage",
+     "EmpyreanAnthem",
+     "DreamoftheLost"
+    ]
+   },
+   "PhantomClangBang": {
+    "key": "PhantomClangBang",
+    "name": "Phantom: Clang Bang",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "FreezingFrost"
+    ]
+   },
+   "PhantomCrownless": {
+    "key": "PhantomCrownless",
+    "name": "Phantom: Crownless",
+    "class": "Overlord",
+    "sets": [
+     "HavocEclipse"
+    ]
+   },
+   "PhantomCuddleWuddle": {
+    "key": "PhantomCuddleWuddle",
+    "name": "Phantom: Cuddle Wuddle",
+    "class": "Elite",
+    "sets": [
+     "MidnightVeil",
+     "FrostyResolve"
+    ]
+   },
+   "PhantomDiggyDuggy": {
+    "key": "PhantomDiggyDuggy",
+    "name": "Phantom: Diggy Duggy",
+    "class": "Common",
+    "sets": [
+     "MoonlitClouds",
+     "LingeringTunes",
+     "CelestialLight"
+    ]
+   },
+   "PhantomDreamless": {
+    "key": "PhantomDreamless",
+    "name": "Phantom: Dreamless",
+    "class": "Calamity",
+    "sets": [
+     "HavocEclipse"
+    ]
+   },
+   "PhantomFaeIgnis": {
+    "key": "PhantomFaeIgnis",
+    "name": "Phantom: Fae Ignis",
+    "class": "Common",
+    "sets": [
+     "MidnightVeil",
+     "EternalRadiance"
+    ]
+   },
+   "PhantomFallacyOfNoReturn": {
+    "key": "PhantomFallacyOfNoReturn",
+    "name": "Phantom: Fallacy of No Return",
+    "class": "Overlord",
+    "sets": [
+     "RejuvenatingGlow"
+    ]
+   },
+   "PhantomFeilianBeringal": {
+    "key": "PhantomFeilianBeringal",
+    "name": "Phantom: Feilian Beringal",
+    "class": "Overlord",
+    "sets": [
+     "SierraGale",
+     "RejuvenatingGlow"
+    ]
+   },
+   "PhantomForbiddenBastion": {
+    "key": "PhantomForbiddenBastion",
+    "name": "Phantom: Forbidden Bastion",
+    "class": "Elite",
+    "sets": [
+     "SongofFeatheredTrace",
+     "HeartofEvilsPurge",
+     "LampofNetherRoad"
+    ]
+   },
+   "PhantomGlommoth": {
+    "key": "PhantomGlommoth",
+    "name": "Phantom: Glommoth",
+    "class": "Elite",
+    "sets": [
+     "TrailblazingStar",
+     "WishesofQuietSnowfall"
+    ]
+   },
+   "PhantomGulpuff": {
+    "key": "PhantomGulpuff",
+    "name": "Phantom: Gulpuff",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "FreezingFrost"
+    ]
+   },
+   "PhantomHoartoise": {
+    "key": "PhantomHoartoise",
+    "name": "Phantom: Hoartoise",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "FreezingFrost",
+     "FrostyResolve",
+     "EmpyreanAnthem"
+    ]
+   },
+   "PhantomIceglintDancer": {
+    "key": "PhantomIceglintDancer",
+    "name": "Phantom: Iceglint Dancer",
+    "class": "Common",
+    "sets": [
+     "TrailblazingStar"
+    ]
+   },
+   "PhantomImpermanenceHeron": {
+    "key": "PhantomImpermanenceHeron",
+    "name": "Phantom: Impermanence Heron",
+    "class": "Overlord",
+    "sets": [
+     "MoonlitClouds"
+    ]
+   },
+   "PhantomInfernoRider": {
+    "key": "PhantomInfernoRider",
+    "name": "Phantom: Inferno Rider",
+    "class": "Overlord",
+    "sets": [
+     "MoltenRift"
+    ]
+   },
+   "PhantomKerasaur": {
+    "key": "PhantomKerasaur",
+    "name": "Phantom: Kerasaur",
+    "class": "Elite",
+    "sets": [
+     "WindwardPilgrimage",
+     "FlamingClawprint"
+    ]
+   },
+   "PhantomKronaclaw": {
+    "key": "PhantomKronaclaw",
+    "name": "Phantom: Kronaclaw",
+    "class": "Elite",
+    "sets": [
+     "TrailblazingStar",
+     "ChromaticFoam"
+    ]
+   },
+   "PhantomLightcrusher": {
+    "key": "PhantomLightcrusher",
+    "name": "Phantom: Lightcrusher",
+    "class": "Elite",
+    "sets": [
+     "HavocEclipse"
+    ]
+   },
+   "PhantomLorelei": {
+    "key": "PhantomLorelei",
+    "name": "Phantom: Lorelei",
+    "class": "Overlord",
+    "sets": [
+     "MidnightVeil"
+    ]
+   },
+   "PhantomLumiscaleConstruct": {
+    "key": "PhantomLumiscaleConstruct",
+    "name": "Phantom: Lumiscale Construct",
+    "class": "Elite",
+    "sets": [
+     "VoidThunder",
+     "FreezingFrost"
+    ]
+   },
+   "PhantomMourningAix": {
+    "key": "PhantomMourningAix",
+    "name": "Phantom: Mourning Aix",
+    "class": "Overlord",
+    "sets": [
+     "CelestialLight"
+    ]
+   },
+   "PhantomMyriadSnareRustfireChassis": {
+    "key": "PhantomMyriadSnareRustfireChassis",
+    "name": "Phantom: Myriad Snare: Rustfire Chassis",
+    "class": "Overlord",
+    "sets": [
+     "HeartofEvilsPurge",
+     "LampofNetherRoad"
+    ]
+   },
+   "PhantomNightmareCrownless": {
+    "key": "PhantomNightmareCrownless",
+    "name": "Phantom: Nightmare Crownless",
+    "class": "Overlord",
+    "sets": [
+     "HavocEclipse"
+    ]
+   },
+   "PhantomNightmareInfernoRider": {
+    "key": "PhantomNightmareInfernoRider",
+    "name": "Phantom: Nightmare Inferno Rider",
+    "class": "Overlord",
+    "sets": [
+     "MoltenRift"
+    ]
+   },
+   "PhantomNimbusWraith": {
+    "key": "PhantomNimbusWraith",
+    "name": "Phantom: Nimbus Wraith",
+    "class": "Common",
+    "sets": [
+     "EmpyreanAnthem",
+     "MidnightVeil"
+    ]
+   },
+   "PhantomQuestlessKnight": {
+    "key": "PhantomQuestlessKnight",
+    "name": "Phantom: Questless Knight",
+    "class": "Elite",
+    "sets": [
+     "MoltenRift",
+     "VoidThunder"
+    ]
+   },
+   "PhantomReactorHusk": {
+    "key": "PhantomReactorHusk",
+    "name": "Phantom: Reactor Husk",
+    "class": "Overlord",
+    "sets": [
+     "HaloofStarryRadiance",
+     "ChromaticFoam"
+    ]
+   },
+   "PhantomRocksteadyGuardian": {
+    "key": "PhantomRocksteadyGuardian",
+    "name": "Phantom: Rocksteady Guardian",
+    "class": "Elite",
+    "sets": [
+     "RejuvenatingGlow",
+     "CelestialLight",
+     "FrostyResolve"
+    ]
+   },
+   "PhantomSentryConstruct": {
+    "key": "PhantomSentryConstruct",
+    "name": "Phantom: Sentry Construct",
+    "class": "Overlord",
+    "sets": [
+     "VoidThunder"
+    ]
+   },
+   "PhantomSigillum": {
+    "key": "PhantomSigillum",
+    "name": "Phantom: Sigillum",
+    "class": "Calamity",
+    "sets": [
+     "TrailblazingStar"
+    ]
+   },
+   "PhantomSkywatchLancer": {
+    "key": "PhantomSkywatchLancer",
+    "name": "Phantom: Skywatch Lancer",
+    "class": "Elite",
+    "sets": [
+     "FlashofElectricReflection",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "PhantomSmiter": {
+    "key": "PhantomSmiter",
+    "name": "Phantom: Smiter",
+    "class": "Common",
+    "sets": [
+     "SongofFeatheredTrace"
+    ]
+   },
+   "PhantomSmolder": {
+    "key": "PhantomSmolder",
+    "name": "Phantom: Smolder",
+    "class": "Common",
+    "sets": [
+     "SongofFeatheredTrace"
+    ]
+   },
+   "PhantomTheFalseSovereign": {
+    "key": "PhantomTheFalseSovereign",
+    "name": "Phantom: The False Sovereign",
+    "class": "Overlord",
+    "sets": [
+     "CrownofValor"
+    ]
+   },
+   "PhantomThunderingMephis": {
+    "key": "PhantomThunderingMephis",
+    "name": "Phantom: Thundering Mephis",
+    "class": "Overlord",
+    "sets": [
+     "VoidThunder"
+    ]
+   },
+   "PhantomTwinNovaCollapsarBlade": {
+    "key": "PhantomTwinNovaCollapsarBlade",
+    "name": "Phantom: Twin Nova - Collapsar Blade",
+    "class": "Elite",
+    "sets": [
+     "RiteofGildedRevelation"
+    ]
+   },
+   "PhantomTwinNovaNebulousCannon": {
+    "key": "PhantomTwinNovaNebulousCannon",
+    "name": "Phantom: Twin Nova - Nebulous Cannon",
+    "class": "Elite",
+    "sets": [
+     "RiteofGildedRevelation"
+    ]
+   },
+   "PhantomVitreumDancer": {
+    "key": "PhantomVitreumDancer",
+    "name": "Phantom: Vitreum Dancer",
+    "class": "Elite",
+    "sets": [
+     "MoltenRift",
+     "VoidThunder"
+    ]
+   },
+   "PhantomZipZap": {
+    "key": "PhantomZipZap",
+    "name": "Phantom: Zip Zap",
+    "class": "Common",
+    "sets": [
+     "PactofNeonlightLeap",
+     "RiteofGildedRevelation"
+    ]
+   },
+   "PilgrimsShell": {
+    "key": "PilgrimsShell",
+    "name": "Pilgrim's Shell",
+    "class": "Elite",
+    "sets": [
+     "WindwardPilgrimage",
+     "FlamingClawprint"
+    ]
+   },
+   "PorcelainPicket": {
+    "key": "PorcelainPicket",
+    "name": "Porcelain Picket",
+    "class": "Common",
+    "sets": [
+     "LampofNetherRoad",
+     "FlashofElectricReflection"
+    ]
+   },
+   "QuestlessKnight": {
+    "key": "QuestlessKnight",
+    "name": "Questless Knight",
+    "class": "Elite",
+    "sets": [
+     "FrostyResolve",
+     "MidnightVeil"
+    ]
+   },
+   "RageAgainsttheStatue": {
+    "key": "RageAgainsttheStatue",
+    "name": "Rage Against the Statue",
+    "class": "Elite",
+    "sets": [
+     "EternalRadiance",
+     "GustsofWelkin",
+     "LawofHarmony"
+    ]
+   },
+   "ReactorHusk": {
+    "key": "ReactorHusk",
+    "name": "Reactor Husk",
+    "class": "Overlord",
+    "sets": [
+     "HaloofStarryRadiance",
+     "ChromaticFoam"
+    ]
+   },
+   "ReminiscenceDenia": {
+    "key": "ReminiscenceDenia",
+    "name": "Reminiscence: Denia",
+    "class": "Calamity",
+    "sets": [
+     "ChromaticFoam"
+    ]
+   },
+   "ReminiscenceFenrico": {
+    "key": "ReminiscenceFenrico",
+    "name": "Reminiscence: Fenrico",
+    "class": "Overlord",
+    "sets": [
+     "DreamoftheLost",
+     "LawofHarmony"
+    ]
+   },
+   "ReminiscenceFleurdelys": {
+    "key": "ReminiscenceFleurdelys",
+    "name": "Reminiscence: Fleurdelys",
+    "class": "Calamity",
+    "sets": [
+     "GustsofWelkin",
+     "WindwardPilgrimage"
+    ]
+   },
+   "ReminiscenceKronaclaw": {
+    "key": "ReminiscenceKronaclaw",
+    "name": "Reminiscence: Kronaclaw",
+    "class": "Elite",
+    "sets": [
+     "TrailblazingStar",
+     "ChromaticFoam"
+    ]
+   },
+   "ReminiscenceNightmareAdamSmasher": {
+    "key": "ReminiscenceNightmareAdamSmasher",
+    "name": "Reminiscence - Nightmare: Adam Smasher",
+    "class": "Overlord",
+    "sets": [
+     "ShadowofShatteredDreams"
+    ]
+   },
+   "ReminiscenceSuhsintheInevitable": {
+    "key": "ReminiscenceSuhsintheInevitable",
+    "name": "Reminiscence: Suhsin the Inevitable",
+    "class": "Calamity",
+    "sets": [
+     "HeartofSwornVigil",
+     "FlashofElectricReflection"
+    ]
+   },
+   "ReminiscenceThrenodianLeviathan": {
+    "key": "ReminiscenceThrenodianLeviathan",
+    "name": "Reminiscence: Threnodian - Leviathan",
+    "class": "Calamity",
+    "sets": [
+     "FlamewingsShadow",
+     "ThreadofSeveredFate"
+    ]
+   },
+   "ReminiscenceThrenodianVoidborneConstruct": {
+    "key": "ReminiscenceThrenodianVoidborneConstruct",
+    "name": "Reminiscence: Threnodian - Voidborne Construct",
+    "class": "Calamity",
+    "sets": [
+     "WishesofQuietSnowfall"
+    ]
+   },
+   "RocksteadyGuardian": {
+    "key": "RocksteadyGuardian",
+    "name": "Rocksteady Guardian",
+    "class": "Elite",
+    "sets": [
+     "RejuvenatingGlow",
+     "CelestialLight"
+    ]
+   },
+   "Roseshroom": {
+    "key": "Roseshroom",
+    "name": "Roseshroom",
+    "class": "Elite",
+    "sets": [
+     "FreezingFrost",
+     "HavocEclipse"
+    ]
+   },
+   "SabercatProwler": {
+    "key": "SabercatProwler",
+    "name": "Sabercat Prowler",
+    "class": "Elite",
+    "sets": [
+     "PactofNeonlightLeap",
+     "HaloofStarryRadiance",
+     "SoundofTrueName"
+    ]
+   },
+   "SabercatReaver": {
+    "key": "SabercatReaver",
+    "name": "Sabercat Reaver",
+    "class": "Elite",
+    "sets": [
+     "PactofNeonlightLeap",
+     "HaloofStarryRadiance",
+     "SoundofTrueName"
+    ]
+   },
+   "SabyrBoar": {
+    "key": "SabyrBoar",
+    "name": "Sabyr Boar",
+    "class": "Common",
+    "sets": [
+     "MoonlitClouds",
+     "SierraGale",
+     "FreezingFrost"
+    ]
+   },
+   "Sacerdos": {
+    "key": "Sacerdos",
+    "name": "Sacerdos",
+    "class": "Common",
+    "sets": [
+     "GustsofWelkin",
+     "WindwardPilgrimage"
+    ]
+   },
+   "Sagittario": {
+    "key": "Sagittario",
+    "name": "Sagittario",
+    "class": "Common",
+    "sets": [
+     "GustsofWelkin",
+     "EternalRadiance",
+     "FlamingClawprint"
+    ]
+   },
+   "SentryConstruct": {
+    "key": "SentryConstruct",
+    "name": "Sentry Construct",
+    "class": "Overlord",
+    "sets": [
+     "FrostyResolve"
+    ]
+   },
+   "ShadowStepper": {
+    "key": "ShadowStepper",
+    "name": "Shadow Stepper",
+    "class": "Common",
+    "sets": [
+     "TrailblazingStar",
+     "ChromaticFoam",
+     "WishesofQuietSnowfall"
+    ]
+   },
+   "Sigillum": {
+    "key": "Sigillum",
+    "name": "Sigillum",
+    "class": "Calamity",
+    "sets": [
+     "TrailblazingStar"
+    ]
+   },
+   "SkywatchLancer": {
+    "key": "SkywatchLancer",
+    "name": "Skywatch Lancer",
+    "class": "Elite",
+    "sets": [
+     "FlashofElectricReflection",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "Smiter": {
+    "key": "Smiter",
+    "name": "Smiter",
+    "class": "Common",
+    "sets": [
+     "SongofFeatheredTrace"
+    ]
+   },
+   "Smolder": {
+    "key": "Smolder",
+    "name": "Smolder",
+    "class": "Common",
+    "sets": [
+     "SongofFeatheredTrace"
+    ]
+   },
+   "SnipSnap": {
+    "key": "SnipSnap",
+    "name": "Snip Snap",
+    "class": "Common",
+    "sets": [
+     "LingeringTunes",
+     "RejuvenatingGlow",
+     "MoltenRift"
+    ]
+   },
+   "Soulfrayer": {
+    "key": "Soulfrayer",
+    "name": "Soulfrayer",
+    "class": "Elite",
+    "sets": [
+     "HeartofSwornVigil",
+     "FlashofElectricReflection"
+    ]
+   },
+   "SpacetrekExplorer": {
+    "key": "SpacetrekExplorer",
+    "name": "Spacetrek Explorer",
+    "class": "Elite",
+    "sets": [
+     "HaloofStarryRadiance",
+     "ChromaticFoam",
+     "SoundofTrueName"
+    ]
+   },
+   "Spearback": {
+    "key": "Spearback",
+    "name": "Spearback",
+    "class": "Elite",
+    "sets": [
+     "LingeringTunes",
+     "MoonlitClouds"
+    ]
+   },
+   "SpectroDrake": {
+    "key": "SpectroDrake",
+    "name": "Spectro Drake",
+    "class": "Common",
+    "sets": [
+     "FlamingClawprint",
+     "WindwardPilgrimage"
+    ]
+   },
+   "SpectroPrism": {
+    "key": "SpectroPrism",
+    "name": "Spectro Prism",
+    "class": "Common",
+    "sets": [
+     "MoltenRift",
+     "VoidThunder",
+     "CelestialLight"
+    ]
+   },
+   "StonePicket": {
+    "key": "StonePicket",
+    "name": "Stone Picket",
+    "class": "Common",
+    "sets": [
+     "LampofNetherRoad",
+     "FlashofElectricReflection"
+    ]
+   },
+   "StonewallBracer": {
+    "key": "StonewallBracer",
+    "name": "Stonewall Bracer",
+    "class": "Elite",
+    "sets": [
+     "RejuvenatingGlow",
+     "MoonlitClouds"
+    ]
+   },
+   "Tambourinist": {
+    "key": "Tambourinist",
+    "name": "Tambourinist",
+    "class": "Elite",
+    "sets": [
+     "FreezingFrost",
+     "HavocEclipse"
+    ]
+   },
+   "TempestMephis": {
+    "key": "TempestMephis",
+    "name": "Tempest Mephis",
+    "class": "Overlord",
+    "sets": [
+     "VoidThunder"
+    ]
+   },
+   "TheFalseSovereign": {
+    "key": "TheFalseSovereign",
+    "name": "The False Sovereign",
+    "class": "Overlord",
+    "sets": [
+     "CrownofValor"
+    ]
+   },
+   "ThousandPuppetPavilion": {
+    "key": "ThousandPuppetPavilion",
+    "name": "Thousand-Puppet Pavilion",
+    "class": "Calamity",
+    "sets": [
+     "SongofFeatheredTrace",
+     "FlowerofTingedYearning"
+    ]
+   },
+   "ThunderingMephis": {
+    "key": "ThunderingMephis",
+    "name": "Thundering Mephis",
+    "class": "Overlord",
+    "sets": [
+     "VoidThunder"
+    ]
+   },
+   "TickTack": {
+    "key": "TickTack",
+    "name": "Tick Tack",
+    "class": "Common",
+    "sets": [
+     "HavocEclipse",
+     "RejuvenatingGlow",
+     "LingeringTunes"
+    ]
+   },
+   "TrafficIlluminator": {
+    "key": "TrafficIlluminator",
+    "name": "Traffic Illuminator",
+    "class": "Common",
+    "sets": [
+     "VoidThunder",
+     "SierraGale",
+     "MoltenRift"
+    ]
+   },
+   "TremorWarrior": {
+    "key": "TremorWarrior",
+    "name": "Tremor Warrior",
+    "class": "Common",
+    "sets": [
+     "HaloofStarryRadiance",
+     "ChromaticFoam",
+     "WishesofQuietSnowfall"
+    ]
+   },
+   "TwinNovaCollapsarBlade": {
+    "key": "TwinNovaCollapsarBlade",
+    "name": "Twin Nova: Collapsar Blade",
+    "class": "Elite",
+    "sets": [
+     "RiteofGildedRevelation",
+     "TrailblazingStar",
+     "SoundofTrueName"
+    ]
+   },
+   "TwinNovaNebulousCannon": {
+    "key": "TwinNovaNebulousCannon",
+    "name": "Twin Nova: Nebulous Cannon",
+    "class": "Elite",
+    "sets": [
+     "RiteofGildedRevelation",
+     "ChromaticFoam"
+    ]
+   },
+   "VanguardJunrock": {
+    "key": "VanguardJunrock",
+    "name": "Vanguard Junrock",
+    "class": "Common",
+    "sets": [
+     "RejuvenatingGlow",
+     "VoidThunder",
+     "LingeringTunes"
+    ]
+   },
+   "VioletFeatheredHeron": {
+    "key": "VioletFeatheredHeron",
+    "name": "Violet-Feathered Heron",
+    "class": "Elite",
+    "sets": [
+     "MoltenRift",
+     "VoidThunder"
+    ]
+   },
+   "ViridblazeSaurian": {
+    "key": "ViridblazeSaurian",
+    "name": "Viridblaze Saurian",
+    "class": "Elite",
+    "sets": [
+     "MoonlitClouds",
+     "MoltenRift"
+    ]
+   },
+   "VitreumDancer": {
+    "key": "VitreumDancer",
+    "name": "Vitreum Dancer",
+    "class": "Elite",
+    "sets": [
+     "EmpyreanAnthem",
+     "EternalRadiance"
+    ]
+   },
+   "VoidwingMoth": {
+    "key": "VoidwingMoth",
+    "name": "Voidwing Moth",
+    "class": "Elite",
+    "sets": [
+     "ReelofSplicedMemories"
+    ]
+   },
+   "VoltscourgeStalker": {
+    "key": "VoltscourgeStalker",
+    "name": "Voltscourge Stalker",
+    "class": "Common",
+    "sets": [
+     "EmpyreanAnthem",
+     "MidnightVeil"
+    ]
+   },
+   "WhiffWhaff": {
+    "key": "WhiffWhaff",
+    "name": "Whiff Whaff",
+    "class": "Common",
+    "sets": [
+     "RejuvenatingGlow",
+     "MoonlitClouds",
+     "SierraGale"
+    ]
+   },
+   "WindlashColeoid": {
+    "key": "WindlashColeoid",
+    "name": "Windlash Coleoid",
+    "class": "Elite",
+    "sets": [
+     "RiteofGildedRevelation",
+     "WishesofQuietSnowfall"
+    ]
+   },
+   "YoungRoseshroom": {
+    "key": "YoungRoseshroom",
+    "name": "Baby Roseshroom",
+    "class": "Common",
+    "sets": [
+     "SierraGale",
+     "HavocEclipse"
+    ]
+   },
+   "ZigZag": {
+    "key": "ZigZag",
+    "name": "Zig Zag",
+    "class": "Common",
+    "sets": [
+     "CelestialLight",
+     "MoonlitClouds",
+     "LingeringTunes"
+    ]
+   },
+   "ZipZap": {
+    "key": "ZipZap",
+    "name": "Zip Zap",
+    "class": "Common",
+    "sets": [
+     "PactofNeonlightLeap",
+     "RiteofGildedRevelation",
+     "ChromaticFoam",
+     "SoundofTrueName"
+    ]
+   }
+  },
+  "echoCostByClass": {
+   "Calamity": 4,
+   "Overlord": 4,
+   "Elite": 3,
+   "Common": 1
+  },
+  "statsTable": {
+   "1": {
+    "HP": {
+     "2": 7.2,
+     "3": 10.2,
+     "4": 14.2,
+     "5": 22.8
+    },
+    "ATK": {
+     "2": 5.7,
+     "3": 8.1,
+     "4": 11.3,
+     "5": 18
+    },
+    "DEF": {
+     "2": 5.7,
+     "3": 8.1,
+     "4": 11.3,
+     "5": 18
+    }
+   },
+   "3": {
+    "HP": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "ATK": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "DEF": {
+     "2": 12.3,
+     "3": 17,
+     "4": 23.9,
+     "5": 38
+    },
+    "Glacio": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "Fusion": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "Electro": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "Aero": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "Spectro": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "Havoc": {
+     "2": 9.6,
+     "3": 14,
+     "4": 18.9,
+     "5": 30
+    },
+    "EnergyRegen": {
+     "2": 10,
+     "3": 14.2,
+     "4": 20.1,
+     "5": 32
+    }
+   },
+   "4": {
+    "HP": {
+     "2": 10.6,
+     "3": 14.6,
+     "4": 20.5,
+     "5": 33
+    },
+    "ATK": {
+     "2": 10.6,
+     "3": 14.6,
+     "4": 20.5,
+     "5": 33
+    },
+    "DEF": {
+     "2": 13.5,
+     "3": 18.7,
+     "4": 26,
+     "5": 41.8
+    },
+    "CritRate": {
+     "2": 7.1,
+     "3": 9.8,
+     "4": 13.8,
+     "5": 22
+    },
+    "CritDMG": {
+     "2": 14.3,
+     "3": 19.7,
+     "4": 27.7,
+     "5": 44
+    },
+    "HealingBonus": {
+     "2": 8.5,
+     "3": 11.9,
+     "4": 16.3,
+     "5": 26
+    }
+   }
+  },
+  "subStatsTable": {
+   "CritRate": [
+    6.3,
+    6.9,
+    7.5,
+    8.1,
+    8.7,
+    9.3,
+    9.9,
+    10.5
+   ],
+   "CritDMG": [
+    12.6,
+    13.8,
+    15,
+    16.2,
+    17.4,
+    18.6,
+    19.8,
+    21
+   ],
+   "ATK": [
+    6.4,
+    7.1,
+    7.9,
+    8.6,
+    9.4,
+    10.1,
+    10.9,
+    11.6
+   ],
+   "ATK_FLAT": [
+    30,
+    40,
+    50,
+    60
+   ],
+   "HP": [
+    6.4,
+    7.1,
+    7.9,
+    8.6,
+    9.4,
+    10.1,
+    10.9,
+    11.6
+   ],
+   "HP_FLAT": [
+    320,
+    360,
+    390,
+    430,
+    470,
+    510,
+    540,
+    580
+   ],
+   "DEF": [
+    8.1,
+    9,
+    10,
+    10.9,
+    11.8,
+    12.8,
+    13.8,
+    14.7
+   ],
+   "DEF_FLAT": [
+    40,
+    50,
+    60,
+    70
+   ],
+   "BasicAttackDMGBonus": [
+    6.4,
+    7.1,
+    7.9,
+    8.6,
+    9.4,
+    10.1,
+    10.9,
+    11.6
+   ],
+   "HeavyAttackDMGBonus": [
+    6.4,
+    7.1,
+    7.9,
+    8.6,
+    9.4,
+    10.1,
+    10.9,
+    11.6
+   ],
+   "ResonanceSkillDMGBonus": [
+    6.4,
+    7.1,
+    7.9,
+    8.6,
+    9.4,
+    10.1,
+    10.9,
+    11.6
+   ],
+   "ResonanceLiberationDMGBonus": [
+    6.4,
+    7.1,
+    7.9,
+    8.6,
+    9.4,
+    10.1,
+    10.9,
+    11.6
+   ],
+   "EnergyRegen": [
+    6.8,
+    7.6,
+    8.4,
+    9.2,
+    10,
+    10.8,
+    11.6,
+    12.4
+   ]
+  },
+  "verboseStatLabelMap": {
+   "ATK": "ATK",
+   "HP": "HP",
+   "DEF": "DEF",
+   "Energy Regen": "EnergyRegen",
+   "Crit. Rate": "CritRate",
+   "Crit. DMG": "CritDMG",
+   "Basic Attack DMG Bonus": "BasicAttackDMGBonus",
+   "Heavy Attack DMG Bonus": "HeavyAttackDMGBonus",
+   "Resonance Skill DMG Bonus": "ResonanceSkillDMGBonus",
+   "Resonance Skill DMG": "ResonanceSkillDMGBonus",
+   "Resonance Skill": "ResonanceSkillDMGBonus",
+   "Resonance Liberation DMG Bonus": "ResonanceLiberationDMGBonus",
+   "Resonance Liberation DMG": "ResonanceLiberationDMGBonus",
+   "Resonance Liberation": "ResonanceLiberationDMGBonus",
+   "Glacio DMG Bonus": "Glacio",
+   "Fusion DMG Bonus": "Fusion",
+   "Electro DMG Bonus": "Electro",
+   "Aero DMG Bonus": "Aero",
+   "Spectro DMG Bonus": "Spectro",
+   "Havoc DMG Bonus": "Havoc",
+   "Echo DMG Bonus": "EchoDMGBonus",
+   "Healing Bonus": "HealingBonus"
+  },
+  "flatBonusesByRankByType": {
+   "1": {
+    "2": 296,
+    "3": 516,
+    "4": 957,
+    "5": 2280
+   },
+   "3": {
+    "2": 31,
+    "3": 44,
+    "4": 63,
+    "5": 100
+   },
+   "4": {
+    "2": 46,
+    "3": 68,
+    "4": 92,
+    "5": 150
+   }
+  },
+  "echoSets": {
+   "CelestialLight": {
+    "name": "Celestial Light",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/CelestialLight.webp"
+   },
+   "ChromaticFoam": {
+    "name": "Chromatic Foam",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/ChromaticFoam.webp"
+   },
+   "CrownofValor": {
+    "name": "Crown of Valor",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/CrownofValor.webp"
+   },
+   "DreamoftheLost": {
+    "name": "Dream of the Lost",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/DreamoftheLost.webp"
+   },
+   "EmpyreanAnthem": {
+    "name": "Empyrean Anthem",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/EmpyreanAnthem.webp"
+   },
+   "EternalRadiance": {
+    "name": "Eternal Radiance",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/EternalRadiance.webp"
+   },
+   "FlamewingsShadow": {
+    "name": "Flamewing's Shadow",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/FlamewingsShadow.webp"
+   },
+   "FlamingClawprint": {
+    "name": "Flaming Clawprint",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/FlamingClawprint.webp"
+   },
+   "FlashofElectricReflection": {
+    "name": "Flash of Electric Reflection",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/FlashofElectricReflection.webp"
+   },
+   "FlowerofTingedYearning": {
+    "name": "Flower of Tinged Yearning",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/FlowerofTingedYearning.webp"
+   },
+   "FreezingFrost": {
+    "name": "Freezing Frost",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/FreezingFrost.webp"
+   },
+   "FrostyResolve": {
+    "name": "Frosty Resolve",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/FrostyResolve.webp"
+   },
+   "GustsofWelkin": {
+    "name": "Gusts of Welkin",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/GustsofWelkin.webp"
+   },
+   "HaloofStarryRadiance": {
+    "name": "Halo of Starry Radiance",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/HaloofStarryRadiance.webp"
+   },
+   "HavocEclipse": {
+    "name": "Havoc Eclipse",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/SunSinkingEclipse.webp"
+   },
+   "HeartofEvilsPurge": {
+    "name": "Heart of Evil's Purge",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/HeartofEvilsPurge.webp"
+   },
+   "HeartofSwornVigil": {
+    "name": "Heart of Sworn Vigil",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/HeartofSwornVigil.webp"
+   },
+   "LampofNetherRoad": {
+    "name": "Lamp of Nether Road",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/LampofNetherRoad.webp"
+   },
+   "LawofHarmony": {
+    "name": "Law of Harmony",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/LawofHarmony.webp"
+   },
+   "LingeringTunes": {
+    "name": "Lingering Tunes",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/LingeringTunes.webp"
+   },
+   "MidnightVeil": {
+    "name": "Midnight Veil",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/MidnightVeil.webp"
+   },
+   "MoltenRift": {
+    "name": "Molten Rift",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/MoltenRift.webp"
+   },
+   "MoonlitClouds": {
+    "name": "Moonlit Clouds",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/MoonlitClouds.webp"
+   },
+   "PactofNeonlightLeap": {
+    "name": "Pact of Neonlight Leap",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/PactofNeonlightLeap.webp"
+   },
+   "ReelofSplicedMemories": {
+    "name": "Reel of Spliced Memories",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/ReelofSplicedMemories.webp"
+   },
+   "RejuvenatingGlow": {
+    "name": "Rejuvenating Glow",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/RejuvenatingGlow.webp"
+   },
+   "RiteofGildedRevelation": {
+    "name": "Rite of Gilded Revelation",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/RiteofGildedRevelation.webp"
+   },
+   "ShadowofShatteredDreams": {
+    "name": "Shadow of Shattered Dreams",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/ShadowofShatteredDreams.webp"
+   },
+   "SierraGale": {
+    "name": "Sierra Gale",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/SierraGale.webp"
+   },
+   "SongofFeatheredTrace": {
+    "name": "Song of Feathered Trace",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/SongofFeatheredTrace.webp"
+   },
+   "SoundofTrueName": {
+    "name": "Sound of True Name",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/SoundofTrueName.webp"
+   },
+   "ThreadofSeveredFate": {
+    "name": "Thread of Severed Fate",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/ThreadofSeveredFate.webp"
+   },
+   "TidebreakingCourage": {
+    "name": "Tidebreaking Courage",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/TidebreakingCourage.webp"
+   },
+   "TrailblazingStar": {
+    "name": "Trailblazing Star",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/TrailblazingStar.webp"
+   },
+   "VoidThunder": {
+    "name": "Void Thunder",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/VoidThunder.webp"
+   },
+   "WindwardPilgrimage": {
+    "name": "Windward Pilgrimage",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/WindwardPilgrimage.webp"
+   },
+   "WishesofQuietSnowfall": {
+    "name": "Wishes of Quiet Snowfall",
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/sets/WishesofQuietSnowfall.webp"
+   }
+  },
+  "characters": [
+   {
+    "key": "Aalto",
+    "name": "Aalto",
+    "rarity": 4,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Aemeath",
+    "name": "Aemeath",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Augusta",
+    "name": "Augusta",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Baizhi",
+    "name": "Baizhi",
+    "rarity": 4,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Brant",
+    "name": "Brant",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Buling",
+    "name": "Buling",
+    "rarity": 4,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Calcharo",
+    "name": "Calcharo",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Camellya",
+    "name": "Camellya",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Cantarella",
+    "name": "Cantarella",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Carlotta",
+    "name": "Carlotta",
+    "rarity": 5,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Cartethyia",
+    "name": "Cartethyia",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Changli",
+    "name": "Changli",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Chisa",
+    "name": "Chisa",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Chixia",
+    "name": "Chixia",
+    "rarity": 4,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Ciaccona",
+    "name": "Ciaccona",
+    "rarity": 5,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Danjin",
+    "name": "Danjin",
+    "rarity": 4,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Denia",
+    "name": "Denia",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Encore",
+    "name": "Encore",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Galbrena",
+    "name": "Galbrena",
+    "rarity": 5,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Hiyuki",
+    "name": "Hiyuki",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Hsin",
+    "name": "Hsin",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Iuno",
+    "name": "Iuno",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Jianxin",
+    "name": "Jianxin",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Jingran",
+    "name": "Jingran",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Jinhsi",
+    "name": "Jinhsi",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Jiyan",
+    "name": "Jiyan",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Lingyang",
+    "name": "Lingyang",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Lucilla",
+    "name": "Lucilla",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Lucy",
+    "name": "Lucy",
+    "rarity": 5,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Lumi",
+    "name": "Lumi",
+    "rarity": 4,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Lupa",
+    "name": "Lupa",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "LuukHerssen",
+    "name": "Luuk Herssen",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Lynae",
+    "name": "Lynae",
+    "rarity": 5,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Mornye",
+    "name": "Mornye",
+    "rarity": 5,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Mortefi",
+    "name": "Mortefi",
+    "rarity": 4,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Phoebe",
+    "name": "Phoebe",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Phrolova",
+    "name": "Phrolova",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Qingxiao",
+    "name": "Qingxiao",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Qiuyuan",
+    "name": "Qiuyuan",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Rebecca",
+    "name": "Rebecca",
+    "rarity": 5,
+    "weapon": "Pistol"
+   },
+   {
+    "key": "Roccia",
+    "name": "Roccia",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "RoverAeroFemale",
+    "name": "Rover Aero",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "RoverAeroMale",
+    "name": "Rover Aero",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Roverelectrofemale",
+    "name": "RoverElectroFemale",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Roverelectromale",
+    "name": "RoverElectroMale",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "RoverHavocFemale",
+    "name": "Rover Havoc",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "RoverHavocMale",
+    "name": "Rover Havoc",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "RoverSpectroFemale",
+    "name": "Rover Spectro",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "RoverSpectroMale",
+    "name": "Rover Spectro",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Sanhua",
+    "name": "Sanhua",
+    "rarity": 4,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Shorekeeper",
+    "name": "Shorekeeper",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Sigrika",
+    "name": "Sigrika",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Suisui",
+    "name": "Suisui",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Taoqi",
+    "name": "Taoqi",
+    "rarity": 4,
+    "weapon": "Broadblade"
+   },
+   {
+    "key": "Verina",
+    "name": "Verina",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "XiangliYao",
+    "name": "Xiangli Yao",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Yangyang",
+    "name": "Yangyang",
+    "rarity": 4,
+    "weapon": "Sword"
+   },
+   {
+    "key": "YangyangXuanling",
+    "name": "Yangyang: Xuanling",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
+    "key": "Yinlin",
+    "name": "Yinlin",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   },
+   {
+    "key": "Youhu",
+    "name": "Youhu",
+    "rarity": 4,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Yuanwu",
+    "name": "Yuanwu",
+    "rarity": 4,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Zani",
+    "name": "Zani",
+    "rarity": 5,
+    "weapon": "Gauntlet"
+   },
+   {
+    "key": "Zhezhi",
+    "name": "Zhezhi",
+    "rarity": 5,
+    "weapon": "Rectifier"
+   }
+  ],
+  "weapons": [
+   {
+    "key": "AbyssSurges",
+    "name": "Abyss Surges",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "AetherStrike",
+    "name": "Aether Strike",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "AgesOfHarvest",
+    "name": "Ages Of Harvest",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "AmityAccord",
+    "name": "Amity Accord",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "Augment",
+    "name": "Augment",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "AureateZenith",
+    "name": "Aureate Zenith",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "Autumntrace",
+    "name": "Autumntrace",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "AzureOath",
+    "name": "Azure Oath",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "BeguilingMelody",
+    "name": "Beguiling Melody",
+    "type": "Broadblade",
+    "rarity": 3
+   },
+   {
+    "key": "BlazingBrilliance",
+    "name": "Blazing Brilliance",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "BlazingJustice",
+    "name": "Blazing Justice",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "BloodpactsPledge",
+    "name": "Bloodpact's Pledge",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "BloomingJadehaven",
+    "name": "Blooming Jadehaven",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "BosonAstrolabe",
+    "name": "Boson Astrolabe",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "Broadblade41",
+    "name": "Broadblade #41",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "BroadbladeOfNight",
+    "name": "Broadblade Of Night",
+    "type": "Broadblade",
+    "rarity": 3
+   },
+   {
+    "key": "BroadbladeOfVoyager",
+    "name": "Broadblade Of Voyager",
+    "type": "Broadblade",
+    "rarity": 3
+   },
+   {
+    "key": "Cadenza",
+    "name": "Cadenza",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "CalloftheAbyss",
+    "name": "Call of the Abyss",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "CelestialSpiral",
+    "name": "Celestial Spiral",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "CometFlare",
+    "name": "Comet Flare",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "CommandoOfConviction",
+    "name": "Commando Of Conviction",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "CosmicRipples",
+    "name": "Cosmic Ripples",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "DauntlessEvernight",
+    "name": "Dauntless Evernight",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "DaybreakersSpine",
+    "name": "Daybreaker's Spine",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "DefiersThorn",
+    "name": "Defier's Thorn",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "Discord",
+    "name": "Discord",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "EmeraldOfGenesis",
+    "name": "Emerald Of Genesis",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "EmeraldSentence",
+    "name": "Emerald Sentence",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "EndlessCollapse",
+    "name": "Endless Collapse",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "EverbrightPolestar",
+    "name": "Everbright Polestar",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "FablesofWisdom",
+    "name": "Fables of Wisdom",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "FeatherEdge",
+    "name": "Feather Edge",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "FirstlightsHerald",
+    "name": "Firstlight's Herald",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "ForgedDwarfStar",
+    "name": "Forged Dwarf Star",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "FreezeFrame",
+    "name": "Freeze Frame",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "Frostburn",
+    "name": "Frostburn",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "FusionAccretion",
+    "name": "Fusion Accretion",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "Gauntlets21D",
+    "name": "Gauntlets #21D",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "GauntletsOfNight",
+    "name": "Gauntlets of Night",
+    "type": "Gauntlet",
+    "rarity": 3
+   },
+   {
+    "key": "GauntletsOfVoyager",
+    "name": "Gauntlets of Voyager",
+    "type": "Gauntlet",
+    "rarity": 3
+   },
+   {
+    "key": "GlintOfClouds",
+    "name": "Glint of Clouds",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "GuardianBroadblade",
+    "name": "Guardian Broadblade",
+    "type": "Broadblade",
+    "rarity": 3
+   },
+   {
+    "key": "GuardianGauntlets",
+    "name": "Guardian Gauntlets",
+    "type": "Gauntlet",
+    "rarity": 3
+   },
+   {
+    "key": "GuardianPistols",
+    "name": "Guardian Pistols",
+    "type": "Pistol",
+    "rarity": 3
+   },
+   {
+    "key": "GuardianRectifier",
+    "name": "Guardian Rectifier",
+    "type": "Rectifier",
+    "rarity": 3
+   },
+   {
+    "key": "GuardianSword",
+    "name": "Guardian Sword",
+    "type": "Sword",
+    "rarity": 3
+   },
+   {
+    "key": "HeliosCleaver",
+    "name": "Helios Cleaver",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "HollowMirage",
+    "name": "Hollow Mirage",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "JinzhouKeeper",
+    "name": "Jinzhou Keeper",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "Kumokiri",
+    "name": "Kumokiri",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "LaserShearer",
+    "name": "Laser Shearer",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "LegendofDrunkenHero",
+    "name": "Legend of Drunken Hero",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "LetheanElegy",
+    "name": "Lethean Elegy",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "Lumingloss",
+    "name": "Lumingloss",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "LuminousHymn",
+    "name": "Luminous Hymn",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "LunarCutter",
+    "name": "Lunar Cutter",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "LustrousRazor",
+    "name": "Lustrous Razor",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "LuxUmbra",
+    "name": "Lux & Umbra",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
+    "key": "Marcato",
+    "name": "Marcato",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "MeditationsonMercy",
+    "name": "Meditations on Mercy",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "MoongazersSigil",
+    "name": "Moongazer's Sigil",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "Novaburst",
+    "name": "Novaburst",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "OceansGift",
+    "name": "Ocean's Gift",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "OriginiteTypeI",
+    "name": "Originite Type I",
+    "type": "Broadblade",
+    "rarity": 3
+   },
+   {
+    "key": "OriginiteTypeII",
+    "name": "Originite Type II",
+    "type": "Sword",
+    "rarity": 3
+   },
+   {
+    "key": "OriginiteTypeIII",
+    "name": "Originite Type III",
+    "type": "Pistol",
+    "rarity": 3
+   },
+   {
+    "key": "OriginiteTypeIV",
+    "name": "Originite: Type IV",
+    "type": "Gauntlet",
+    "rarity": 3
+   },
+   {
+    "key": "OriginiteTypeV",
+    "name": "Originite Type V",
+    "type": "Rectifier",
+    "rarity": 3
+   },
+   {
+    "key": "Overture",
+    "name": "Overture",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "PhasicHomogenizer",
+    "name": "Phasic Homogenizer",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
+    "key": "Pistols26",
+    "name": "Pistols #26",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "PistolsOfNight",
+    "name": "Pistols Of Night",
+    "type": "Pistol",
+    "rarity": 3
+   },
+   {
+    "key": "PistolsOfVoyager",
+    "name": "Pistols Of Voyager",
+    "type": "Pistol",
+    "rarity": 3
+   },
+   {
+    "key": "PulsationBracer",
+    "name": "Pulsation Bracer",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "RadianceCleaver",
+    "name": "Radiance Cleaver",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "RadiantDawn",
+    "name": "Radiant Dawn",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "Rectifier25",
+    "name": "Rectifier #25",
+    "type": "Rectifier",
+    "rarity": 3
+   },
+   {
+    "key": "RectifierOfNight",
+    "name": "Rectifier Of Night",
+    "type": "Rectifier",
+    "rarity": 3
+   },
+   {
+    "key": "RectifierOfVoyager",
+    "name": "Rectifier Of Voyager",
+    "type": "Rectifier",
+    "rarity": 3
+   },
+   {
+    "key": "RedSpring",
+    "name": "Red Spring",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "RelativisticJet",
+    "name": "Relativistic Jet",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "RimeDrapedSprouts",
+    "name": "Rime-Draped Sprouts",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "RomanceinFarewell",
+    "name": "Romance in Farewell",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "SkullThrasher",
+    "name": "Skull Thrasher",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
+    "key": "SolarFlame",
+    "name": "Solar Flame",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "SolswornCiphers",
+    "name": "Solsworn Ciphers",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "SomnoireAnchor",
+    "name": "Somnoire Anchor",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "SpectralTrigger",
+    "name": "Spectral Trigger",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
+    "key": "SpectrumBlaster",
+    "name": "Spectrum Blaster",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
+    "key": "StarfieldCalibrator",
+    "name": "Starfield Calibrator",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "StaticMist",
+    "name": "Static Mist",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
+    "key": "StellarSymphony",
+    "name": "Stellar Symphony",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "Stonard",
+    "name": "Stonard",
+    "type": "Gauntlet",
+    "rarity": 4
+   },
+   {
+    "key": "Stringmaster",
+    "name": "Stringmaster",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "Sword18",
+    "name": "Sword #18",
+    "type": "Sword",
+    "rarity": 4
+   },
+   {
+    "key": "SwordOfNight",
+    "name": "Sword Of Night",
+    "type": "Sword",
+    "rarity": 3
+   },
+   {
+    "key": "SwordOfVoyager",
+    "name": "Sword Of Voyager",
+    "type": "Sword",
+    "rarity": 3
+   },
+   {
+    "key": "TheLastDance",
+    "name": "The Last Dance",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
+    "key": "ThousandfoldDeliverance",
+    "name": "Thousandfold Deliverance",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "Thunderbolt",
+    "name": "Thunderbolt",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "ThunderflareDominion",
+    "name": "Thunderflare Dominion",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "Tragicomedy",
+    "name": "Tragicomedy",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "TrainingBroadblade",
+    "name": "Training Broadblade",
+    "type": "Broadblade",
+    "rarity": 1
+   },
+   {
+    "key": "TrainingGauntlets",
+    "name": "Training Gauntlets",
+    "type": "Gauntlet",
+    "rarity": 1
+   },
+   {
+    "key": "TrainingPistols",
+    "name": "Training Pistols",
+    "type": "Pistol",
+    "rarity": 1
+   },
+   {
+    "key": "TrainingRectifier",
+    "name": "Training Rectifier",
+    "type": "Rectifier",
+    "rarity": 1
+   },
+   {
+    "key": "TrainingSword",
+    "name": "Training Sword",
+    "type": "Sword",
+    "rarity": 1
+   },
+   {
+    "key": "TyroBroadblade",
+    "name": "Tyro Broadblade",
+    "type": "Broadblade",
+    "rarity": 2
+   },
+   {
+    "key": "TyroGauntlets",
+    "name": "Tyro Gauntlets",
+    "type": "Gauntlet",
+    "rarity": 2
+   },
+   {
+    "key": "TyroPistols",
+    "name": "Tyro Pistols",
+    "type": "Pistol",
+    "rarity": 2
+   },
+   {
+    "key": "TyroRectifier",
+    "name": "Tyro Rectifier",
+    "type": "Rectifier",
+    "rarity": 2
+   },
+   {
+    "key": "TyroSword",
+    "name": "Tyro Sword",
+    "type": "Sword",
+    "rarity": 2
+   },
+   {
+    "key": "UndyingFlame",
+    "name": "Undying Flame",
+    "type": "Pistol",
+    "rarity": 4
+   },
+   {
+    "key": "UnflickeringValor",
+    "name": "Unflickering Valor",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
+    "key": "Variation",
+    "name": "Variation",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "VerdantSummit",
+    "name": "Verdant Summit",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "VeritysHandle",
+    "name": "Verity's Handle",
+    "type": "Gauntlet",
+    "rarity": 5
+   },
+   {
+    "key": "WaltzinMasquerade",
+    "name": "Waltz in Masquerade",
+    "type": "Rectifier",
+    "rarity": 4
+   },
+   {
+    "key": "WaningRedshift",
+    "name": "Waning Redshift",
+    "type": "Broadblade",
+    "rarity": 4
+   },
+   {
+    "key": "WhispersofSirens",
+    "name": "Whispers of Sirens",
+    "type": "Rectifier",
+    "rarity": 5
+   },
+   {
+    "key": "WildfireMark",
+    "name": "Wildfire Mark",
+    "type": "Broadblade",
+    "rarity": 5
+   },
+   {
+    "key": "WoodlandAria",
+    "name": "Woodland Aria",
+    "type": "Pistol",
+    "rarity": 5
+   }
+  ]
+ }
+}

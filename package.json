@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . && vue-tsc -b",
-    "check": "docker compose run --rm check"
+    "check": "docker compose run --rm check",
+    "data:update": "node scripts/update-scanner-data.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.1",

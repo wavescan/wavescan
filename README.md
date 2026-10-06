@@ -100,7 +100,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 | Connection | Why | Sends |
 |---|---|---|
 | `github.com` (Releases) | Checks for a new version of the scanner | Nothing about you, just a request for the latest version number |
-| `ryanbenson.github.io` | Downloads the newest list of echoes/characters so new releases are recognised without updating the app | Nothing about you |
+| `wutheringtools.com` | Downloads the newest list of echoes/characters so new releases are recognised without updating the app *(coming later; scans always work offline with the list built into the app)* | Nothing about you |
 
 You can confirm this with a firewall app like Little Snitch (Mac) or Windows Defender Firewall.
 

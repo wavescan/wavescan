@@ -161,13 +161,16 @@ Only these outbound connections exist. Each can be turned off in Settings ([ADR 
 | Host | Purpose | Verified how |
 |---|---|---|
 | `github.com` / `objects.githubusercontent.com` | Updater manifest + signed update bundles | Tauri updater signature (minisign public key compiled in) |
-| `ryanbenson.github.io` | `scanner-data.json` + icon templates (game data refresh) | Detached signature checked against a compiled-in public key. Falls back to the bundled snapshot |
+| `wutheringtools.com` | `scanner-data.json` (game data refresh, *planned*) | Detached signature checked against a compiled-in public key. Falls back to the bundled snapshot ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)) |
 
 Adding a host means: ADR → this table → the README table → CSP `connect-src`.
 
 ## 8. Game data freshness
 
-Each release bundles a snapshot of `scanner-core` data: echo names, sets, stat tables, character names + aliases (e.g. "Yangyang: Xuanling" → `Yangyang`), and set-icon templates. On launch (if enabled), the app fetches a newer signed `scanner-data.json` from the assets site, so a new echo released mid-patch is recognised without an app update. If the signature check fails, the download is ignored.
+Game data (echo names, sets, costs, stat tables, characters, weapons) comes from Wuthering Tools, which publishes it as `https://wutheringtools.com/scanner-data.json` on every deploy ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)).
+
+- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
+- **Runtime refresh** *(planned)*: opt-in, signed, and fails safe to the bundled snapshot, so new echoes are recognised without an app update.
 
 ## 9. Output & handoff
 
