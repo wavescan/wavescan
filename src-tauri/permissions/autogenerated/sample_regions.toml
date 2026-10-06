@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-sample-regions"
+description = "Enables the sample_regions command without any pre-configured scope."
+commands.allow = ["sample_regions"]
+
+[[permission]]
+identifier = "deny-sample-regions"
+description = "Denies the sample_regions command without any pre-configured scope."
+commands.deny = ["sample_regions"]

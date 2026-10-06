@@ -97,3 +97,18 @@ export interface AutoModeStatus {
   state: AutoModeState;
   actions_used: number;
 }
+
+/** One region to OCR (`regions::RegionRead`). */
+export interface RegionRead {
+  id: string;
+  region: FracRect;
+}
+
+/** Text read from one region (`regions::RegionText`). */
+export interface RegionText {
+  id: string;
+  lines: OcrLine[];
+  width: number;
+  height: number;
+  elapsed_ms: number;
+}

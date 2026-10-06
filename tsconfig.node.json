@@ -26,6 +26,7 @@
     "src/diagnostics/**/*.ts",
     "src/ipc/**/*.ts",
     "src/data/**/*.ts",
-    "src/data/**/*.json"
+    "src/data/**/*.json",
+    "src/session/**/*.ts"
   ]
 }

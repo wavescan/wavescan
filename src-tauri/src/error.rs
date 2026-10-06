@@ -67,6 +67,11 @@ pub enum Error {
     #[error("refused to send input outside the game window")]
     OutOfBounds,
 
+    /// The frame the caller asked about is no longer the pinned one (a newer sample
+    /// replaced it). The caller should sample again.
+    #[error("that frame is no longer available; sample again")]
+    FrameExpired,
+
     /// This feature isn't implemented on this operating system.
     #[error("not supported on this operating system")]
     Unsupported,
@@ -91,6 +96,7 @@ impl Error {
             Error::ConfirmationMismatch => "ConfirmationMismatch",
             Error::AutoModeAborted(_) => "AutoModeAborted",
             Error::OutOfBounds => "OutOfBounds",
+            Error::FrameExpired => "FrameExpired",
             Error::Unsupported => "Unsupported",
         }
     }

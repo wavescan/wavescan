@@ -19,6 +19,8 @@
     "allow-arm-auto-mode",
     "allow-disarm-auto-mode",
     "allow-auto-focus-game",
-    "allow-auto-click"
+    "allow-auto-click",
+    "allow-sample-regions",
+    "allow-read-regions"
   ]
 }

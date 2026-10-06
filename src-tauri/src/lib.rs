@@ -10,6 +10,7 @@
 //! | [`traits`] | The four OS seams: window, capture, OCR, input |
 //! | [`safety`] | Gatekeeper for input (auto mode) and User ID privacy |
 //! | [`frame`] | In-memory captured images: crop, fill |
+//! | [`regions`] | Batched region sampling (change detection) and OCR for the scanner |
 //! | [`geometry`] | Pixel and fractional rectangles/points |
 //! | [`platform`] | Windows/macOS implementations of the traits |
 //! | [`stats`] | Frame-rate measurement |
@@ -21,6 +22,7 @@ pub mod error;
 pub mod frame;
 pub mod geometry;
 pub mod platform;
+pub mod regions;
 pub mod safety;
 pub mod stats;
 pub mod traits;
@@ -53,6 +55,8 @@ pub fn run() -> Result<(), Error> {
             commands::disarm_auto_mode,
             commands::auto_focus_game,
             commands::auto_click,
+            commands::sample_regions,
+            commands::read_regions,
         ])
         .run(tauri::generate_context!())
         .map_err(|source| Error::Startup(source.to_string()))
