@@ -97,9 +97,36 @@ export function inferRank(input: RankInput): RankResult {
   return { rank: null, confidence: "low" };
 }
 
-/** Reads the number out of a stat value like "2.8%" or "114". Null if it isn't one. */
-export function statNumber(rawValue: string | undefined): number | null {
-  if (!rawValue) return null;
-  const match = /^[+-]?\d+(?:\.\d+)?/.exec(rawValue.replace(/\s+/g, ""));
-  return match ? Number(match[0]) : null;
+/**
+ * Works out the main stat from its value alone, for when the OCR missed the label (Windows
+ * OCR never reads a lone "HP": fixture replay, 2026-10-07). Tries every main stat this cost
+ * allows, at `rank` if known or else at every rank, and returns the key only if exactly one
+ * fits. Cost 1 HP% always differs from ATK%/DEF%, but those two share a table, so they
+ * can't be told apart and come back null.
+ */
+export function inferMainStatKey(input: {
+  cost: number | null;
+  level: number | null;
+  rank: number | null;
+  value: number | null;
+}): string | null {
+  const { cost, level, rank, value } = input;
+  if (cost === null || level === null || value === null) return null;
+  const table = scannerGameData().statsTable[cost];
+  if (!table) return null;
+  const allowed = (r: number) => rank === null || r === rank;
+  const fits = Object.keys(table).filter(
+    (key) => ranksMatching(value, level, 0.1, (r) => (allowed(r) ? table[key]?.[r] : undefined)).length > 0,
+  );
+  return fits.length === 1 ? (fits[0] ?? null) : null;
+}
+
+/**
+ * The number at the end of a stat row: "HP 114" → 114, "Electro DMG Bonus 3.7%" → 3.7.
+ * Works when the label is missing too ("114"), which matters for the secondary stat: its
+ * type is fixed by cost, so the number alone is enough.
+ */
+export function rowValue(text: string): number | null {
+  const match = /([+-]?\d+(?:\.\d+)?)\s*%?$/.exec(text.trim());
+  return match?.[1] ? Number(match[1]) : null;
 }

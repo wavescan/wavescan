@@ -1,7 +1,6 @@
 import {
   computeSignature,
   parseEchoCandidate,
-  parseStatRow,
   resolveEchoByNameAndCost,
   scannerGameData,
   type FieldConfidence,
@@ -9,7 +8,7 @@ import {
 } from "@wutheringtools/scanner-core";
 import type { RegionText } from "@/ipc/types";
 import type { EchoRegionId } from "./echoRegions";
-import { inferRank, statNumber } from "./echoRank";
+import { inferMainStatKey, inferRank, rowValue } from "./echoRank";
 import { readingOrder } from "./ocrText";
 import { toCoreLines } from "./samples";
 
@@ -35,6 +34,12 @@ export interface ExtractedEcho {
   raw: { name: string; level: string; mainStat: string; secondaryStat: string };
 }
 
+/** The panel's wording for a stat key ("HP" → "HP", "Electro" → "Electro DMG Bonus"). */
+function labelForStatKey(key: string): string {
+  const entry = Object.entries(scannerGameData().verboseStatLabelMap).find(([, k]) => k === key);
+  return entry?.[0] ?? key;
+}
+
 /** Reads "+25" style level text. Null unless it's a clean 0–25. */
 export function parseLevel(text: string): number | null {
   const match = /\+\s*(\d{1,2})\b/.exec(text);
@@ -49,6 +54,9 @@ export function parseLevel(text: string): number | null {
  *
  * Set: taken directly when the identified echo can only belong to one set. Otherwise
  * it's left null (low confidence) until set-icon matching lands.
+ *
+ * Main stat: when only its value was read (Windows OCR drops a lone "HP" label), it's
+ * worked out from the value, cost, rarity and level (`inferMainStatKey`) and flagged low.
  */
 export function extractEcho(results: RegionText[]): ExtractedEcho {
   const byId = new Map(results.map((r) => [r.id as EchoRegionId, r]));
@@ -78,25 +86,36 @@ export function extractEcho(results: RegionText[]): ExtractedEcho {
   });
 
   const level = parseLevel(levelText);
-  const mainStatLabel = parsed.slot.mainStatLabel;
-  const { rank, confidence: rankConfidence } = inferRank({
-    cost: parsed.slot.cost === null ? null : Number(parsed.slot.cost),
-    level,
-    secondaryValue: statNumber(parseStatRow(secondaryStatText)?.rawValue),
-    mainStatKey: mainStatLabel ? (scannerGameData().verboseStatLabelMap[mainStatLabel] ?? null) : null,
-    mainStatValue: statNumber(parseStatRow(mainStatText)?.rawValue),
-  });
+  const cost = parsed.slot.cost === null ? null : Number(parsed.slot.cost);
+  const mainStatValue = rowValue(mainStatText);
+  const rankInput = { cost, level, secondaryValue: rowValue(secondaryStatText), mainStatValue };
+
+  let mainStatLabel = parsed.slot.mainStatLabel;
+  let mainStatConfidence = parsed.confidence.mainStat;
+  let mainStatKey = mainStatLabel ? (scannerGameData().verboseStatLabelMap[mainStatLabel] ?? null) : null;
+  let rank = inferRank({ ...rankInput, mainStatKey });
+  if (!mainStatLabel) {
+    const inferred = inferMainStatKey({ cost, level, rank: rank.rank, value: mainStatValue });
+    if (inferred) {
+      mainStatKey = inferred;
+      mainStatLabel = labelForStatKey(inferred);
+      mainStatConfidence = "low";
+      rank = inferRank({ ...rankInput, mainStatKey });
+    }
+  }
+  const slot = { ...parsed.slot, mainStatLabel };
   return {
-    slot: parsed.slot,
+    slot,
     confidence: {
       ...parsed.confidence,
+      mainStat: mainStatConfidence,
       set: matchedSet ? parsed.confidence.set : "low",
       level: level === null ? "low" : "high",
-      rank: rankConfidence,
+      rank: rank.confidence,
     },
     level,
-    rank,
-    signature: `${computeSignature(parsed.slot)}|L${level ?? "?"}|R${rank ?? "?"}`,
+    rank: rank.rank,
+    signature: `${computeSignature(slot)}|L${level ?? "?"}|R${rank.rank ?? "?"}`,
     raw: { name: nameText, level: levelText, mainStat: mainStatText, secondaryStat: secondaryStatText },
   };
 }
