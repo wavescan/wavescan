@@ -65,6 +65,19 @@ This reproduces both ends of every in-game main stat range (e.g. cost 1 flat HP 
 - **Still to verify:** that growth is linear *between* the endpoints. Capture an echo at a mid level (e.g. +7) for a fixture.
 - One known disagreement: a community table lists 4-cost DEF% rank 5 as 8.3%–41.5%, while WT's data says 41.8% max. The tolerance accepts both. Check in game before changing WT's data.
 
+## Grid (auto mode)
+
+Measured 2026-10-07 on the 2880×1800 fixtures and a 2304×1440 scrolling recording (both 16:10), as fractions of the game area. `src/auto/grid.ts` holds the numbers. **16:9 isn't measured**, so auto mode refuses it until a capture exists.
+
+- **Columns** never move: 6 cards, centres at x = 0.130 + k × 0.092 (k = 0–5), each about 0.077 wide.
+- **Rows** scroll smoothly, so they can sit at any height. Each card is art (≈ 0.118 tall), then a bright gold line, then the dark level bar with "+25" (≈ 0.04). Row pitch 0.1753–0.1786.
+- **Finding rows:** sample `GRID_STRIP` (x 0.09–0.61, y 0.105–0.855) at 256 px wide and average each line's brightness. A drop of ≥ 55 (to ≤ 110) between neighbouring lines is a gold line → level bar edge (gold ≈ 180–215, bar ≈ 55–85). It was found in every frame checked.
+- **Fully visible:** card top (edge − 0.118) ≥ 0.105 and bar bottom (edge + 0.04) ≤ 0.855, with 0.005 slack. Partly hidden rows are skipped and picked up after the next scroll.
+- **Click target:** column centre, half-way up the card art.
+- **Empty slots** (end of the list) can't be told from cards by the level bar: the grid fades out towards its bottom edge, which lightens the bars. The navigator checks that a click selected something instead.
+- **How far a scroll moved:** 4×4 brightness thumbnails of each card in a row. The same row after a scroll differs by 0–12 (12 with the cursor over a card), different rows by ≥ 20; threshold 16. The rows before and after are lined up as a sequence, and identical rows that fit more than one way return "unknown" rather than a guess.
+- The selected card has a bright gold frame (useful to confirm a click landed).
+
 ## Timing (measured from Video A)
 
 - Clicking a cell redraws the stats panel in **one frame**. The portrait art animates, but the stat text doesn't. So the loop is: click → wait for 2 identical stats fingerprints (~35 ms @ 60 fps) → queue the crops → next click.
