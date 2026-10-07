@@ -92,7 +92,7 @@ stateDiagram-v2
 
 - **Watch mode** sends no input at all. It needs no admin rights (Windows) and only Screen Recording permission (macOS).
 - **Auto mode** is opt-in and armed per session. The navigator (`src/auto/navigator.ts`) clicks every card from the top of the list, reads it, and scrolls in steps small enough (under half a row) that it always knows which list row is on screen; when it can't follow the grid it stops with a reason instead of guessing. The target is ≤150 ms per echo; measurements are in [screens/echoes.md](screens/echoes.md). ([ADR 0006](adr/0006-watch-and-auto-modes-and-fair-play-risk.md))
-  - For now each echo is read before the next click: only the last sampled frame stays pinned ([ADR 0021](adr/0021-batched-region-reads-with-pinned-frames.md)), so a read can't overlap the next click's sampling. Overlapping them (the OCR queue in the diagram) needs a few pinned frames and is a follow-up.
+  - Each echo's read (OCR) starts as soon as its panel settles and runs while the next card is clicked, at most two at a time, reported in list order. Rust keeps the last 4 sampled frames readable so the next click's sampling doesn't unpin the frame a read needs ([ADR 0025](adr/0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md)).
 
 ## 4. Rust trait seams
 
@@ -133,8 +133,8 @@ Implemented (milestone 3). Each one is listed in `build.rs` and granted in `capa
 | `auto_click` | `{ target: FracPoint }` → `AutoModeStatus` | Every `AutoMode` check; Windows: `SetCursorPos` + `SendInput` |
 | `auto_scroll` | `{ target: FracPoint, ticks }` → `AutoModeStatus` | Same checks as a click, plus at most 40 notches either way (`MAX_SCROLL_TICKS`); negative scrolls down ([ADR 0024](adr/0024-f8-stop-key-and-auto-scroll.md)) |
 
-| `sample_regions` | `{ regions: FracRect[], maxWidth }` → raw bytes `[seq u64][count u32]` + per region `[w u32][h u32][RGBA]` | Small images for change detection (fingerprints computed in TS by scanner-core). **Pins** the sampled frame |
-| `read_regions` | `{ seq, regions: RegionRead[] }` → `RegionText[]` | OCRs the **pinned** frame `seq` (so text matches the frame judged stable), one thread per region; `FrameExpired` if `seq` isn't pinned |
+| `sample_regions` | `{ regions: FracRect[], maxWidth }` → raw bytes `[seq u64][count u32]` + per region `[w u32][h u32][RGBA]` | Small images for change detection (fingerprints computed in TS by scanner-core). **Pins** the sampled frame (the last 4 distinct frames stay pinned, [ADR 0025](adr/0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md)) |
+| `read_regions` | `{ seq, regions: RegionRead[] }` → `RegionText[]` | OCRs the **pinned** frame `seq` (so text matches the frame judged stable), one thread per region; `FrameExpired` if `seq` isn't one of the pinned frames |
 
 *(Planned)*: `layout_check`, scroll/key commands (driver already supports them), F8 stop hotkey, `save_debug_frame` (setting-gated, masked).
 

@@ -72,8 +72,8 @@ pub enum Error {
     #[error("refused a scroll of that size")]
     InvalidScroll,
 
-    /// The frame the caller asked about is no longer the pinned one (a newer sample
-    /// replaced it). The caller should sample again.
+    /// The frame the caller asked about is no longer pinned (several newer samples replaced
+    /// it, see `regions::PINNED_FRAMES`). The caller should sample again.
     #[error("that frame is no longer available; sample again")]
     FrameExpired,
 

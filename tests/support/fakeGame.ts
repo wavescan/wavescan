@@ -30,7 +30,12 @@ export interface FakeGameOptions {
   clicksLand?: boolean;
   /** Art brightness for a card; constant art makes every row look the same. */
   art?: (echo: FakeEcho, cy: number) => number;
+  /** How long a read (OCR) takes, in event-loop turns, so reads overlap the next clicks. */
+  readTurns?: number;
 }
+
+/** Same as `regions::PINNED_FRAMES` in Rust: how many recent frames a read can still use. */
+const PINNED_FRAMES = 4;
 
 /** Where row 0's gold line sits at the top of the list (16:10 top-of-list fixture). */
 const TOP_ROW_16_10 = 0.237;
@@ -56,7 +61,11 @@ export function createFakeGame(options: FakeGameOptions) {
   let seq = 0;
   let time = 0;
   const pending: { due: number; apply: () => void }[] = [];
-  const log = { clicks: [] as FracPoint[], scrolls: [] as number[] };
+  const log = { clicks: [] as FracPoint[], scrolls: [] as number[], maxReadsInFlight: 0 };
+  /** The selected echo in each frame, and the frames a read can still use (newest last). */
+  const selectedAt = new Map<number, number>();
+  const pinned: number[] = [];
+  let readsInFlight = 0;
 
   function later(apply: () => void) {
     pending.push({ due: seq + (options.lag ?? 0), apply });
@@ -157,11 +166,21 @@ export function createFakeGame(options: FakeGameOptions) {
     frameSize: () => frame,
     async sampleRegions(regions: FracRect[]) {
       nextFrame();
-      if (regions.length === 1) return encodeSamples(seq, [renderStrip()]);
+      selectedAt.set(seq, selected);
+      if (pinned.at(-1) !== seq) pinned.push(seq);
+      if (pinned.length > PINNED_FRAMES) pinned.shift();
+    if (regions.length === 1) return encodeSamples(seq, [renderStrip()]);
       return encodeSamples(seq, [renderPanel(64, 48, 1), renderPanel(128, 96, 2), renderPanel(16, 16, 3)]);
     },
-    async readEcho() {
-      return echoes[selected]!;
+    async readEcho(frameSeq) {
+      // Like Rust: the frame has to be one of the last few sampled when the read starts.
+      if (!pinned.includes(frameSeq)) throw new Error("that frame is no longer available; sample again");
+      const shown = selectedAt.get(frameSeq)!;
+      readsInFlight += 1;
+      log.maxReadsInFlight = Math.max(log.maxReadsInFlight, readsInFlight);
+      for (let i = 0; i < (options.readTurns ?? 0); i++) await new Promise((resolve) => setTimeout(resolve, 0));
+      readsInFlight -= 1;
+      return echoes[shown]!;
     },
     async click(target) {
       log.clicks.push(target);
