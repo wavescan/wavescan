@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { buildChecks, buildReport, formatReport, type DiagnosticsInput } from "@/diagnostics/report";
 import { decodePreview } from "@/diagnostics/preview";
-import { isSupportedAspect } from "@/diagnostics/regions";
+import { INPUT_TEST_TARGETS, isSupportedAspect } from "@/diagnostics/regions";
 import type { GameWindow, RegionRead, RegionText } from "@/ipc/types";
 import { describeEchoRead, readEchoForDiagnostics } from "@/diagnostics/echoRead";
 import { loadBundledScannerData } from "@/data/scannerData";
@@ -244,5 +244,16 @@ describe("diagnostics echo read", () => {
     const input = { ...healthy(), echoRead: { ok: false as const, error: "frame expired", kind: "FrameExpired" } };
     expect(statusOf(input, "echo-read")).toBe("fail");
     expect(buildReport(input).echoRead).toEqual({ error: "frame expired" });
+  });
+});
+
+describe("input test targets", () => {
+  it("clicks the first two echoes in the top grid row, which exists on any inventory with two echoes", () => {
+    // 16:10 fixtures: first-row cells span y 0.115–0.265, columns centre at 0.130 and 0.222.
+    for (const target of INPUT_TEST_TARGETS) {
+      expect(target.y).toBeGreaterThan(0.13);
+      expect(target.y).toBeLessThan(0.25);
+    }
+    expect(INPUT_TEST_TARGETS.map((t) => t.x)).toEqual([0.13, 0.222]);
   });
 });
