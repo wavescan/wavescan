@@ -11,7 +11,19 @@ Measured notes for the echo inventory screen. Fixtures live in `fixtures/screens
 | Video A (`2880x1800/…22-18-18.mp4`, Game Bar) | 2304×1440 @ 60 fps, 49 s | 16:10 | Manual click-through |
 | Video B (`…09-15-58 - Copy.mp4`) | 2304×1440 @ 120 fps, 69 s | 16:10 | Manual click-through + scroll |
 
-**Still needed:** 16:9 captures (1920×1080, 2560×1440, 3840×2160) and any **macOS (Apple Silicon)** capture.
+| 7 PNGs (Windows, **windowed** 1920×1080 on a 1920×1080 desktop, 2026-10-07) | 1920×1080 game area | 16:9 | Top of list, two mid-scrolls, +5/+15/+20/+25 echoes. Desktop screenshots, so they include the title bar (58 px) and the left border (2 px), and the window ran 58 px off the bottom and 2 px off the right of the screen. The fixtures are the game area rebuilt from them: crop x ≥ 2, y ≥ 58, paste at (0, 0) on a black 1920×1080 frame. The bottom 58 rows (footer edge and the **User ID**) are black |
+
+**Still needed:** 16:9 at 2560×1440 / 3840×2160, and any **macOS (Apple Silicon)** capture.
+
+## 16:9 vs 16:10
+
+Checked on the 1920×1080 captures (2026-10-07). The game scales its UI with the **width**, so:
+
+- **x** fractions are the same at both shapes (name x 0.6935, grid column 1 x 0.129, Upgrade x 0.876 all match).
+- Everything in the top part of the screen (header, detail panel, grid top) is **top-anchored**: in 1920-wide pixels it sits at the same y. As a fraction, y₁₆:₉ = y₁₆:₁₀ × 1.111. scanner-core's `regionForFrame` already does this, and every read region lands on its text at 1920×1080.
+- The footer (Sort by Level, Upgrade) is **bottom-anchored**: the same distance from the bottom in 1920-wide pixels (Upgrade: 90 px at both shapes). The grid's scrolling area ends above the footer, so its bottom edge is bottom-anchored too.
+- The extra height at 16:10 (120 px at 1920 wide) goes between the two, which is why the 16:10 grid shows about half a row more.
+- **User ID:** bottom-anchored like the footer. The windowed captures had it off screen; a fullscreen 1920×1080 recording (`fixtures/scrollwheel.mp4`, local only) shows the text at x 0.887–0.972, y 0.983–0.996, inside `USER_ID_REGION` (y ≥ 0.975). Pinned by a test in `safety.rs`.
 
 ## Layout
 
@@ -67,16 +79,40 @@ This reproduces both ends of every in-game main stat range (e.g. cost 1 flat HP 
 
 ## Grid (auto mode)
 
-Measured 2026-10-07 on the 2880×1800 fixtures and a 2304×1440 scrolling recording (both 16:10), as fractions of the game area. `src/auto/grid.ts` holds the numbers. **16:9 isn't measured**, so auto mode refuses it until a capture exists.
+Measured 2026-10-07 on the 2880×1800 fixtures and a 2304×1440 scrolling recording (both 16:10), as fractions of the game area, then checked at 16:9 on the 1920×1080 captures. `src/auto/grid.ts` holds the numbers (`gridLayout`). Values below are 16:10. **At 16:9** every height is × 1.111 and the strip's bottom keeps its distance from the frame's bottom: strip y 0.1167–0.8389, row pitch 0.1967 (measured 211–212 px at 1080, i.e. 0.1954–0.1963), card art 0.131. Other shapes are refused.
 
 - **Columns** never move: 6 cards, centres at x = 0.130 + k × 0.092 (k = 0–5), each about 0.077 wide.
 - **Rows** scroll smoothly, so they can sit at any height. Each card is art (≈ 0.118 tall), then a bright gold line, then the dark level bar with "+25" (≈ 0.04). Row pitch 0.1753–0.1786.
-- **Finding rows:** sample `GRID_STRIP` (x 0.09–0.61, y 0.105–0.855) at 256 px wide and average each line's brightness. A drop of ≥ 55 (to ≤ 110) between neighbouring lines is a gold line → level bar edge (gold ≈ 180–215, bar ≈ 55–85). It was found in every frame checked.
+- **Finding rows:** sample the grid strip (x 0.09–0.61, y 0.105–0.855) at 256 px wide and average each line's brightness. A drop of ≥ 55 (to ≤ 110) between neighbouring lines is a gold line → level bar edge (gold ≈ 180–215, bar ≈ 55–85). It was found in every frame checked.
+- **Edges in the card art:** a row of Kernel Puppets has a bright crossbar across every card, about 0.05 above the gold line (16:9 fixture `kernel-puppet-joy-plus25`). In the 256-px sample it makes a drop of 50, just under the threshold, so a row of six identical crossbars could pass it. The gold line is always a card's lowest edge, so a drop with another one less than 0.6 of a row below it is ignored. The remaining edges must also be whole row pitches apart. If they disagree, the largest group that does is kept, and a tie gives no rows.
 - **Fully visible:** card top (edge − 0.118) ≥ 0.105 and bar bottom (edge + 0.04) ≤ 0.855, with 0.005 slack. Partly hidden rows are skipped and picked up after the next scroll.
 - **Click target:** column centre, half-way up the card art.
 - **Empty slots** (end of the list) can't be told from cards by the level bar: the grid fades out towards its bottom edge, which lightens the bars. The navigator checks that a click selected something instead.
 - **How far a scroll moved:** 4×4 brightness thumbnails of each card in a row. The same row after a scroll differs by 0–12 (12 with the cursor over a card), different rows by ≥ 20; threshold 16. The rows before and after are lined up as a sequence, and identical rows that fit more than one way return "unknown" rather than a guess.
 - The selected card has a bright gold frame (useful to confirm a click landed).
+
+## Scrolling (measured 2026-10-07)
+
+From a fullscreen 1920×1080 recording of mouse-wheel scrolling (`fixtures/scrollwheel.mp4`, local only, git-ignored):
+
+- One wheel notch moves the grid **about 26 px = 1/8 of a row** (row pitch 211 px). One notch moved only 13 px, so notches aren't perfectly regular.
+- Each notch lands in **one frame**: no smooth scrolling animation between notches.
+- Not measured yet: whether one wheel event carrying several notches moves the same as that many separate notches, and the notch size at 16:10. The navigator calibrates from what it sees, so neither is assumed.
+
+## Auto mode navigator
+
+`src/auto/navigator.ts`, tested against a pretend grid in `tests/navigator.spec.ts`.
+
+1. Refuse anything but 16:10 and 16:9 (`gridLayout`). Scroll to the top (37 notches at a time, not a multiple of 8, so a move of whole rows can't look like "didn't move"; the row thumbnails are compared too).
+2. Mark the echo that's already selected as seen, so a stale panel is never read for the first card. If the first click leaves the panel unchanged, that echo is the first card (the game selects it when the screen opens) and is read after all.
+3. For each fully visible row not read yet, click the six cards left to right. After each click, wait for scanner-core's stability detector: a settled **new** panel is read from that exact frame. A panel that stays on an echo already read for 0.7 s counts as **unchanged** (an empty slot, mostly). Stop at the first echo below the minimum level, without reporting it.
+4. Scroll down in steps of at most 0.4 of a row (3 notches at 1/8 of a row each; never sized below 1/8 a notch, so one small notch can't inflate the next step). Measure the move from the row edges: every edge pair's difference wrapped into one row pitch, then the median. Because the step is under half a row, only one move fits, even when every row looks the same. Each row then has a fixed number counted from the top of the list.
+5. Check the rows on screen against their thumbnails from before the scroll. A mismatch, a move over 0.45 of a row, or no grid at all stops the run as **lost track** rather than risk skipping echoes.
+6. Keep scrolling until the first fully visible row is one not read yet, then go back to 3. Two scrolls in a row that don't move the grid mean the **end of the list**; whatever is left on screen (a last row that only now fits) is read first.
+
+About 2.7 scrolls per row, so a full 3,000-echo inventory is about 4,300 guarded actions, under auto mode's cap of 5,000 per session (`safety.rs`).
+
+**Partly filled last row:** two cards out of six don't make a big enough drop in the strip-wide brightness profile (16:9 fixture `end-of-list`: the last row isn't found that way). `findPartialRow` checks each column for its own edge one row pitch below the last row. Every row still gets all six click targets, because an empty slot can't be told from a card reliably, and clicking one only counts as "unchanged".
 
 ## Timing (measured from Video A)
 

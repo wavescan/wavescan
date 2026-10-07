@@ -1,0 +1,16 @@
+{
+  "echo": "WhiffWhaff",
+  "echoSet": "MoonlitClouds",
+  "cost": 1,
+  "rank": 5,
+  "level": 20,
+  "stat": "ATK",
+  "substats": [
+    { "type": "HeavyAttackDMGBonus", "value": 7.9 },
+    { "type": "ATK", "value": 10.9 },
+    { "type": "CritDMG", "value": 13.8 },
+    { "type": "HP_FLAT", "value": 510 }
+  ],
+  "equippedBy": "Rebecca",
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar cropped, the bottom 58 px and right 2 px were off screen and are black). +20 with 4 substats, ending in flat HP. Set checked against the reference icon."
+}

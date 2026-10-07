@@ -1,5 +1,5 @@
 {
-  "notes": "Hand-checked grid goldens (docs/fixtures.md). rows: barTop (gold line / level bar edge) of each fully visible row, as frame y fractions, ±0.006. scrolls: the visible-row index shift between two frames of a manual scroll in a 2304x1440 recording (the matched rows were compared by eye).",
+  "notes": "Hand-checked grid goldens (docs/fixtures.md). rows: barTop (gold line / level bar edge) of each fully visible row, as frame y fractions, ±0.006. scrolls: the visible-row index shift between two frames of a manual scroll (the matched rows were compared by eye). 2304x1440: a manual scroll recording. 1920x1080: 16:9, rebuilt from windowed screenshots (bottom 58 px black).",
   "frames": {
     "echoes-grid/2304x1440/scroll-a-before": [0.345, 0.521, 0.697],
     "echoes-grid/2304x1440/scroll-a-after": [0.341, 0.518, 0.694],
@@ -9,11 +9,23 @@
     "echoes/2880x1800/kronaclaw-plus25": [0.27, 0.446, 0.622, 0.798],
     "echoes/2880x1800/thousand-puppet-pavilion-plus25": [0.237, 0.41, 0.589, 0.765],
     "echoes/2880x1800/thousand-puppet-pavilion-plus25-toast": [0.237, 0.41, 0.589, 0.765],
-    "echoes/2880x1800/viridblaze-saurian-plus15": [0.24, 0.416, 0.593, 0.769]
+    "echoes/2880x1800/viridblaze-saurian-plus15": [0.24, 0.416, 0.593, 0.769],
+    "echoes-grid/1920x1080/stack-selected": [0.287, 0.4824, 0.6787],
+    "echoes-grid/1920x1080/last-row-cut": [0.3398, 0.5352, 0.7315],
+    "echoes/1920x1080/suhsin-plus25": [0.2602, 0.4565, 0.6519],
+    "echoes/1920x1080/kernel-puppet-joy-plus25": [0.4046, 0.6, 0.7963],
+    "echoes/1920x1080/suhsin-plus15": [0.287, 0.4824, 0.6787],
+    "echoes/1920x1080/whiff-whaff-plus20": [0.2852, 0.4815, 0.6769],
+    "echoes/1920x1080/rocksteady-guardian-plus5": [0.287, 0.4824, 0.6787],
+    "echoes-grid/1920x1080/end-of-list": [0.4038, 0.5988, 0.7974]
   },
   "scrolls": [
     { "before": "echoes-grid/2304x1440/scroll-a-before", "after": "echoes-grid/2304x1440/scroll-a-after", "shift": 2 },
     { "before": "echoes-grid/2304x1440/scroll-b-before", "after": "echoes-grid/2304x1440/scroll-b-after", "shift": 2 },
-    { "before": "echoes-grid/2304x1440/scroll-a-before", "after": "echoes-grid/2304x1440/scroll-a-before", "shift": 0 }
+    { "before": "echoes-grid/2304x1440/scroll-a-before", "after": "echoes-grid/2304x1440/scroll-a-before", "shift": 0 },
+    { "before": "echoes/1920x1080/whiff-whaff-plus20", "after": "echoes/1920x1080/suhsin-plus15", "shift": 1 },
+    { "before": "echoes/1920x1080/whiff-whaff-plus20", "after": "echoes-grid/1920x1080/stack-selected", "shift": 1 },
+    { "before": "echoes/1920x1080/suhsin-plus25", "after": "echoes-grid/1920x1080/last-row-cut", "shift": 1 },
+    { "before": "echoes/1920x1080/suhsin-plus15", "after": "echoes/1920x1080/rocksteady-guardian-plus5", "shift": 0 }
   ]
 }

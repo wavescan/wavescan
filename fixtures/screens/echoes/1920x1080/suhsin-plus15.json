@@ -1,0 +1,15 @@
+{
+  "echo": "ReminiscenceSuhsintheInevitable",
+  "echoSet": "HeartofSwornVigil",
+  "cost": 4,
+  "rank": 5,
+  "level": 15,
+  "stat": "CritDMG",
+  "substats": [
+    { "type": "ResonanceSkillDMGBonus", "value": 10.9 },
+    { "type": "HP_FLAT", "value": 540 },
+    { "type": "DEF_FLAT", "value": 40 }
+  ],
+  "equippedBy": null,
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar cropped, the bottom 58 px and right 2 px were off screen and are black). +15 with 3 substats, a wrapped label and a flat HP row; the Echo Skill text sits below the substats. Set checked against the reference icon."
+}
