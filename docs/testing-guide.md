@@ -54,7 +54,7 @@ This is the scan itself. Wavescan only watches; it never clicks anything.
 
 ## 5. Optional: click test
 
-This checks whether Wavescan's clicks reach the game, which the future *auto mode* needs.
+This checks whether Wavescan's clicks reach the game, which auto mode (step 6) needs.
 
 - It brings the game to the front and **clicks the second and then the first echo in your Bag grid**, so you should see the selection move twice. Clicking only selects them; nothing is upgraded, locked or discarded.
 - Read the Fair Play note on screen. If you're comfortable, type `I understand` and press **Run click test**. **Don't touch the mouse** until it finishes; moving it stops the test immediately.
@@ -63,9 +63,19 @@ This checks whether Wavescan's clicks reach the game, which the future *auto mod
 
 Skipping this test is completely fine.
 
-## 6. Send the report
+## 6. Optional: auto mode
 
-Click **Copy report** and paste it in the Discord testing thread, along with the watch-mode scan and rows from step 4. Also mention:
+Only if the click test worked, and only if you're comfortable with the Fair Play risk (it's explained on screen). Auto mode clicks through your echoes for you.
+
+1. In the game, open **Bag → Echoes**, sorted by **Level**, highest first.
+2. In Wavescan, open **Scan echoes → Auto mode**. Pick **+25 only** for a short first try, type `I understand` and press **Start auto scan**.
+3. Don't touch the mouse or keyboard. Wavescan scrolls back to the top of the list, then clicks each echo and scrolls down by itself.
+4. Check the end result against the game: did it stop at the right place, and did it skip or repeat any echo? Copy the scan and the message Wavescan shows at the end.
+5. **Please also try the stop key:** start another scan and press **F8** after a few echoes. It should stop straight away and say "the stop key was pressed". Tell us if it didn't (and whether the game was fullscreen or windowed). Moving the mouse should stop it too.
+
+## 7. Send the report
+
+Click **Copy report** and paste it in the Discord testing thread, along with the watch-mode scan and rows from step 4, and the auto-mode result from step 6 if you tried it. Also mention:
 
 - your computer: Mac model, or Windows PC with its GPU
 - your game resolution and display mode (fullscreen/windowed)

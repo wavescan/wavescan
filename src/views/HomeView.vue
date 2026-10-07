@@ -14,8 +14,9 @@ defineEmits<{ diagnostics: []; scan: [] }>();
       </h1>
       <p class="text-sm opacity-80">
         Reads your echoes from the Wuthering Waves window and exports them for Wuthering Tools.
-        Early preview: watch mode reads echoes while you click through Bag → Echoes. Run
-        Diagnostics first to check Wavescan can see and read your game.
+        Early preview: watch mode reads echoes while you click through Bag → Echoes, and the
+        optional auto mode clicks through them for you. Run Diagnostics first to check Wavescan
+        can see and read your game.
       </p>
       <div
         v-if="info"

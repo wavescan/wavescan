@@ -50,7 +50,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - [x] Navigator state machine (click → read → next, scroll, end of list, stop level): `src/auto/navigator.ts`, against a fake grid
   - [ ] Overlap reads with clicks (keep a few pinned frames, ADR 0021 follow-up)
   - [x] `auto_scroll` command + F8 stop hotkey ([ADR 0024](adr/0024-f8-stop-key-and-auto-scroll.md))
-  - [ ] Auto mode UI
+  - [x] Auto mode UI: Scan echoes → Auto mode tab (`src/views/AutoModePanel.vue`, run by `src/auto/autoScan.ts`)
   - [x] 16:9 grid measurements (1920×1080)
 - [ ] Fixture tests ≥ 99% field accuracy at every captured resolution, on both OCR engines
   - [x] Masked fixtures + goldens committed, replayed through the real OCR on CI's Windows and macOS runners (`npm run test:fixtures`, docs/fixtures.md)
