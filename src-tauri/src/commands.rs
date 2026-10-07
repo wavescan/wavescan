@@ -36,6 +36,9 @@ pub struct AppInfo {
     pub platform: &'static str,
     /// Short commit id for CI builds (`WAVESCAN_BUILD` at compile time); `None` locally.
     pub build: Option<&'static str>,
+    /// True if Wavescan runs as administrator (Windows only; `None` elsewhere or if
+    /// unknown). Explains failed click tests: see [`crate::platform::is_elevated`].
+    pub elevated: Option<bool>,
 }
 
 /// Size and sequence number of a captured frame.
@@ -314,6 +317,7 @@ pub fn app_info() -> AppInfo {
         version: env!("CARGO_PKG_VERSION"),
         platform: std::env::consts::OS,
         build: option_env!("WAVESCAN_BUILD"),
+        elevated: crate::platform::is_elevated(),
     }
 }
 
@@ -517,6 +521,7 @@ mod tests {
         assert_eq!(info.version, env!("CARGO_PKG_VERSION"));
         assert_eq!(info.platform, std::env::consts::OS);
         assert_eq!(info.build, option_env!("WAVESCAN_BUILD"));
+        assert_eq!(info.elevated.is_some(), cfg!(windows));
     }
 
     #[test]

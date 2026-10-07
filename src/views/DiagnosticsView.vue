@@ -12,6 +12,8 @@ import {
   getCaptureStatus,
   getWindowCandidates,
   ocrRegion,
+  readRegions,
+  sampleRegions,
   startCapture,
   stopCapture,
 } from "@/ipc/commands";
@@ -20,6 +22,7 @@ import type { GameDataInfo } from "@/data/scannerData";
 import { decodePreview } from "@/diagnostics/preview";
 import { INPUT_TEST_TARGETS, OCR_TEST_REGIONS } from "@/diagnostics/regions";
 import { CONFIRMATION_PHRASE, runInputTest } from "@/diagnostics/inputTest";
+import { readEchoForDiagnostics } from "@/diagnostics/echoRead";
 import {
   buildReport,
   formatReport,
@@ -86,6 +89,7 @@ async function run() {
     candidates: [],
     capture: null,
     ocr: [],
+    echoRead: null,
     input: lastInput?.input ?? null,
   };
   try {
@@ -109,6 +113,13 @@ async function run() {
             label: test.label,
             outcome: await attempt(() => ocrRegion(test.region)),
           });
+        }
+        const frame = input.capture.ok ? input.capture.value.frame : null;
+        if (frame) {
+          step.value = "Reading the selected echo like a scan…";
+          input.echoRead = await attempt(() =>
+            readEchoForDiagnostics({ sampleRegions, readRegions }, frame),
+          );
         }
       } else {
         input.capture = started;

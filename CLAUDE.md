@@ -34,7 +34,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 
 | Path | Role |
 |---|---|
-| `src-tauri/src/platform/{windows,macos}/` | **Only** place with OS APIs: `window.rs`, `capture.rs`, `ocr.rs`, `input.rs` (+ `macos/app.rs`) |
+| `src-tauri/src/platform/{windows,macos}/` | **Only** place with OS APIs: `window.rs`, `capture.rs`, `ocr.rs`, `input.rs` (+ `macos/app.rs`, `windows/process.rs`: own-process elevation only) |
 | `src-tauri/src/platform/helpers.rs` | OS-independent helpers for the adapters (unit-tested everywhere) |
 | `scripts/macos-probe/` | Type-checks all macOS adapters from Linux (ADR 0018); keep its deps in sync |
 | `src-tauri/src/traits.rs` | `WindowFinder`, `FrameSource`, `OcrEngine`, `InputDriver`: the seams everything is tested through |

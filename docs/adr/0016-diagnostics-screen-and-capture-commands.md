@@ -30,6 +30,7 @@ This milestone also adds the first commands that expose capture and OCR to the U
   - matching window titles and classes
   - capture frame rate and frame size
   - OCR text and timing for two echo-panel regions
+  - **Amended 2026-10-07:** the selected echo read exactly like a scan (`src/diagnostics/echoRead.ts`): the OCR text of each scan region, and the echo as it would be exported. Still text only, from regions that `crop_outside_user_id` already guards. `app.elevated` says whether Wavescan itself runs as administrator (Windows, via its own process token; the game's process is never opened).
 
   It contains **no images**. A unit test asserts no image data appears in the report.
 - **Windows capture** uses `buffer_without_title_bar` so windowed-mode frames match the client area. The Diagnostics "captured area matches the game" check flags any mismatch, which tells us whether more cropping is needed.

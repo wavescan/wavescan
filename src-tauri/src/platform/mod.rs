@@ -36,6 +36,21 @@ pub struct Platform {
     pub input: Box<dyn InputDriver + Send + Sync>,
 }
 
+/// True if Wavescan itself is running as administrator (Windows). `None` on other systems,
+/// where it doesn't matter, or if Windows won't say. Shown in Diagnostics because Windows
+/// blocks clicks from a normal app into a game running as administrator.
+#[must_use]
+pub fn is_elevated() -> Option<bool> {
+    #[cfg(windows)]
+    {
+        windows::is_elevated()
+    }
+    #[cfg(not(windows))]
+    {
+        None
+    }
+}
+
 /// Creates the adapters for this OS. On other platforms (Linux, which only runs in the
 /// Docker check container) every adapter returns [`crate::Error::Unsupported`].
 #[must_use]
