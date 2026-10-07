@@ -71,6 +71,14 @@ export function autoClick(target: FracPoint): Promise<AutoModeStatus> {
 }
 
 /**
+ * Scrolls the mouse wheel `ticks` notches at `target` (negative scrolls down), through the
+ * same auto-mode checks as a click. At most 40 notches either way.
+ */
+export function autoScroll(target: FracPoint, ticks: number): Promise<AutoModeStatus> {
+  return invoke<AutoModeStatus>("auto_scroll", { target, ticks });
+}
+
+/**
  * Small RGBA images of `regions` from the latest frame (for change detection), and pins
  * that frame for `readRegions`. Decode with `decodeSamples`.
  */

@@ -67,6 +67,11 @@ pub enum Error {
     #[error("refused to send input outside the game window")]
     OutOfBounds,
 
+    /// A scroll of 0 notches or more than `safety::MAX_SCROLL_TICKS`. Indicates a bug, so we
+    /// refuse to act.
+    #[error("refused a scroll of that size")]
+    InvalidScroll,
+
     /// The frame the caller asked about is no longer the pinned one (a newer sample
     /// replaced it). The caller should sample again.
     #[error("that frame is no longer available; sample again")]
@@ -96,6 +101,7 @@ impl Error {
             Error::ConfirmationMismatch => "ConfirmationMismatch",
             Error::AutoModeAborted(_) => "AutoModeAborted",
             Error::OutOfBounds => "OutOfBounds",
+            Error::InvalidScroll => "InvalidScroll",
             Error::FrameExpired => "FrameExpired",
             Error::Unsupported => "Unsupported",
         }

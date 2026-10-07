@@ -38,7 +38,9 @@ Two Windows facts shape the design:
   - A "no change" result tells the user the likely fix: run Wavescan as administrator if the game is.
 - **Not in this spike:**
   - The F8 stop hotkey. It needs a global-shortcut plugin, which gets its own ADR. Until then, moving the mouse and focus loss are the abort paths, and both are tested.
+    **Done 2026-10-07:** see [ADR 0024](./0024-f8-stop-key-and-auto-scroll.md).
   - Scroll and key commands. The driver supports them, but no command exposes them until the scanner needs them.
+    **Scroll added 2026-10-07** (`auto_scroll`, ADR 0024). Key commands still aren't exposed.
 
 ## Consequences
 

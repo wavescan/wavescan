@@ -98,6 +98,8 @@ export type AutoModeState = "Disarmed" | "Armed" | { Aborted: AbortReason };
 export interface AutoModeStatus {
   state: AutoModeState;
   actions_used: number;
+  /** Whether F8 is claimed as the stop key (false while disarmed, or if another app holds F8). */
+  stop_key_active: boolean;
 }
 
 /** One region to OCR (`regions::RegionRead`). */

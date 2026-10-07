@@ -18,9 +18,10 @@ use serde::Serialize;
 use crate::error::Error;
 use crate::frame::Frame;
 use crate::geometry::{FracPoint, FracRect};
+use crate::hotkey;
 use crate::platform::Platform;
 use crate::regions::{self, RegionRead, RegionText};
-use crate::safety::{self, AutoMode, AutoModeState};
+use crate::safety::{self, AbortReason, AutoMode, AutoModeState};
 use crate::traits::{
     FrameSource, GameWindow, InputDriver, OcrEngine, OcrLine, WindowCandidate, WindowFinder,
 };
@@ -83,6 +84,9 @@ pub struct AutoModeStatus {
     pub state: AutoModeState,
     /// Actions sent since arming.
     pub actions_used: u32,
+    /// Whether F8 is claimed as the stop key right now. False while disarmed, and also when
+    /// armed if another app already holds F8 (then only moving the mouse stops auto mode).
+    pub stop_key_active: bool,
 }
 
 /// Largest preview the UI may request, in pixels wide. Keeps IPC payloads small.
@@ -101,6 +105,8 @@ pub struct AppState {
     /// frame, so text always comes from the frame that was judged stable, even if the
     /// game has moved on since.
     pinned: Mutex<Option<Arc<Frame>>>,
+    /// Whether the F8 stop key is claimed (set by `hotkey::sync`).
+    stop_key_active: AtomicBool,
 }
 
 impl AppState {
@@ -115,6 +121,7 @@ impl AppState {
             auto: Mutex::new(AutoMode::default()),
             capturing: AtomicBool::new(false),
             pinned: Mutex::new(None),
+            stop_key_active: AtomicBool::new(false),
         }
     }
 
@@ -219,7 +226,25 @@ impl AppState {
         AutoModeStatus {
             state: auto.state(),
             actions_used: auto.actions_used(),
+            stop_key_active: self.stop_key_active.load(Ordering::SeqCst),
         }
+    }
+
+    /// Whether auto mode is armed (not disarmed, not aborted).
+    #[must_use]
+    pub fn is_armed(&self) -> bool {
+        self.lock_auto().state() == AutoModeState::Armed
+    }
+
+    /// Records whether the F8 stop key is claimed. Only `hotkey::sync` calls this.
+    pub fn set_stop_key_active(&self, active: bool) {
+        self.stop_key_active.store(active, Ordering::SeqCst);
+    }
+
+    /// The F8 stop key was pressed: stops auto mode (it has to be re-armed). Does nothing if
+    /// it isn't armed.
+    pub fn stop_from_hotkey(&self) {
+        self.lock_auto().abort(AbortReason::Hotkey);
     }
 
     /// See [`arm_auto_mode`].
@@ -257,6 +282,17 @@ impl AppState {
     pub fn auto_click(&self, target: FracPoint) -> Result<AutoModeStatus, Error> {
         self.lock_auto()
             .click(self.finder.as_ref(), self.input.as_ref(), target)?;
+        Ok(self.auto_mode_status())
+    }
+
+    /// See [`auto_scroll`].
+    ///
+    /// # Errors
+    ///
+    /// Any [`AutoMode::scroll`] error.
+    pub fn auto_scroll(&self, target: FracPoint, ticks: i32) -> Result<AutoModeStatus, Error> {
+        self.lock_auto()
+            .scroll(self.finder.as_ref(), self.input.as_ref(), target, ticks)?;
         Ok(self.auto_mode_status())
     }
 
@@ -404,24 +440,44 @@ pub fn auto_mode_status(state: tauri::State<'_, AppState>) -> AutoModeStatus {
     state.auto_mode_status()
 }
 
-/// Arms auto mode if `confirmation` is the exact phrase shown with the Fair Play warning.
+/// Arms auto mode if `confirmation` is the exact phrase shown with the Fair Play warning,
+/// and claims F8 as the stop key while it's armed. Async so it runs off the main thread,
+/// which claiming the key waits for (see `hotkey`).
 ///
 /// # Errors
 ///
 /// [`Error::ConfirmationMismatch`] if the phrase is wrong.
 #[tauri::command]
-pub fn arm_auto_mode(
+pub async fn arm_auto_mode(
+    app: tauri::AppHandle,
     state: tauri::State<'_, AppState>,
     confirmation: String,
 ) -> Result<AutoModeStatus, Error> {
-    state.arm_auto_mode(&confirmation)
+    state.arm_auto_mode(&confirmation)?;
+    hotkey::sync(&app);
+    Ok(state.auto_mode_status())
 }
 
-/// Turns auto mode off.
+/// Turns auto mode off and gives F8 back. Async for the same reason as [`arm_auto_mode`].
+///
+/// # Errors
+///
+/// Never; returns `Result` because async commands that borrow state must.
 #[tauri::command]
-#[must_use]
-pub fn disarm_auto_mode(state: tauri::State<'_, AppState>) -> AutoModeStatus {
-    state.disarm_auto_mode()
+pub async fn disarm_auto_mode(
+    app: tauri::AppHandle,
+    state: tauri::State<'_, AppState>,
+) -> Result<AutoModeStatus, Error> {
+    state.disarm_auto_mode();
+    hotkey::sync(&app);
+    Ok(state.auto_mode_status())
+}
+
+/// After an action, gives F8 back if that action stopped auto mode.
+fn release_stop_key_if_stopped(app: &tauri::AppHandle, state: &AppState) {
+    if !state.is_armed() {
+        hotkey::sync_later(app.clone());
+    }
 }
 
 /// Brings the game to the front (auto mode must be armed).
@@ -430,8 +486,13 @@ pub fn disarm_auto_mode(state: tauri::State<'_, AppState>) -> AutoModeStatus {
 ///
 /// See [`AppState::auto_focus_game`].
 #[tauri::command]
-pub fn auto_focus_game(state: tauri::State<'_, AppState>) -> Result<AutoModeStatus, Error> {
-    state.auto_focus_game()
+pub fn auto_focus_game(
+    app: tauri::AppHandle,
+    state: tauri::State<'_, AppState>,
+) -> Result<AutoModeStatus, Error> {
+    let result = state.auto_focus_game();
+    release_stop_key_if_stopped(&app, &state);
+    result
 }
 
 /// Clicks at `target` (fractions of the game window) through every safety check.
@@ -441,10 +502,32 @@ pub fn auto_focus_game(state: tauri::State<'_, AppState>) -> Result<AutoModeStat
 /// See [`AppState::auto_click`].
 #[tauri::command]
 pub fn auto_click(
+    app: tauri::AppHandle,
     state: tauri::State<'_, AppState>,
     target: FracPoint,
 ) -> Result<AutoModeStatus, Error> {
-    state.auto_click(target)
+    let result = state.auto_click(target);
+    release_stop_key_if_stopped(&app, &state);
+    result
+}
+
+/// Scrolls the mouse wheel `ticks` notches at `target` (fractions of the game window;
+/// negative scrolls down) through every safety check, plus a limit of
+/// `safety::MAX_SCROLL_TICKS` notches per call.
+///
+/// # Errors
+///
+/// See [`AppState::auto_scroll`].
+#[tauri::command]
+pub fn auto_scroll(
+    app: tauri::AppHandle,
+    state: tauri::State<'_, AppState>,
+    target: FracPoint,
+    ticks: i32,
+) -> Result<AutoModeStatus, Error> {
+    let result = state.auto_scroll(target, ticks);
+    release_stop_key_if_stopped(&app, &state);
+    result
 }
 
 /// Small images of `regions` from the latest frame, for change detection; pins that frame.
@@ -498,7 +581,7 @@ fn run_ocr(crop: &Frame, ocr: &(dyn OcrEngine + Send + Sync)) -> Result<OcrResul
 mod tests {
     use super::*;
     use crate::geometry::Rect;
-    use crate::safety::{AbortReason, CONFIRMATION_PHRASE};
+    use crate::safety::CONFIRMATION_PHRASE;
     use crate::testing::{FakeFrames, FakeInput, FakeOcr, FakeWindowFinder};
 
     fn state_with(frames: Vec<Frame>, lines: Vec<OcrLine>) -> AppState {
@@ -633,6 +716,57 @@ mod tests {
     }
 
     #[test]
+    fn the_stop_key_aborts_auto_mode_and_blocks_further_input() {
+        let state = state_with(vec![], vec![]);
+        state.arm_auto_mode(CONFIRMATION_PHRASE).unwrap();
+        state.auto_click(FracPoint::new(0.5, 0.5)).unwrap();
+
+        state.stop_from_hotkey();
+
+        assert_eq!(
+            state.auto_mode_status().state,
+            AutoModeState::Aborted(AbortReason::Hotkey)
+        );
+        assert!(!state.is_armed());
+        assert!(matches!(
+            state.auto_click(FracPoint::new(0.5, 0.5)),
+            Err(Error::AutoModeAborted(AbortReason::Hotkey))
+        ));
+        assert!(matches!(
+            state.auto_scroll(FracPoint::new(0.5, 0.5), -3),
+            Err(Error::AutoModeAborted(AbortReason::Hotkey))
+        ));
+        assert_eq!(state.auto_mode_status().actions_used, 1);
+    }
+
+    #[test]
+    fn the_stop_key_does_nothing_while_disarmed() {
+        let state = state_with(vec![], vec![]);
+        state.stop_from_hotkey();
+        assert_eq!(state.auto_mode_status().state, AutoModeState::Disarmed);
+        // Arming afterwards works normally.
+        state.arm_auto_mode(CONFIRMATION_PHRASE).unwrap();
+        assert!(state.is_armed());
+    }
+
+    #[test]
+    fn auto_scroll_needs_arming_and_goes_through_the_guard() {
+        let state = state_with(vec![], vec![]);
+        assert!(matches!(
+            state.auto_scroll(FracPoint::new(0.5, 0.5), -3),
+            Err(Error::AutoModeNotArmed)
+        ));
+        state.arm_auto_mode(CONFIRMATION_PHRASE).unwrap();
+        let status = state.auto_scroll(FracPoint::new(0.5, 0.5), -3).unwrap();
+        assert_eq!(status.actions_used, 1);
+        assert!(matches!(
+            state.auto_scroll(FracPoint::new(0.5, 0.5), 500),
+            Err(Error::InvalidScroll)
+        ));
+        assert!(!state.is_armed(), "an oversized scroll stops auto mode");
+    }
+
+    #[test]
     fn read_regions_uses_the_frame_pinned_by_sample_and_expires_it() {
         let line = OcrLine {
             text: "Hecate".into(),
@@ -671,11 +805,16 @@ mod tests {
         let status = AutoModeStatus {
             state: AutoModeState::Aborted(AbortReason::UserInput),
             actions_used: 3,
+            stop_key_active: false,
         };
         let json = serde_json::to_value(status).unwrap();
         assert_eq!(
             json,
-            serde_json::json!({ "state": { "Aborted": "UserInput" }, "actions_used": 3 })
+            serde_json::json!({
+                "state": { "Aborted": "UserInput" },
+                "actions_used": 3,
+                "stop_key_active": false
+            })
         );
     }
 }

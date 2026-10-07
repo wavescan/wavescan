@@ -87,7 +87,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 - It takes pictures of **only the Wuthering Waves window**. Never your whole screen or other apps.
 - It reads text from those pictures **on your computer**, using the reader built into Windows or macOS.
 - It works out each echo's set by comparing the small set icon with copies of the set icons that come with the app. Nothing is downloaded for this.
-- In auto mode only, it sends mouse clicks and key presses to the game window.
+- In auto mode only, it sends mouse clicks and wheel scrolls to the game window. While auto mode is on, it also listens for **F8** so you can stop it; F8 goes back to normal as soon as auto mode stops.
 
 **What it never does**
 
@@ -148,6 +148,9 @@ This shouldn't appear for signed releases. If it does, check that you downloaded
 
 **Mac: auto mode or the click test says "permission needed: Accessibility"**
 Go to **System Settings → Privacy & Security → Accessibility**, turn on *Wavescan*, then try again.
+
+**F8 doesn't stop auto mode**
+Another app is probably using F8 already (the auto mode screen says so). Move the mouse instead: that always stops it.
 
 **Auto mode doesn't click anything (Windows)**
 Auto mode needs the scanner to run as administrator. Without it, Windows blocks the scanner's clicks, sometimes without any error. Close the scanner, right-click it, choose **Run as administrator** and try again.

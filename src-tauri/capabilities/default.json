@@ -20,6 +20,7 @@
     "allow-disarm-auto-mode",
     "allow-auto-focus-game",
     "allow-auto-click",
+    "allow-auto-scroll",
     "allow-sample-regions",
     "allow-read-regions"
   ]

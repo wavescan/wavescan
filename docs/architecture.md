@@ -127,10 +127,11 @@ Implemented (milestone 3). Each one is listed in `build.rs` and granted in `capa
 | `capture_status` | `()` → `CaptureStatus { running, fps, frame }` | |
 | `capture_preview` | `{ maxWidth }` → raw bytes `[w u32][h u32][RGBA]` | Downscaled, **User ID masked in Rust** |
 | `ocr_region` | `{ region: FracRect }` → `OcrResult { lines, elapsed_ms, width, height }` | Crops via `crop_outside_user_id`; runs on a blocking worker thread |
-| `auto_mode_status` | `()` → `AutoModeStatus { state, actions_used }` | `state`: `"Disarmed"` · `"Armed"` · `{ "Aborted": reason }` |
-| `arm_auto_mode` / `disarm_auto_mode` | `{ confirmation }` / `()` → `AutoModeStatus` | Arming needs the exact phrase; never persisted |
+| `auto_mode_status` | `()` → `AutoModeStatus { state, actions_used, stop_key_active }` | `state`: `"Disarmed"` · `"Armed"` · `{ "Aborted": reason }`. `stop_key_active`: F8 is claimed |
+| `arm_auto_mode` / `disarm_auto_mode` | `{ confirmation }` / `()` → `AutoModeStatus` | Arming needs the exact phrase; never persisted. Arming claims F8 as the stop key, disarming (or any abort) gives it back ([ADR 0024](adr/0024-f8-stop-key-and-auto-scroll.md)) |
 | `auto_focus_game` | `()` → `AutoModeStatus` | Guarded; needs arming, not focus ([ADR 0017](adr/0017-input-spike-and-auto-mode-commands.md)) |
 | `auto_click` | `{ target: FracPoint }` → `AutoModeStatus` | Every `AutoMode` check; Windows: `SetCursorPos` + `SendInput` |
+| `auto_scroll` | `{ target: FracPoint, ticks }` → `AutoModeStatus` | Same checks as a click, plus at most 40 notches either way (`MAX_SCROLL_TICKS`); negative scrolls down ([ADR 0024](adr/0024-f8-stop-key-and-auto-scroll.md)) |
 
 | `sample_regions` | `{ regions: FracRect[], maxWidth }` → raw bytes `[seq u64][count u32]` + per region `[w u32][h u32][RGBA]` | Small images for change detection (fingerprints computed in TS by scanner-core). **Pins** the sampled frame |
 | `read_regions` | `{ seq, regions: RegionRead[] }` → `RegionText[]` | OCRs the **pinned** frame `seq` (so text matches the frame judged stable), one thread per region; `FrameExpired` if `seq` isn't pinned |
