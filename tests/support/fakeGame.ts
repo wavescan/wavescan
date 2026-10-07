@@ -87,7 +87,17 @@ export function createFakeGame(options: FakeGameOptions) {
     return null;
   }
 
+  /** The last strip drawn, reused until the grid scrolls (most samples see the same grid). */
+  let cached: { offset: number; sample: Sample } | null = null;
+
   function renderStrip(): Sample {
+    if (cached?.offset === offset) return cached.sample;
+    const sample = drawStrip();
+    cached = { offset, sample };
+    return sample;
+  }
+
+  function drawStrip(): Sample {
     const { strip } = layout;
     const height = Math.round((SAMPLE_WIDTH * strip.height * frame.height) / (strip.width * frame.width));
     const rgba = new Uint8ClampedArray(SAMPLE_WIDTH * height * 4);
@@ -101,7 +111,9 @@ export function createFakeGame(options: FakeGameOptions) {
         // so a card's top edge never makes a bright-to-dark drop of its own.
         let value = 80;
         if (column >= 0) {
-          for (let row = 0; row < rowCount; row++) {
+          // Only the row whose card can cover this y, and its neighbours.
+          const near = Math.floor((fy + offset - top0) / layout.rowPitch);
+          for (let row = Math.max(0, near); row <= Math.min(rowCount - 1, near + 1); row++) {
             const index = row * 6 + column;
             if (index >= echoes.length) continue;
             const bar = barTop(row);
@@ -118,8 +130,19 @@ export function createFakeGame(options: FakeGameOptions) {
     return { width: SAMPLE_WIDTH, height, rgba };
   }
 
+  const panels = new Map<string, Sample>();
+
   /** Panel pixels: noise seeded by the selected echo, so each echo has its own fingerprint. */
   function renderPanel(width: number, height: number, salt: number): Sample {
+    const key = `${selected}/${salt}`;
+    const known = panels.get(key);
+    if (known) return known;
+    const sample = drawPanel(width, height, salt);
+    panels.set(key, sample);
+    return sample;
+  }
+
+  function drawPanel(width: number, height: number, salt: number): Sample {
     const rgba = new Uint8ClampedArray(width * height * 4);
     let state = (selected + 1) * 7919 + salt;
     for (let i = 0; i < width * height; i++) {

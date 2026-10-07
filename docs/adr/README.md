@@ -55,3 +55,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0021](./0021-batched-region-reads-with-pinned-frames.md) | Batched region reads with pinned frames | accepted | | capture, ocr, ipc |
 | [0022](./0022-set-icon-matching-with-bundled-references.md) | Set-icon matching against bundled reference icons | accepted | | data, ocr, accuracy |
 | [0023](./0023-auto-mode-requires-administrator-on-windows.md) | Auto mode on Windows needs Wavescan to run as administrator | accepted | | input, security, product, windows |
+| [0024](./0024-f8-stop-key-and-auto-scroll.md) | F8 stop key via the global-shortcut plugin, and the `auto_scroll` command | accepted | | input, security, dependencies |

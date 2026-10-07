@@ -160,7 +160,7 @@ describe("navigator", () => {
     const downScrolls = fake.log.scrolls.filter((t) => t < 0).length;
     expect(downScrolls / rows).toBeLessThan(3.5);
     expect(fake.log.clicks.length).toBe(rows * 6);
-  });
+  }, 20_000);
 });
 
 describe("measureMove", () => {

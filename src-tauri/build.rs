@@ -19,6 +19,7 @@ fn main() {
             "disarm_auto_mode",
             "auto_focus_game",
             "auto_click",
+            "auto_scroll",
             "sample_regions",
             "read_regions",
         ]));

@@ -12,6 +12,7 @@
 //! | [`frame`] | In-memory captured images: crop, fill |
 //! | [`regions`] | Batched region sampling (change detection) and OCR for the scanner |
 //! | [`geometry`] | Pixel and fractional rectangles/points |
+//! | [`hotkey`] | The F8 stop key for auto mode (held only while armed) |
 //! | [`platform`] | Windows/macOS implementations of the traits |
 //! | [`stats`] | Frame-rate measurement |
 //! | [`commands`] | IPC commands the UI calls, and the shared app state |
@@ -21,6 +22,7 @@ pub mod commands;
 pub mod error;
 pub mod frame;
 pub mod geometry;
+pub mod hotkey;
 pub mod platform;
 pub mod regions;
 pub mod safety;
@@ -41,6 +43,7 @@ pub use error::Error;
 pub fn run() -> Result<(), Error> {
     tauri::Builder::default()
         .manage(commands::AppState::new(platform::create()))
+        .plugin(hotkey::plugin())
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
             commands::find_game_window,
@@ -55,6 +58,7 @@ pub fn run() -> Result<(), Error> {
             commands::disarm_auto_mode,
             commands::auto_focus_game,
             commands::auto_click,
+            commands::auto_scroll,
             commands::sample_regions,
             commands::read_regions,
         ])

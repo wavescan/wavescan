@@ -52,7 +52,8 @@ pub enum AbortReason {
     WindowGone,
     /// The session used up its maximum number of actions.
     ActionCapReached,
-    /// A click target was outside the game window (a bug; we refuse to guess).
+    /// A click target was outside the game window, or a scroll was too big (a bug; we
+    /// refuse to guess).
     InvalidTarget,
     /// The OS rejected our input.
     InputRejected,
@@ -68,7 +69,9 @@ impl fmt::Display for AbortReason {
             AbortReason::FocusLost => "the game window lost focus",
             AbortReason::WindowGone => "the game window closed",
             AbortReason::ActionCapReached => "the safety limit on actions was reached",
-            AbortReason::InvalidTarget => "a click target was outside the game window",
+            AbortReason::InvalidTarget => {
+                "a click outside the game window or an oversized scroll was refused"
+            }
             AbortReason::InputRejected => "the game did not accept input",
             AbortReason::CheckFailed => "a safety check could not be completed",
         };
@@ -76,11 +79,17 @@ impl fmt::Display for AbortReason {
     }
 }
 
+/// Most wheel notches one scroll may send, either way. The navigator sends at most 37
+/// (going back to the top of the echo list) and 8 while reading. Anything bigger is a bug,
+/// so it's refused and auto mode stops.
+pub const MAX_SCROLL_TICKS: i32 = 40;
+
 /// Limits for one auto-mode session.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct AutoModeLimits {
     /// Maximum clicks + scrolls + key presses per armed session. A full 3,000-echo bag
-    /// needs about 3,000 clicks plus a few hundred scrolls.
+    /// needs about 3,000 clicks plus about 1,300 scrolls (the navigator scrolls under half
+    /// a row at a time, about 2.7 scrolls per row of 6).
     pub max_actions: u32,
     /// How far (in physical pixels) the cursor may drift from where we last put it
     /// before we treat it as the user taking over. Allows for rounding in DPI scaling.
@@ -226,7 +235,8 @@ impl AutoMode {
     ///
     /// # Errors
     ///
-    /// Same as [`AutoMode::click`].
+    /// Same as [`AutoMode::click`], plus [`Error::InvalidScroll`] (and auto mode stops) if
+    /// `ticks` is 0 or more than [`MAX_SCROLL_TICKS`] either way.
     pub fn scroll(
         &mut self,
         finder: &dyn WindowFinder,
@@ -235,6 +245,10 @@ impl AutoMode {
         ticks: i32,
     ) -> Result<(), Error> {
         let window = self.check(finder, driver, Focus::Required)?;
+        if ticks == 0 || ticks.abs() > MAX_SCROLL_TICKS {
+            self.abort(AbortReason::InvalidTarget);
+            return Err(Error::InvalidScroll);
+        }
         let point = self.resolve(&window, target)?;
         self.send(|| driver.scroll(point, ticks))?;
         self.last_cursor = Some(point);
@@ -443,6 +457,29 @@ mod tests {
         assert!(matches!(input.events()[0], InputEvent::Scroll(_, -3)));
         assert_eq!(input.events()[1], InputEvent::Press(Key::Escape));
         assert_eq!(guard.actions_used(), 2);
+    }
+
+    #[test]
+    fn oversized_or_empty_scrolls_are_refused_and_stop_auto_mode() {
+        for ticks in [0, MAX_SCROLL_TICKS + 1, -MAX_SCROLL_TICKS - 1] {
+            let (finder, input) = (FakeWindowFinder::focused(), FakeInput::default());
+            let mut guard = armed();
+            assert!(matches!(
+                guard.scroll(&finder, &input, CENTER, ticks),
+                Err(Error::InvalidScroll)
+            ));
+            assert!(input.events().is_empty(), "nothing may be sent");
+            assert_eq!(
+                guard.state(),
+                AutoModeState::Aborted(AbortReason::InvalidTarget)
+            );
+        }
+        let (finder, input) = (FakeWindowFinder::focused(), FakeInput::default());
+        let mut guard = armed();
+        guard
+            .scroll(&finder, &input, CENTER, -MAX_SCROLL_TICKS)
+            .unwrap();
+        assert_eq!(input.events().len(), 1);
     }
 
     // ---- abort conditions --------------------------------------------------------------

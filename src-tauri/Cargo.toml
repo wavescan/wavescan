@@ -21,6 +21,9 @@ tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
+# The F8 stop key for auto mode (ADR 0024): RegisterHotKey / RegisterEventHotKey, held only
+# while auto mode is armed. The webview gets no global-shortcut permission.
+tauri-plugin-global-shortcut = "2"
 
 # Only for examples/fixtures.rs (masking and OCR-replaying fixture screenshots). Already in
 # Cargo.lock through Tauri, so it adds no new crate.

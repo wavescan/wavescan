@@ -49,7 +49,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - [x] Grid reader: visible rows, click targets, scroll matching (`src/auto/grid.ts`, 16:10 and 16:9)
   - [x] Navigator state machine (click → read → next, scroll, end of list, stop level): `src/auto/navigator.ts`, against a fake grid
   - [ ] Overlap reads with clicks (keep a few pinned frames, ADR 0021 follow-up)
-  - [ ] `auto_scroll` command + F8 stop hotkey (ADR)
+  - [x] `auto_scroll` command + F8 stop hotkey ([ADR 0024](adr/0024-f8-stop-key-and-auto-scroll.md))
   - [ ] Auto mode UI
   - [x] 16:9 grid measurements (1920×1080)
 - [ ] Fixture tests ≥ 99% field accuracy at every captured resolution, on both OCR engines
