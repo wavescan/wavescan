@@ -183,6 +183,8 @@ describe("administrator note (Windows)", () => {
   it("says whether Wavescan runs as administrator, and nothing when unknown", () => {
     expect(windowDetail(true)).toContain("Wavescan is running as administrator");
     expect(windowDetail(false)).toContain("not running as administrator");
+    // Auto mode always needs it on Windows (ADR 0023), so no "usually".
+    expect(windowDetail(false)).toContain("(auto mode needs it)");
     expect(windowDetail(null)).toBe("2880×1800 at 200% scale");
   });
 });

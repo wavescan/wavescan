@@ -156,7 +156,7 @@ Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `sr
 | User ID never read | `crop_outside_user_id` refuses OCR crops that overlap it. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
 | Tauri capabilities | `src-tauri/capabilities/default.json`: only our commands + updater + dialog save + clipboard write |
 | CSP | `default-src 'self'`. No remote scripts or styles |
-| Least privilege | Admin (Windows) / Accessibility (macOS) requested only when arming auto mode |
+| Least privilege | Admin (Windows, the user runs Wavescan as administrator: [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md)) / Accessibility (macOS) needed only for auto mode |
 | Supply chain | `cargo deny`, `npm audit`, lockfiles committed, signed + attested release builds ([ADR 0011](adr/0011-signing-provenance-and-updater.md)) |
 
 ### Network {#network}

@@ -49,6 +49,7 @@ Two Windows facts shape the design:
 - Cons:
   - The effect check depends on OCR and on being on Bag → Echoes with at least two different echoes visible.
   - Elevation can't be detected without opening the game process, which we avoid ([ADR 0016](./0016-diagnostics-screen-and-capture-commands.md)), so the advice is a best guess.
+    **Superseded 2026-10-07:** see [ADR 0023](./0023-auto-mode-requires-administrator-on-windows.md). We no longer guess: auto mode on Windows needs administrator.
 
 ## Guidance
 

@@ -65,10 +65,10 @@ export interface DiagnosticsReport {
 /** Frame rate below this is flagged: the game may be paused, minimised or throttled. */
 export const MIN_GOOD_FPS = 20;
 
-/** Windows only: whether Wavescan runs as administrator, which auto mode usually needs. */
+/** Windows only: whether Wavescan runs as administrator, which auto mode needs (ADR 0023). */
 function adminNote(app: AppInfo | null): string {
   if (app?.elevated === true) return ". Wavescan is running as administrator";
-  if (app?.elevated === false) return ". Wavescan is not running as administrator (auto mode usually needs it)";
+  if (app?.elevated === false) return ". Wavescan is not running as administrator (auto mode needs it)";
   return "";
 }
 
