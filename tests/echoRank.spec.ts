@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadBundledScannerData } from "@/data/scannerData";
-import { inferRank, statNumber, valueAtLevel } from "@/session/echoRank";
+import { inferMainStatKey, inferRank, rowValue, valueAtLevel } from "@/session/echoRank";
 import { extractEcho } from "@/session/echoExtract";
 import { readingOrder } from "@/session/ocrText";
 import { buildScan } from "@/session/exportScan";
@@ -103,12 +103,22 @@ describe("inferRank", () => {
     expect(inferRank({ cost: 1, level: 12, secondaryValue: 114, mainStatKey: null, mainStatValue: null }).rank).toBeNull();
   });
 
-  it("reads numbers out of stat values", () => {
-    expect(statNumber("2.8%")).toBe(2.8);
-    expect(statNumber("114")).toBe(114);
-    expect(statNumber("x")).toBeNull();
-    expect(statNumber(undefined)).toBeNull();
+  it("infers a main stat only when exactly one fits", () => {
+    expect(inferMainStatKey({ cost: 1, level: 0, rank: 2, value: 2.8 })).toBe("HP");
+    expect(inferMainStatKey({ cost: 1, level: 25, rank: null, value: 22.8 })).toBe("HP");
+    expect(inferMainStatKey({ cost: 1, level: 25, rank: 5, value: 18 })).toBeNull(); // ATK% or DEF%
+    expect(inferMainStatKey({ cost: 1, level: null, rank: 2, value: 2.8 })).toBeNull();
+    expect(inferMainStatKey({ cost: 3, level: 0, rank: 2, value: 99 })).toBeNull();
   });
+
+  it("reads the number at the end of a stat row, with or without its label", () => {
+    expect(rowValue("HP 114")).toBe(114);
+    expect(rowValue("114")).toBe(114);
+    expect(rowValue("Electro DMG Bonus 3.7%")).toBe(3.7);
+    expect(rowValue("2280")).toBe(2280);
+    expect(rowValue("ATK")).toBeNull();
+  });
+
 });
 
 const at = (text: string, x: number, y: number, width = 100, height = 40): OcrLine => ({
@@ -149,6 +159,28 @@ describe("reading order (2026-10-06 Windows report: main stat came out as '?')",
     expect(echo.confidence.mainStat).toBe("high");
     expect(echo.level).toBe(0);
     expect({ rank: echo.rank, confidence: echo.confidence.rank }).toEqual({ rank: 2, confidence: "high" });
+  });
+
+  it("works out Whiff Whaff's main stat when Windows OCR drops both 'HP' labels (2026-10-07)", () => {
+    const echo = extractEcho(rankTwoPanel("Whiff Whaff", [at("2.8%", 620, 6)], [at("114", 650, 6)]));
+    expect(echo.slot.mainStatLabel).toBe("HP");
+    expect(echo.confidence.mainStat).toBe("low");
+    expect({ rank: echo.rank, confidence: echo.confidence.rank }).toEqual({ rank: 2, confidence: "high" });
+    const { scan } = buildScan([{ ...echo, id: "echo-1", index: 1 }], {
+      scannerVersion: "0.0.1",
+      platform: "windows",
+      resolution: { width: 2880, height: 1800 },
+      mode: "watch",
+    });
+    expect(scan.echoes[0]).toMatchObject({ stat: "HP", rank: 2 });
+    expect(scan.echoes[0]?.lowConfidence).toContain("stat");
+  });
+
+  it("leaves the main stat unknown when its value fits more than one stat", () => {
+    // Cost 1 ATK% and DEF% share a table: 2.2% at rank 2 +0 could be either.
+    const echo = extractEcho(rankTwoPanel("Whiff Whaff", [at("2.2%", 620, 6)], [at("114", 650, 6)]));
+    expect(echo.slot.mainStatLabel).toBe("");
+    expect(echo.confidence.mainStat).toBe("low");
   });
 
   it("doesn't treat the same echo at a different rarity as a duplicate", () => {
