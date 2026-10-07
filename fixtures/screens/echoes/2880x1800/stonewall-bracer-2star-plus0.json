@@ -1,0 +1,11 @@
+{
+  "echo": "StonewallBracer",
+  "echoSet": "RejuvenatingGlow",
+  "cost": 3,
+  "rank": 2,
+  "level": 0,
+  "stat": "Electro",
+  "substats": [],
+  "equippedBy": null,
+  "notes": "Rank 2 (green name) at +0: no substats, the Echo Skill text sits where substats would be. One-digit level, so the set icon is further left than at +25 (2026-10-07 report). Set checked against the reference icon and the grid card. The mouse cursor is over the set icon in this screenshot (a live capture never includes it). Equipped by the player's Rover under a custom name, element unknown, so equippedBy stays null until it's checked in game."
+}
