@@ -50,7 +50,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - [ ] Navigator state machine (click → read → next, scroll, end of list, stop level)
   - [ ] `auto_scroll` command + F8 stop hotkey (ADR)
   - [ ] Auto mode UI
-  - [x] 16:9 grid measurements (1920×1080 windowed; User ID position at 16:9 is still a best guess)
+  - [x] 16:9 grid measurements (1920×1080)
 - [ ] Fixture tests ≥ 99% field accuracy at every captured resolution, on both OCR engines
   - [x] Masked fixtures + goldens committed, replayed through the real OCR on CI's Windows and macOS runners (`npm run test:fixtures`, docs/fixtures.md)
 

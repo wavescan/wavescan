@@ -13,7 +13,7 @@ Measured notes for the echo inventory screen. Fixtures live in `fixtures/screens
 
 | 7 PNGs (Windows, **windowed** 1920×1080 on a 1920×1080 desktop, 2026-10-07) | 1920×1080 game area | 16:9 | Top of list, two mid-scrolls, +5/+15/+20/+25 echoes. Desktop screenshots, so they include the title bar (58 px) and the left border (2 px), and the window ran 58 px off the bottom and 2 px off the right of the screen. The fixtures are the game area rebuilt from them: crop x ≥ 2, y ≥ 58, paste at (0, 0) on a black 1920×1080 frame. The bottom 58 rows (footer edge and the **User ID**) are black |
 
-**Still needed:** 16:9 at 2560×1440 / 3840×2160 and a fullscreen 16:9 capture (to see the User ID), and any **macOS (Apple Silicon)** capture.
+**Still needed:** 16:9 at 2560×1440 / 3840×2160, and any **macOS (Apple Silicon)** capture.
 
 ## 16:9 vs 16:10
 
@@ -23,7 +23,7 @@ Checked on the 1920×1080 captures (2026-10-07). The game scales its UI with the
 - Everything in the top part of the screen (header, detail panel, grid top) is **top-anchored**: in 1920-wide pixels it sits at the same y. As a fraction, y₁₆:₉ = y₁₆:₁₀ × 1.111. scanner-core's `regionForFrame` already does this, and every read region lands on its text at 1920×1080.
 - The footer (Sort by Level, Upgrade) is **bottom-anchored**: the same distance from the bottom in 1920-wide pixels (Upgrade: 90 px at both shapes). The grid's scrolling area ends above the footer, so its bottom edge is bottom-anchored too.
 - The extra height at 16:10 (120 px at 1920 wide) goes between the two, which is why the 16:10 grid shows about half a row more.
-- **User ID (best guess, not seen yet):** bottom-right, so assumed bottom-anchored like the footer: text at about y 0.983–0.996 at 16:9, inside `USER_ID_REGION` (y ≥ 0.975). The windowed captures had it off screen.
+- **User ID:** bottom-anchored like the footer. The windowed captures had it off screen; a fullscreen 1920×1080 recording (`fixtures/scrollwheel.mp4`, local only) shows the text at x 0.887–0.972, y 0.983–0.996, inside `USER_ID_REGION` (y ≥ 0.975). Pinned by a test in `safety.rs`.
 
 ## Layout
 
