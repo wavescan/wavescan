@@ -56,7 +56,7 @@ This is the scan itself. Wavescan only watches; it never clicks anything.
 
 This checks whether Wavescan's clicks reach the game, which the future *auto mode* needs.
 
-- It brings the game to the front and **clicks two echoes in your Bag grid**. Clicking only selects them; nothing is upgraded, locked or discarded.
+- It brings the game to the front and **clicks the second and then the first echo in your Bag grid**, so you should see the selection move twice. Clicking only selects them; nothing is upgraded, locked or discarded.
 - Read the Fair Play note on screen. If you're comfortable, type `I understand` and press **Run click test**. **Don't touch the mouse** until it finishes; moving it stops the test immediately.
 - **Mac:** the first time, macOS asks for **Accessibility** permission. Turn on Wavescan in System Settings → Privacy & Security → Accessibility, then run the test again.
 - **Windows:** Wuthering Waves usually runs as administrator, and Windows then blocks clicks from normal apps. **Before** the test, close Wavescan, right-click it → **Run as administrator**, and run Diagnostics again. The **Find game window** check says whether Wavescan is running as administrator. If the test still fails, mention that in your message.

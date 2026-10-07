@@ -17,7 +17,7 @@ Measured notes for the echo inventory screen. Fixtures live in `fixtures/screens
 
 - **Left rail:** bag category icons.
 - **Header:** `Echoes  2969/3000`. This gives the **total count**, so auto mode knows when it's done and can show progress.
-- **Grid:** **6 columns**, about 4.5 rows visible. On the 16:10 reference, column centres are x ≈ 0.130, 0.222, … (pitch ≈ 0.092) and the first row's cells span y 0.115–0.265 (centre 0.19). The diagnostics click test clicks the first two cells, since that row is the only one guaranteed to exist on a small inventory. Each cell shows:
+- **Grid:** **6 columns**, about 4.5 rows visible. On the 16:10 reference, column centres are x ≈ 0.130, 0.222, … (pitch ≈ 0.092) and the first row's cells span y 0.115–0.265 (centre 0.19). The diagnostics click test clicks the second cell, then the first, since that row is the only one guaranteed to exist on a small inventory. The first echo is usually selected when the screen opens, so this order makes both clicks visibly change the selection. Each cell shows:
   - an equipped-character avatar (top-left)
   - a lock icon
   - cost (`4`/`3`/`1`, right)

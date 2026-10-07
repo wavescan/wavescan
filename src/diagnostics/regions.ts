@@ -24,16 +24,19 @@ export const OCR_TEST_REGIONS: TestRegion[] = [
 ];
 
 /**
- * Where the input test clicks on Bag → Echoes: the first two echoes in the grid (top-left).
- * Clicking a cell only selects that echo, so it's harmless whatever is there. Measured
+ * Where the input test clicks on Bag → Echoes: the second echo in the grid, then the first.
+ * The first echo is usually already selected when the screen opens, so clicking it first
+ * changed nothing visible and the test looked like it stopped after one click (2026-10-07
+ * report). In this order both clicks change the selection on screen. Clicking a cell only
+ * selects that echo, so it's harmless whatever is there. Measured
  * from the 16:10 fixtures: column centres are about 0.130 and 0.222, and the first row's
  * centre is y 0.19 (cells span y 0.115–0.265). The first row is the only one that exists
  * on a small inventory: the old y 0.42 hit the third row and clicked empty space on an
  * account with three echoes (2026-10-07 report).
  */
 export const INPUT_TEST_TARGETS = [
-  { x: 0.13, y: 0.19 },
   { x: 0.222, y: 0.19 },
+  { x: 0.13, y: 0.19 },
 ] as const;
 
 /** Game UI aspect ratios the layouts support: 16:10 to 16:9, with a little slack. */

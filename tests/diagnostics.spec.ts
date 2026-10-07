@@ -251,6 +251,11 @@ describe("input test targets", () => {
       expect(target.y).toBeGreaterThan(0.13);
       expect(target.y).toBeLessThan(0.25);
     }
-    expect(INPUT_TEST_TARGETS.map((t) => t.x)).toEqual([0.13, 0.222]);
+    expect(INPUT_TEST_TARGETS.map((t) => t.x).toSorted()).toEqual([0.13, 0.222]);
+  });
+
+  it("clicks the second echo before the first, so both clicks change the selection", () => {
+    // The first echo is usually selected already when Bag → Echoes opens.
+    expect(INPUT_TEST_TARGETS.map((t) => t.x)).toEqual([0.222, 0.13]);
   });
 });
