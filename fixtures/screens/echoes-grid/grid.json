@@ -16,7 +16,8 @@
     "echoes/1920x1080/kernel-puppet-joy-plus25": [0.4046, 0.6, 0.7963],
     "echoes/1920x1080/suhsin-plus15": [0.287, 0.4824, 0.6787],
     "echoes/1920x1080/whiff-whaff-plus20": [0.2852, 0.4815, 0.6769],
-    "echoes/1920x1080/rocksteady-guardian-plus5": [0.287, 0.4824, 0.6787]
+    "echoes/1920x1080/rocksteady-guardian-plus5": [0.287, 0.4824, 0.6787],
+    "echoes-grid/1920x1080/end-of-list": [0.4038, 0.5988, 0.7974]
   },
   "scrolls": [
     { "before": "echoes-grid/2304x1440/scroll-a-before", "after": "echoes-grid/2304x1440/scroll-a-after", "shift": 2 },

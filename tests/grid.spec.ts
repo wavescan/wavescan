@@ -26,6 +26,8 @@ interface StripOptions {
   /** y (frame fraction) of a bright band across every card, like a Kernel Puppet's crossbar. */
   band?: (barTop: number) => number | undefined;
   layout?: GridLayout;
+  /** How many cards each row has, from the left (default 6). */
+  cards?: (row: number) => number;
 }
 
 /** Draws rows whose gold line sits at each `barTops` (frame y). */
@@ -46,7 +48,7 @@ function strip(barTops: number[], options: StripOptions = {}): Sample {
       const column = COLUMN_X.findIndex((cx) => Math.abs(fx - cx) <= 0.0385);
       let value = 150;
       barTops.forEach((barTop, row) => {
-        if (column < 0) return;
+        if (column < 0 || column >= (options.cards?.(row) ?? 6)) return;
         const band = options.band?.(barTop);
         if (band !== undefined && fy >= band - bandHeight && fy < band) value = 200;
         else if (band !== undefined && fy >= band && fy < barTop - lineHeight) value = 60;
@@ -104,6 +106,17 @@ describe("grid rows", () => {
 
   it("returns nothing when two edges disagree and neither has company", () => {
     expect(findRowEdges(L, strip([0.3, 0.55]))).toEqual([]);
+  });
+
+  it("finds a last row with only two cards, and still targets every column", () => {
+    const rows = visibleRows(L, strip([0.237, 0.41, 0.589, 0.766], { cards: (row) => (row === 3 ? 2 : 6) }));
+    expect(rows).toHaveLength(4);
+    expect(Math.abs(rows[3]!.barTop - 0.766)).toBeLessThan(0.012);
+    expect(rows[3]!.targets).toHaveLength(6);
+  });
+
+  it("doesn't invent a row below the last one when the area there is empty", () => {
+    expect(visibleRows(L, strip([0.237, 0.41]))).toHaveLength(2);
   });
 
   it("reads a 16:9 grid with its own layout", () => {
