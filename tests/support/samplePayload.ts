@@ -3,17 +3,29 @@ import type { Sample } from "@/session/samples";
 
 // Test helpers: build `sample_regions` payloads and set-icon samples without a game.
 
-/** A sample showing a set's reference icon on a plain background, padded like the real search region. */
-export function iconSample(set: string, pad = 13, background: [number, number, number] = [60, 45, 50]): Sample {
+/**
+ * A sample showing a set's reference icon on a plain background, shaped like the real
+ * search region: `pad` around the icon, plus the extra area on the left that
+ * `setIconSearchRegion` adds for one-digit levels. `shiftLeft` moves the icon that many
+ * pixels left, the way a "+0" level does.
+ */
+export function iconSample(
+  set: string,
+  pad = 13,
+  background: [number, number, number] = [60, 45, 50],
+  shiftLeft = 0,
+): Sample {
   const icon = setIconReference(set);
   if (!icon) throw new Error(`no reference icon for ${set}`);
-  const width = icon.width + 2 * pad;
+  const extra = Math.round(0.4 * (icon.width + 2 * pad));
+  const width = icon.width + 2 * pad + extra;
   const height = icon.height + 2 * pad;
+  const left = extra + pad - shiftLeft;
   const rgba = new Uint8ClampedArray(width * height * 4);
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const o = (y * width + x) * 4;
-      const ix = x - pad;
+      const ix = x - left;
       const iy = y - pad;
       const inside = ix >= 0 && iy >= 0 && ix < icon.width && iy < icon.height;
       const i = (iy * icon.width + ix) * 3;

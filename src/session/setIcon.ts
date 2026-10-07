@@ -14,8 +14,19 @@ import type { Sample } from "./samples";
 /** SET_ICON_BOX grown by this share of its size on every side. The icon sits inside it. */
 const SEARCH_PAD = 0.25;
 
-/** The sample is shrunk to this width before searching (enough detail, and fast). */
+/**
+ * The search area also reaches this share of SET_ICON_BOX's width further left. The icon
+ * follows the level text, so a one-digit level ("+0") puts it about 0.0085 of the screen
+ * further left than "+25" does, half outside the padded box (2026-10-07 report: every +0
+ * echo with more than one possible set came out with no set).
+ */
+const SEARCH_LEFT_EXTRA = 0.6;
+
+/** The padded SET_ICON_BOX is shrunk to this width before searching (enough detail, and fast). */
 const SEARCH_WIDTH = 40;
+
+/** Width of the whole search area (padded box plus the extra on the left) at that scale. */
+const TARGET_WIDTH = Math.round((SEARCH_WIDTH * (1 + 2 * SEARCH_PAD + SEARCH_LEFT_EXTRA)) / (1 + 2 * SEARCH_PAD));
 
 /** Icon sizes tried, as a share of SEARCH_WIDTH. Measured: 0.53 (PC), 0.58 (mobile). */
 const MIN_ICON_SHARE = 0.45;
@@ -32,12 +43,21 @@ const CIRCLE = 0.47;
 export const MIN_SCORE = 0.7;
 export const MIN_MARGIN = 0.15;
 
-/** The area to sample for set matching (padded SET_ICON_BOX, adjusted for the frame shape). */
+/**
+ * The area to sample for set matching (padded SET_ICON_BOX plus the extra on the left for
+ * one-digit levels, adjusted for the frame shape).
+ */
 export function setIconSearchRegion(frame: FrameSize): RegionFrac {
   const box = regionForFrame(SET_ICON_BOX, frame);
   const padX = box.width * SEARCH_PAD;
   const padY = box.height * SEARCH_PAD;
-  return { x: box.x - padX, y: box.y - padY, width: box.width + 2 * padX, height: box.height + 2 * padY };
+  const extra = box.width * SEARCH_LEFT_EXTRA;
+  return {
+    x: box.x - padX - extra,
+    y: box.y - padY,
+    width: box.width + 2 * padX + extra,
+    height: box.height + 2 * padY,
+  };
 }
 
 export interface SetIconMatch {
@@ -128,7 +148,7 @@ function features(p: Pixels) {
 /** A reference icon shrunk to one size, ready to compare (only depends on the set and size). */
 interface Prepared {
   size: number;
-  /** Positions inside the circle, as offsets into a SEARCH_WIDTH-wide target. */
+  /** Positions inside the circle, as offsets into a TARGET_WIDTH-wide target. */
   offsets: Int32Array;
   /** Reference brightness minus its mean, per position, and the length of that vector. */
   dev: Float32Array;
@@ -151,7 +171,7 @@ function prepare(key: string, icon: RgbImage, size: number): Prepared {
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       if ((x - centre) ** 2 + (y - centre) ** 2 > radius2) continue;
-      offsets.push(y * SEARCH_WIDTH + x);
+      offsets.push(y * TARGET_WIDTH + x);
       index.push(y * size + x);
     }
   }
@@ -170,7 +190,7 @@ function prepare(key: string, icon: RgbImage, size: number): Prepared {
  * when the shape score alone is already too low (most positions; keeps the search fast).
  */
 function scoreAt(t: ReturnType<typeof features>, ref: Prepared, ox: number, oy: number, toBeat: number): number {
-  const origin = oy * SEARCH_WIDTH + ox;
+  const origin = oy * TARGET_WIDTH + ox;
   const count = ref.offsets.length;
   let mean = 0;
   for (let k = 0; k < count; k++) mean += t.lum[origin + ref.offsets[k]!]!;
@@ -204,7 +224,7 @@ function bestScore(target: Pixels, key: string, icon: RgbImage): number {
   for (let size = minSize; size <= maxSize; size++) {
     const ref = prepare(key, icon, size);
     for (let oy = 0; oy + size <= target.height; oy++) {
-      for (let ox = 0; ox + size <= SEARCH_WIDTH; ox++) {
+      for (let ox = 0; ox + size <= TARGET_WIDTH; ox++) {
         best = Math.max(best, scoreAt(t, ref, ox, oy, best));
       }
     }
@@ -218,8 +238,8 @@ function bestScore(target: Pixels, key: string, icon: RgbImage): number {
  * candidate has no reference icon, since that set could never be picked.
  */
 export function matchSetIcon(sample: Sample, candidates: readonly string[]): SetIconMatch {
-  const height = Math.max(1, Math.round((SEARCH_WIDTH * sample.height) / sample.width));
-  const target = resize(fromSample(sample), SEARCH_WIDTH, height);
+  const height = Math.max(1, Math.round((TARGET_WIDTH * sample.height) / sample.width));
+  const target = resize(fromSample(sample), TARGET_WIDTH, height);
   const scores: Record<string, number> = {};
   for (const key of candidates) {
     const icon = setIconReference(key);
