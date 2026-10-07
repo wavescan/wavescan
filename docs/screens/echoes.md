@@ -46,10 +46,24 @@ These match the optimizer's 16:10 `layout.ts` ROIs (measured from the same accou
 | level | OCR of `+NN` in **`LEVEL_ROW`** (`src/session/echoRegions.ts`: x 0.69, y 0.16, w 0.0355, h 0.035 on the 16:10 reference) | Measured text span x 0.696–0.721, y 0.168–0.187 on every fixture at 2880×1800 and 2800×1752; ends before `SET_ICON_BOX`. Values 0–25, otherwise null + low confidence |
 | set | Taken from the echo when it can only belong to one set; otherwise set-icon matching *(planned, PR D)* | Until then multi-set echoes export `echoSet: null` + `lowConfidence: ["echoSet"]` |
 | cost | OCR `COST n`, cross-checked with `inferCostFromSecondaryStat` | The secondary value is level-dependent, so only use the inference at +25 |
-| main stat | OCR label → `normalizeStatLabel` | The value is level-dependent. Store the key, and let the app compute the value from cost/rank/level |
+| main stat | OCR label → `normalizeStatLabel`. OCR lines are put in reading order first (`src/session/ocrText.ts`) | Windows OCR can return a row's value before its label ("2.8%", "HP"), which scanner-core can't parse (2026-10-06 report) | The value is level-dependent. Store the key, and let the app compute the value from cost/rank/level |
 | substats | Label column + value column paired by line y (`parseSubstatColumns`) | 0–5 rows, wrapped labels, snap to `subStatsTable` |
 | equippedBy | Search the lower panel for the `Equipped by` anchor, then OCR the rest of that line → match against `allCharactersList` + aliases | Variant names like "Yangyang: Xuanling" need an alias map. A missing line means `null` |
-| rank (rarity) | Name-plate colour (the name text colour is gold for 5★) | Verify on 4★/3★/2★ fixtures, which are still needed |
+| rank (rarity) | Worked out from the numbers: the secondary stat at the read level, cross-checked with the main stat (`src/session/echoRank.ts`, see [Rarity](#rarity)) | Needs the level. Main-stat-only matches and disagreements export low confidence, and anything ambiguous exports `rank: null` |
+
+## Rarity
+
+There's no rarity text on the panel. The bundled data has each main stat's value **at max level** per rank (`statsTable`, `flatBonusesByRankByType`). Two facts give the value at any level:
+
+- **Level cap per rank:** rank 2 → +10, rank 3 → +15, rank 4 → +20, rank 5 → +25.
+- **Growth:** +16% of the +0 value per level, so `value(L) = max × (1 + 0.16·L) / (1 + 0.16·cap)`.
+
+This reproduces both ends of every in-game main stat range (e.g. cost 1 flat HP at +0: 114 / 152 / 228 / 456 for ranks 2–5; cost 3 Electro DMG at +0: 3.7% / 4.0% / 4.5% / 6.0%). Checked on a rank 2 test account (Whiff Whaff: HP 2.8% + HP 114 at +0). The table is pinned in `tests/echoRank.spec.ts`.
+
+- **Secondary stat** (flat HP on cost 1, flat ATK on cost 3/4) is the main signal. Neighbouring ranks differ by ≥ 33%, and it's a whole number.
+- **Main stat** is a cross-check. Ranks 2 and 3 differ by only ~8% (cost 1 HP%: 2.8% vs 3.0% at +0).
+- **Still to verify:** that growth is linear *between* the endpoints. Capture an echo at a mid level (e.g. +7) for a fixture.
+- One known disagreement: a community table lists 4-cost DEF% rank 5 as 8.3%–41.5%, while WT's data says 41.8% max. The tolerance accepts both. Check in game before changing WT's data.
 
 ## Timing (measured from Video A)
 

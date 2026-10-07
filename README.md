@@ -72,7 +72,7 @@ Auto mode clicks through your whole echo list for you. A full 3,000-echo bag tak
 To use it:
 
 1. In the scanner, open **Settings → Auto mode**, read the warning and type `I understand` to turn it on.
-   - *Windows:* if the game runs as administrator, the scanner asks to restart as administrator. This is only needed for auto mode.
+   - *Windows:* the game usually runs as administrator, and Windows then blocks clicks from normal apps. Close the scanner, right-click it and choose **Run as administrator**. This is only needed for auto mode.
    - *Mac:* macOS asks for **Accessibility** permission (needed to click). Watch mode never asks for this.
 2. Go to **Bag → Echoes** in the game, sorted by **Level**.
 3. Press **Start auto scan** and **don't touch the mouse or keyboard**.
@@ -149,10 +149,10 @@ This shouldn't appear for signed releases. If it does, check that you downloaded
 Go to **System Settings → Privacy & Security → Accessibility**, turn on *Wavescan*, then try again.
 
 **Auto mode doesn't click anything (Windows)**
-The game is probably running as administrator. Accept the scanner's offer to restart as administrator.
+The game is probably running as administrator, so Windows blocks the scanner's clicks. If you see "Windows didn't let Wavescan move the mouse", that's the cause. Close the scanner, right-click it, choose **Run as administrator** and try again.
 
 **Some values are wrong**
-Fix them in the review screen before exporting, and please [report it](#reporting-a-bug) so we can improve the reader.
+Fix them in the review screen before exporting, and please [report it](#reporting-a-bug) so we can improve the reader. Uncertain fields are shown in yellow with a grey "Read as: …" line underneath. Copying that line into your report helps a lot.
 
 ## Check your setup (Diagnostics)
 

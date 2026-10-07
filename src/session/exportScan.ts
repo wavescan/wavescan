@@ -16,7 +16,7 @@ export interface ScanEcho {
   echo: string;
   echoSet: string | null;
   cost: 1 | 3 | 4;
-  rank: number;
+  rank: number | null;
   level: number | null;
   stat: string | null;
   substats: { type: string; value: number }[];
@@ -62,8 +62,8 @@ function substatsOf(mapped: MappedEcho): { type: string; value: number; slot: nu
  * a registry key). Unknown set / main stat / level are exported as null and listed in
  * `lowConfidence` so the web app asks the user to check them.
  *
- * Rarity isn't read yet: `rank` is 5 for now (the Bag → Echoes scan is aimed at
- * end-game echoes; reading rarity is planned).
+ * Rarity is worked out from the panel's numbers (`echoRank.ts`); it's null when they
+ * don't pin it down.
  */
 export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEcho | null {
   const [mapped] = mapParsedEchoes([candidate.slot], false);
@@ -78,6 +78,7 @@ export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEch
   if (c.mainStat === "low" || !mapped.stat) low.add("stat");
   if (c.set === "low" || !mapped.echoSet) low.add("echoSet");
   if (c.level === "low" || candidate.level === null) low.add("level");
+  if (c.rank === "low" || candidate.rank === null) low.add("rank");
   substats.forEach((s, i) => {
     if (c.substats[s.slot] === "low") low.add(`substats.${i}.value`);
   });
@@ -87,7 +88,7 @@ export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEch
     echo: mapped.echo,
     echoSet: mapped.echoSet ?? null,
     cost: cost as 1 | 3 | 4,
-    rank: 5,
+    rank: candidate.rank,
     level: candidate.level,
     stat: mapped.stat,
     substats: substats.map(({ type, value }) => ({ type, value })),

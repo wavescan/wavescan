@@ -187,10 +187,17 @@
           ]
         },
         "rank": {
-          "description": "Rarity, 1-5.",
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 5
+          "description": "Rarity, 1-5, or null when the scanner couldn't tell (listed in lowConfidence).",
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "level": {
           "description": "0-25, or null when it couldn't be read (listed in lowConfidence).",

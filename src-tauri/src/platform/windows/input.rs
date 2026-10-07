@@ -79,11 +79,19 @@ fn virtual_key(key: Key) -> VIRTUAL_KEY {
     }
 }
 
+/// Shown when Windows refuses to move the cursor. Unlike `SendInput`, which UIPI blocks
+/// silently, `SetCursorPos` fails loudly when the window in front belongs to a process
+/// running as administrator. Windows often reports no error code for it ("The operation
+/// completed successfully"), so the raw message would only confuse the user.
+const CURSOR_BLOCKED: &str = "Windows didn't let Wavescan move the mouse. This usually means \
+    Wuthering Waves is running as administrator and Wavescan isn't. Close Wavescan, \
+    right-click it and choose \"Run as administrator\", then try again.";
+
 fn move_cursor(point: ScreenPoint) -> Result<(), Error> {
     // SAFETY: SetCursorPos takes plain integers. Wavescan is per-monitor DPI aware (Tauri),
     // so these are physical pixels, matching `GameWindow::client_rect`.
     unsafe { SetCursorPos(point.x, point.y) }
-        .map_err(|e| Error::InputBlocked(format!("couldn't move the cursor: {e}")))
+        .map_err(|_| Error::InputBlocked(CURSOR_BLOCKED.into()))
 }
 
 fn mouse(flags: MOUSE_EVENT_FLAGS, data: u32) -> INPUT {
