@@ -205,6 +205,21 @@ describe("buildScan", () => {
     expect([0, 4, 5, 15, 24, 25].map(expectedSubstatCount)).toEqual([0, 0, 1, 3, 4, 5]);
   });
 
+  it("keeps a flat HP substat whose label Windows OCR dropped, flagged (scanner-core 0.1.2)", () => {
+    // Shadow Stepper at +25 (fixture): "HP" missing before 430.
+    const panel = sabercatPanel().map((r) => {
+      if (r.id === "substatLabels") return { ...r, lines: r.lines.filter((l) => l.text !== "Basic Attack DMG Bonus") };
+      if (r.id === "substatValues") return { ...r, lines: r.lines.map((l) => (l.bounds.y === 124 ? { ...l, text: "430" } : l)) };
+      return r;
+    });
+    const { scan } = buildScan([{ ...extractEcho(panel), id: "echo-1", index: 1 }], meta);
+    const echo = scan.echoes[0]!;
+    const index = echo.substats.findIndex((s) => s.type === "HP_FLAT");
+    expect(echo.substats[index]).toEqual({ type: "HP_FLAT", value: 430 });
+    expect(echo.lowConfidence).toContain(`substats.${index}.value`);
+    expect(echo.lowConfidence).not.toContain("substats");
+  });
+
   it("skips echoes it couldn't identify and counts them", () => {
     const unknown = { ...extractEcho(sabercatPanel()), id: "echo-2", index: 2 };
     unknown.slot = { ...unknown.slot, echo: null };
