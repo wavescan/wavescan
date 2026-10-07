@@ -122,16 +122,21 @@ function sampleY(layout: GridLayout, sample: Sample, y: number): number {
   return Math.round(((y - layout.strip.y) / layout.strip.height) * sample.height);
 }
 
-/** Every bright-to-dark drop in the strip's brightness profile, top to bottom. */
-function brightnessDrops(layout: GridLayout, sample: Sample): number[] {
+/** Average brightness of each sample row, over sample columns [x0, x1). */
+function brightnessProfile(sample: Sample, x0 = 0, x1 = sample.width): number[] {
   const profile: number[] = [];
   for (let y = 0; y < sample.height; y++) {
     let sum = 0;
-    for (let x = 0; x < sample.width; x++) sum += lum(sample, x, y);
-    profile.push(sum / sample.width);
+    for (let x = x0; x < x1; x++) sum += lum(sample, x, y);
+    profile.push(sum / Math.max(1, x1 - x0));
   }
+  return profile;
+}
+
+/** Every bright-to-dark drop in a brightness profile, top to bottom, as frame y fractions. */
+function profileDrops(layout: GridLayout, sample: Sample, profile: number[]): number[] {
   const drops: number[] = [];
-  for (let y = 1; y < sample.height - 1; y++) {
+  for (let y = 1; y < profile.length - 1; y++) {
     const drop = profile[y - 1]! - profile[y + 1]!;
     if (drop < EDGE_DROP || profile[y + 1]! > EDGE_MAX_BELOW) continue;
     const edge = frameY(layout, sample, y);
@@ -139,6 +144,23 @@ function brightnessDrops(layout: GridLayout, sample: Sample): number[] {
     if (last === undefined || edge - last > layout.sameRow) drops.push(edge);
   }
   return drops;
+}
+
+/** Every bright-to-dark drop across the whole strip. */
+function brightnessDrops(layout: GridLayout, sample: Sample): number[] {
+  return profileDrops(layout, sample, brightnessProfile(sample));
+}
+
+/** Half the width of the slice of a card used for its own edge check (inside the card, clear of its border). */
+const COLUMN_SLICE_HALF_WIDTH = 0.025;
+
+/** Whether column `column` has a gold-line edge of its own within the pitch tolerance of `y`. */
+function columnEdgeNear(layout: GridLayout, sample: Sample, column: number, y: number): boolean {
+  const x = COLUMN_X[column]!;
+  const x0 = Math.max(0, sampleX(layout, sample, x - COLUMN_SLICE_HALF_WIDTH));
+  const x1 = Math.min(sample.width, sampleX(layout, sample, x + COLUMN_SLICE_HALF_WIDTH));
+  const drops = profileDrops(layout, sample, brightnessProfile(sample, x0, x1));
+  return drops.some((d) => Math.abs(d - y) <= layout.pitchTolerance);
 }
 
 /** Whether `a` and `b` are a whole number of row pitches apart. */
@@ -154,7 +176,9 @@ function onPitch(layout: GridLayout, a: number, b: number): boolean {
  * Card art can make the same kind of drop: a row of Kernel Puppets has a bright crossbar
  * across every card (16:9 fixture `kernel-puppet-joy-plus25`). Such a drop sits inside the
  * card, above that card's real edge, so a drop with another one less than ~0.6 of a row
- * below it is dropped. Then the edges have to be whole row pitches apart: when they don't
+ * below it is dropped. This relies on the top of a card not making a drop of its own: the
+ * gap above a card is darker than the line (45-90 in all 23 grid fixtures), and none of them
+ * shows a drop there. Then the edges have to be whole row pitches apart: when they don't
  * agree (say a lone art edge in a row whose level bar is out of view), the largest group that
  * does is kept, and a tie returns nothing rather than a guess.
  */
@@ -174,14 +198,32 @@ export function findRowEdges(layout: GridLayout, sample: Sample): number[] {
 }
 
 /**
- * The fully visible rows in a grid strip sample, with a click target for each column. A row
- * whose card top or level bar is cut off by the scrolling area is left out: clicking it
- * could scroll the grid by itself.
+ * The last row of the list when it isn't full: one row pitch below the last edge, where at
+ * least one column has an edge of its own. Averaged over the whole strip, two cards out of
+ * six don't make a big enough drop (16:9 fixture `end-of-list`), so without this the last
+ * few echoes would be skipped. Null when there's no such row.
+ */
+export function findPartialRow(layout: GridLayout, sample: Sample, edges: readonly number[]): number | null {
+  const last = edges.at(-1);
+  if (last === undefined) return null;
+  const y = last + layout.rowPitch;
+  return COLUMN_X.some((_, column) => columnEdgeNear(layout, sample, column, y)) ? y : null;
+}
+
+/**
+ * The fully visible rows in a grid strip sample, with a click target for each column,
+ * including a partly filled last row (`findPartialRow`). Every row gets all six targets:
+ * an empty slot can't be told from a card reliably (see `GridRow`), and clicking one is
+ * harmless. A row whose card top or level bar is cut off by the scrolling area is left out:
+ * clicking it could scroll the grid by itself.
  */
 export function visibleRows(layout: GridLayout, sample: Sample): GridRow[] {
   const top = layout.strip.y - layout.edgeSlack;
   const bottom = layout.strip.y + layout.strip.height + layout.edgeSlack;
-  return findRowEdges(layout, sample)
+  const edges = findRowEdges(layout, sample);
+  const partial = findPartialRow(layout, sample, edges);
+  if (partial !== null) edges.push(partial);
+  return edges
     .filter((edge) => edge - layout.cardArtHeight >= top && edge + layout.levelBarHeight <= bottom)
     .map((barTop) => ({
       barTop,

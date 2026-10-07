@@ -91,6 +91,29 @@ Measured 2026-10-07 on the 2880×1800 fixtures and a 2304×1440 scrolling record
 - **How far a scroll moved:** 4×4 brightness thumbnails of each card in a row. The same row after a scroll differs by 0–12 (12 with the cursor over a card), different rows by ≥ 20; threshold 16. The rows before and after are lined up as a sequence, and identical rows that fit more than one way return "unknown" rather than a guess.
 - The selected card has a bright gold frame (useful to confirm a click landed).
 
+## Scrolling (measured 2026-10-07)
+
+From a fullscreen 1920×1080 recording of mouse-wheel scrolling (`fixtures/scrollwheel.mp4`, local only, git-ignored):
+
+- One wheel notch moves the grid **about 26 px = 1/8 of a row** (row pitch 211 px). One notch moved only 13 px, so notches aren't perfectly regular.
+- Each notch lands in **one frame**: no smooth scrolling animation between notches.
+- Not measured yet: whether one wheel event carrying several notches moves the same as that many separate notches, and the notch size at 16:10. The navigator calibrates from what it sees, so neither is assumed.
+
+## Auto mode navigator
+
+`src/auto/navigator.ts`, tested against a pretend grid in `tests/navigator.spec.ts`.
+
+1. Refuse anything but 16:10 and 16:9 (`gridLayout`). Scroll to the top (37 notches at a time, not a multiple of 8, so a move of whole rows can't look like "didn't move"; the row thumbnails are compared too).
+2. Mark the echo that's already selected as seen, so a stale panel is never read for the first card. If the first click leaves the panel unchanged, that echo is the first card (the game selects it when the screen opens) and is read after all.
+3. For each fully visible row not read yet, click the six cards left to right. After each click, wait for scanner-core's stability detector: a settled **new** panel is read from that exact frame. A panel that stays on an echo already read for 0.7 s counts as **unchanged** (an empty slot, mostly). Stop at the first echo below the minimum level, without reporting it.
+4. Scroll down in steps of at most 0.4 of a row (3 notches at 1/8 of a row each; never sized below 1/8 a notch, so one small notch can't inflate the next step). Measure the move from the row edges: every edge pair's difference wrapped into one row pitch, then the median. Because the step is under half a row, only one move fits, even when every row looks the same. Each row then has a fixed number counted from the top of the list.
+5. Check the rows on screen against their thumbnails from before the scroll. A mismatch, a move over 0.45 of a row, or no grid at all stops the run as **lost track** rather than risk skipping echoes.
+6. Keep scrolling until the first fully visible row is one not read yet, then go back to 3. Two scrolls in a row that don't move the grid mean the **end of the list**; whatever is left on screen (a last row that only now fits) is read first.
+
+About 2.7 scrolls per row, so a full 3,000-echo inventory is about 4,300 guarded actions, under auto mode's cap of 5,000 per session (`safety.rs`).
+
+**Partly filled last row:** two cards out of six don't make a big enough drop in the strip-wide brightness profile (16:9 fixture `end-of-list`: the last row isn't found that way). `findPartialRow` checks each column for its own edge one row pitch below the last row. Every row still gets all six click targets, because an empty slot can't be told from a card reliably, and clicking one only counts as "unchanged".
+
 ## Timing (measured from Video A)
 
 - Clicking a cell redraws the stats panel in **one frame**. The portrait art animates, but the stat text doesn't. So the loop is: click → wait for 2 identical stats fingerprints (~35 ms @ 60 fps) → queue the crops → next click.

@@ -91,7 +91,8 @@ stateDiagram-v2
 ```
 
 - **Watch mode** sends no input at all. It needs no admin rights (Windows) and only Screen Recording permission (macOS).
-- **Auto mode** is opt-in and armed per session. Its OCR runs asynchronously through a queue (`queue.ts`), so clicking never waits on reading. The target is ≤150 ms per echo; measurements are in [screens/echoes.md](screens/echoes.md). ([ADR 0006](adr/0006-watch-and-auto-modes-and-fair-play-risk.md))
+- **Auto mode** is opt-in and armed per session. The navigator (`src/auto/navigator.ts`) clicks every card from the top of the list, reads it, and scrolls in steps small enough (under half a row) that it always knows which list row is on screen; when it can't follow the grid it stops with a reason instead of guessing. The target is ≤150 ms per echo; measurements are in [screens/echoes.md](screens/echoes.md). ([ADR 0006](adr/0006-watch-and-auto-modes-and-fair-play-risk.md))
+  - For now each echo is read before the next click: only the last sampled frame stays pinned ([ADR 0021](adr/0021-batched-region-reads-with-pinned-frames.md)), so a read can't overlap the next click's sampling. Overlapping them (the OCR queue in the diagram) needs a few pinned frames and is a follow-up.
 
 ## 4. Rust trait seams
 
