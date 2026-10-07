@@ -1,0 +1,32 @@
+{
+  "echo": "SabercatProwler",
+  "echoSet": null,
+  "cost": 3,
+  "rank": 5,
+  "level": 25,
+  "stat": "Fusion",
+  "substats": [
+    {
+      "type": "CritDMG",
+      "value": 17.4
+    },
+    {
+      "type": "HeavyAttackDMGBonus",
+      "value": 9.4
+    },
+    {
+      "type": "ResonanceSkillDMGBonus",
+      "value": 7.9
+    },
+    {
+      "type": "BasicAttackDMGBonus",
+      "value": 8.6
+    },
+    {
+      "type": "ATK",
+      "value": 8.6
+    }
+  ],
+  "equippedBy": null,
+  "notes": "'Resonance Skill DMG Bonus' wraps onto two lines. Set unconfirmed (3 possible)."
+}

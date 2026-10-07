@@ -1,0 +1,32 @@
+{
+  "echo": "ReminiscenceNightmareAdamSmasher",
+  "echoSet": "ShadowofShatteredDreams",
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritDMG",
+  "substats": [
+    {
+      "type": "CritRate",
+      "value": 6.9
+    },
+    {
+      "type": "HP_FLAT",
+      "value": 430
+    },
+    {
+      "type": "ATK_FLAT",
+      "value": 50
+    },
+    {
+      "type": "HeavyAttackDMGBonus",
+      "value": 7.1
+    },
+    {
+      "type": "BasicAttackDMGBonus",
+      "value": 8.6
+    }
+  ],
+  "equippedBy": null,
+  "notes": "Collab echo. Only one possible set."
+}

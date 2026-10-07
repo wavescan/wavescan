@@ -15,9 +15,11 @@
     "tauri": "tauri",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:fixtures": "vitest run --config vitest.fixtures.config.ts",
     "lint": "eslint . && vue-tsc -b",
     "check": "docker compose run --rm check",
-    "data:update": "node scripts/update-scanner-data.mjs"
+    "data:update": "node scripts/update-scanner-data.mjs",
+    "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.1",

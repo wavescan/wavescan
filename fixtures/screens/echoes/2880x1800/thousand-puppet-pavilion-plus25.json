@@ -1,0 +1,32 @@
+{
+  "echo": "ThousandPuppetPavilion",
+  "echoSet": null,
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "HealingBonus",
+  "substats": [
+    {
+      "type": "DEF_FLAT",
+      "value": 40
+    },
+    {
+      "type": "HP",
+      "value": 8.6
+    },
+    {
+      "type": "CritDMG",
+      "value": 16.2
+    },
+    {
+      "type": "EnergyRegen",
+      "value": 11.6
+    },
+    {
+      "type": "ResonanceSkillDMGBonus",
+      "value": 10.9
+    }
+  ],
+  "equippedBy": "Suisui",
+  "notes": "Set unconfirmed: SongofFeatheredTrace or FlowerofTingedYearning."
+}

@@ -1,0 +1,32 @@
+{
+  "echo": "ReminiscenceFleurdelys",
+  "echoSet": null,
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritRate",
+  "substats": [
+    {
+      "type": "CritDMG",
+      "value": 21.0
+    },
+    {
+      "type": "HeavyAttackDMGBonus",
+      "value": 6.4
+    },
+    {
+      "type": "BasicAttackDMGBonus",
+      "value": 7.9
+    },
+    {
+      "type": "HP",
+      "value": 6.4
+    },
+    {
+      "type": "CritRate",
+      "value": 9.3
+    }
+  ],
+  "equippedBy": "Cartethyia",
+  "notes": "2800x1752, converted from a JPEG screenshot (compression artefacts). Set unconfirmed: GustsofWelkin or WindwardPilgrimage."
+}

@@ -22,6 +22,11 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
 
+# Only for examples/fixtures.rs (masking and OCR-replaying fixture screenshots). Already in
+# Cargo.lock through Tauri, so it adds no new crate.
+[dev-dependencies]
+png = "0.18"
+
 # macOS-only OS adapters (src/platform/macos/). See ADR 0004 (OCR), 0005 (capture), 0018.
 # Keep objc2 versions/features in sync with scripts/macos-probe/Cargo.toml.
 [target.'cfg(target_os = "macos")'.dependencies]

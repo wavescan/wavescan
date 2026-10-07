@@ -1,0 +1,24 @@
+{
+  "echo": "BellBorneGeochelone",
+  "echoSet": "MoonlitClouds",
+  "cost": 4,
+  "rank": 5,
+  "level": 15,
+  "stat": "CritRate",
+  "substats": [
+    {
+      "type": "ATK_FLAT",
+      "value": 40
+    },
+    {
+      "type": "BasicAttackDMGBonus",
+      "value": 9.4
+    },
+    {
+      "type": "EnergyRegen",
+      "value": 10.0
+    }
+  ],
+  "equippedBy": "Rebecca",
+  "notes": "+15: 3 substats. Set inferred, see the Viridblaze fixture (please confirm)."
+}

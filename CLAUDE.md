@@ -18,6 +18,8 @@ npm run check              # Docker: every CI check in a Linux container (docs/d
 npm ci                     # install JS deps
 npm run tauri dev          # run the app (Vite + Rust, hot reload)
 npm run test               # Vitest (TS: session, extractors, auto navigator)
+npm run test:fixtures      # replay fixtures/ through this OS's OCR (Windows/macOS only, docs/fixtures.md)
+npm run fixtures:mask -- <in.png> <out.png>   # mask the User ID before committing a capture
 npm run lint               # eslint + vue-tsc -b
 npm run tauri build        # release bundle for the current OS
 
@@ -42,6 +44,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src-tauri/src/safety.rs` | `AutoMode` input guard (arming, bounds, abort detection, action cap), User ID mask + crop guard |
 | `src-tauri/src/frame.rs`, `geometry.rs` | Captured images (crop/fill) and pixel ↔ fraction geometry |
 | `src-tauri/src/testing.rs` | Fakes for the four traits (test-only) |
+| `src-tauri/examples/fixtures.rs` | Dev tool: mask fixture captures, OCR them for the fixture replay |
 | `src-tauri/capabilities/` | Tauri permission allow-list (keep minimal) |
 | `src/data/` | Bundled `scanner-data.json` + loader/validator (ADR 0020). Refresh with `npm run data:update`; never hand-edit |
 | `src/diagnostics/` | Diagnostics checks + report builder (no images; ADR 0016) |

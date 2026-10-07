@@ -47,6 +47,11 @@ export interface BuiltScan {
 
 const COSTS = new Set([1, 3, 4]);
 
+/** Substats unlock one per 5 levels (+5, +10, …, +25), so a +N echo shows ⌊N/5⌋ of them. */
+export function expectedSubstatCount(level: number): number {
+  return Math.min(5, Math.floor(level / 5));
+}
+
 function substatsOf(mapped: MappedEcho): { type: string; value: number; slot: number }[] {
   const out: { type: string; value: number; slot: number }[] = [];
   for (let i = 1; i <= 5; i++) {
@@ -64,6 +69,10 @@ function substatsOf(mapped: MappedEcho): { type: string; value: number; slot: nu
  *
  * Rarity is worked out from the panel's numbers (`echoRank.ts`); it's null when they
  * don't pin it down.
+ *
+ * `substats` is flagged when the count doesn't match the level. Otherwise a row the OCR
+ * missed would silently import as an echo with fewer substats (Windows OCR drops a lone
+ * "HP" label, found by the fixture replay on 2026-10-07).
  */
 export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEcho | null {
   const [mapped] = mapParsedEchoes([candidate.slot], false);
@@ -79,6 +88,7 @@ export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEch
   if (c.set === "low" || !mapped.echoSet) low.add("echoSet");
   if (c.level === "low" || candidate.level === null) low.add("level");
   if (c.rank === "low" || candidate.rank === null) low.add("rank");
+  if (candidate.level !== null && substats.length !== expectedSubstatCount(candidate.level)) low.add("substats");
   substats.forEach((s, i) => {
     if (c.substats[s.slot] === "low") low.add(`substats.${i}.value`);
   });

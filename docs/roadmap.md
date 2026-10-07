@@ -46,6 +46,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [ ] Preview with ROI overlay; save to file
 - [ ] Auto mode: arming flow + warning, grid navigator, early stop by level, abort paths, elevation/Accessibility prompts
 - [ ] Fixture tests ≥ 99% field accuracy at every captured resolution, on both OCR engines
+  - [x] Masked fixtures + goldens committed, replayed through the real OCR on CI's Windows and macOS runners (`npm run test:fixtures`, docs/fixtures.md)
 
 **Exit:** a full auto scan + a watch scan on real accounts on Windows and Mac, spot-checking 50 echoes.
 

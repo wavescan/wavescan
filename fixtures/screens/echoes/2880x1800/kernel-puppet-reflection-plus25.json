@@ -1,0 +1,32 @@
+{
+  "echo": "KernelPuppetReflection",
+  "echoSet": null,
+  "cost": 1,
+  "rank": 5,
+  "level": 25,
+  "stat": "ATK",
+  "substats": [
+    {
+      "type": "CritRate",
+      "value": 6.9
+    },
+    {
+      "type": "HP",
+      "value": 7.9
+    },
+    {
+      "type": "CritDMG",
+      "value": 19.8
+    },
+    {
+      "type": "ATK",
+      "value": 7.9
+    },
+    {
+      "type": "ATK_FLAT",
+      "value": 50
+    }
+  ],
+  "equippedBy": "Qingxiao",
+  "notes": "Set unconfirmed: HeartofEvilsPurge or FlowerofTingedYearning."
+}

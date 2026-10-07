@@ -1,0 +1,32 @@
+{
+  "echo": "ShadowStepper",
+  "echoSet": "WishesofQuietSnowfall",
+  "cost": 1,
+  "rank": 5,
+  "level": 25,
+  "stat": "ATK",
+  "substats": [
+    {
+      "type": "CritRate",
+      "value": 10.5
+    },
+    {
+      "type": "ResonanceSkillDMGBonus",
+      "value": 7.1
+    },
+    {
+      "type": "BasicAttackDMGBonus",
+      "value": 10.1
+    },
+    {
+      "type": "HP_FLAT",
+      "value": 430
+    },
+    {
+      "type": "ATK_FLAT",
+      "value": 60
+    }
+  ],
+  "equippedBy": null,
+  "notes": "Wrapped label. Set from the snowflake icon, same as the Threnodian fixture (please confirm)."
+}

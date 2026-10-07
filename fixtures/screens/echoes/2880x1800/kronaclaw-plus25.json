@@ -1,0 +1,32 @@
+{
+  "echo": "ReminiscenceKronaclaw",
+  "echoSet": null,
+  "cost": 3,
+  "rank": 5,
+  "level": 25,
+  "stat": "Fusion",
+  "substats": [
+    {
+      "type": "HeavyAttackDMGBonus",
+      "value": 8.6
+    },
+    {
+      "type": "HP",
+      "value": 7.9
+    },
+    {
+      "type": "CritRate",
+      "value": 10.5
+    },
+    {
+      "type": "CritDMG",
+      "value": 15.0
+    },
+    {
+      "type": "DEF_FLAT",
+      "value": 50
+    }
+  ],
+  "equippedBy": null,
+  "notes": "Set unconfirmed: TrailblazingStar or ChromaticFoam."
+}
