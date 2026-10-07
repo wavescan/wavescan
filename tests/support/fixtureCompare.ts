@@ -22,7 +22,8 @@ export interface GoldenEcho {
  * - `correct`: matches the golden.
  * - `flagged`: wrong or missing, but listed in `lowConfidence`, so the web app asks the user.
  * - `missing`: exported as null (the schema's "couldn't read it", ADR 0008).
- * - `wrong`: a different value, not flagged. A silent misread: the one outcome that fails.
+ * - `wrong`: a different value, or a dropped substat, not flagged. A silent misread: the
+ *   one outcome that fails.
  * - `skipped`: not compared (golden not confirmed, or the scanner doesn't read it yet).
  */
 export type Outcome = "correct" | "flagged" | "missing" | "wrong" | "skipped";
@@ -49,6 +50,44 @@ function judge(field: string, expected: unknown, actual: unknown, low: Set<strin
   return "wrong";
 }
 
+type Substat = { type: string; value: number };
+const label = (s: Substat | null) => (s ? `${s.type} ${s.value}` : "none");
+
+/**
+ * Substats are matched by content, not position: one dropped row shouldn't make every
+ * later row look wrong. Exact matches are correct. Leftovers are paired up in order (a
+ * misread value), and each pair or lone leftover is `flagged` when the export flagged it
+ * (`substats`, or `substats.<i>.value` for that row) and `wrong` otherwise. A dropped
+ * substat that isn't flagged is wrong too: the web app would believe the echo has fewer.
+ */
+function compareSubstats(expected: Substat[], actual: Substat[], low: Set<string>): FieldResult[] {
+  const results: FieldResult[] = [];
+  const unmatched = actual.map((s, index) => ({ s, index }));
+  const missing: Substat[] = [];
+  for (const want of expected) {
+    const hit = unmatched.findIndex(({ s }) => s.type === want.type && s.value === want.value);
+    if (hit < 0) {
+      missing.push(want);
+      continue;
+    }
+    unmatched.splice(hit, 1);
+    results.push({ field: `substats[${label(want)}]`, expected: want, actual: want, outcome: "correct" });
+  }
+  const pairs = Math.max(missing.length, unmatched.length);
+  for (let i = 0; i < pairs; i++) {
+    const want = missing[i] ?? null;
+    const got = unmatched[i] ?? null;
+    const flagged = low.has("substats") || (got !== null && low.has(`substats.${got.index}.value`));
+    results.push({
+      field: `substats[${label(want)}]`,
+      expected: want,
+      actual: got?.s ?? null,
+      outcome: flagged ? "flagged" : "wrong",
+    });
+  }
+  return results;
+}
+
 /** Compares one exported echo (null = the scanner couldn't identify it) with its golden. */
 export function compareEcho(golden: GoldenEcho, actual: ScanEcho | null): FieldResult[] {
   const low = new Set(actual?.lowConfidence ?? []);
@@ -61,20 +100,12 @@ export function compareEcho(golden: GoldenEcho, actual: ScanEcho | null): FieldR
     results.push({ field, expected, actual: got, outcome: skip ? "skipped" : judge(field, expected, got, low) });
   }
 
-  const actualSubs = actual?.substats ?? [];
-  const count = Math.max(golden.substats.length, actualSubs.length);
-  for (let i = 0; i < count; i++) {
-    const field = `substats.${i}`;
-    const expected = golden.substats[i] ?? null;
-    const got = actualSubs[i] ?? null;
-    const same = expected !== null && got !== null && expected.type === got.type && expected.value === got.value;
-    const flagged = low.has(`${field}.value`) || low.has(`${field}.type`) || low.has(field);
-    let outcome: Outcome;
-    if (same) outcome = "correct";
-    else if (flagged) outcome = "flagged";
-    else if (got === null) outcome = "missing";
-    else outcome = "wrong";
-    results.push({ field, expected, actual: got, outcome });
+  if (actual) results.push(...compareSubstats(golden.substats, actual.substats, low));
+  else {
+    // Not exported at all (the app lists it as needing a fix), so not a silent misread.
+    for (const want of golden.substats) {
+      results.push({ field: `substats[${label(want)}]`, expected: want, actual: null, outcome: "missing" });
+    }
   }
   return results;
 }

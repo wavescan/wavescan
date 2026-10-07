@@ -63,10 +63,10 @@ Each field gets one outcome (`tests/support/fixtureCompare.ts`):
 | correct | matches the golden | no |
 | flagged | wrong or missing, but in `lowConfidence`, so the web app asks the user | no |
 | missing | exported as `null` ("couldn't read it", ADR 0008) | no |
-| wrong | a different value, not flagged: a **silent misread** | **yes** |
+| wrong | a different value, or a dropped or extra substat, not flagged: a **silent misread** | **yes** |
 | skipped | golden not confirmed, or a field the scanner doesn't read yet (`equippedBy`, until "Equipped by" reading lands) | no |
 
-The run ends with an accuracy line (`correct / compared`). The release gate is **≥ 99%** (CLAUDE.md). When a fixture has problems, the test prints the raw OCR text of every region, which is usually enough to see what went wrong.
+Substats are matched by type and value, not position, so one dropped row doesn't make the rows after it look wrong. The run ends with an accuracy line (`correct / compared`). The release gate is **≥ 99%** (CLAUDE.md). When a fixture has problems, the test prints the raw OCR text of every region, which is usually enough to see what went wrong.
 
 It runs on CI's Windows and macOS runners after `cargo nextest`, so every change is checked against both OCR engines. It isn't part of `npm test`, because Linux (the Docker check) has no OS OCR. The Rust tool refuses any screenshot whose User ID area isn't masked, so an unmasked capture fails CI.
 

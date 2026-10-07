@@ -46,8 +46,8 @@ describe("compareEcho", () => {
       level: "correct",
       stat: "correct",
       equippedBy: "skipped",
-      "substats.0": "correct",
-      "substats.1": "correct",
+      "substats[CritDMG 17.4]": "correct",
+      "substats[ATK 8.6]": "correct",
     });
   });
 
@@ -64,20 +64,28 @@ describe("compareEcho", () => {
     expect(outcomes(golden, exported({ level: null })).level).toBe("missing");
   });
 
-  it("checks substats by position, including missing and extra ones", () => {
-    const misread = exported({ substats: [{ type: "CritDMG", value: 17.5 }] });
-    expect(outcomes(golden, misread)).toMatchObject({ "substats.0": "wrong", "substats.1": "missing" });
+  it("matches substats by content, so one dropped row doesn't shift the rest", () => {
+    const dropped = exported({ substats: [{ type: "ATK", value: 8.6 }] });
+    expect(outcomes(golden, dropped)).toMatchObject({ "substats[ATK 8.6]": "correct", "substats[CritDMG 17.4]": "wrong" });
+    const flaggedDrop = exported({ substats: [{ type: "ATK", value: 8.6 }], lowConfidence: ["substats"] });
+    expect(outcomes(golden, flaggedDrop)["substats[CritDMG 17.4]"]).toBe("flagged");
+  });
 
-    const flagged = exported({ substats: [{ type: "CritDMG", value: 17.5 }], lowConfidence: ["substats.0.value"] });
-    expect(outcomes(golden, flagged)["substats.0"]).toBe("flagged");
+  it("pairs a misread value with what it should have been", () => {
+    const misread = exported({ substats: [{ type: "CritDMG", value: 17.5 }, { type: "ATK", value: 8.6 }] });
+    expect(outcomes(golden, misread)["substats[CritDMG 17.4]"]).toBe("wrong");
+    const flagged = exported({ ...misread, lowConfidence: ["substats.0.value"] });
+    expect(outcomes(golden, flagged)["substats[CritDMG 17.4]"]).toBe("flagged");
+  });
 
+  it("calls an extra substat wrong", () => {
     const extra = exported({ substats: [...golden.substats, { type: "HP", value: 6.4 }] });
-    expect(outcomes(golden, extra)["substats.2"]).toBe("wrong");
+    expect(outcomes(golden, extra)["substats[none]"]).toBe("wrong");
   });
 
   it("counts every field as missing when the echo wasn't identified", () => {
-    const results = compareEcho(golden, null);
-    expect(results.filter((r) => r.outcome !== "skipped").every((r) => r.outcome === "missing")).toBe(true);
+    const results = compareEcho(golden, null).filter((r) => r.outcome !== "skipped");
+    expect(results.every((r) => r.outcome === "missing")).toBe(true);
   });
 });
 

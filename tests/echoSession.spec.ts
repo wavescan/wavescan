@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { loadBundledScannerData } from "@/data/scannerData";
 import { extractEcho, parseLevel } from "@/session/echoExtract";
 import { createEchoSession, type EchoCandidate } from "@/session/echoSession";
-import { buildScan } from "@/session/exportScan";
+import { buildScan, expectedSubstatCount } from "@/session/exportScan";
 import type { OcrLine, RegionText } from "@/ipc/types";
 
 beforeAll(() => {
@@ -186,6 +186,23 @@ describe("buildScan", () => {
       equippedBy: null,
       lowConfidence: ["echoSet"],
     });
+  });
+
+  it("flags substats when fewer were read than the level unlocks", () => {
+    // Windows OCR dropped a lone "HP" label (fixture replay, 2026-10-07): 4 rows at +25.
+    const panel = sabercatPanel().map((r) =>
+      r.id === "substatLabels" ? { ...r, lines: r.lines.filter((l) => l.text !== "ATK") } : r,
+    );
+    const { scan } = buildScan([{ ...extractEcho(panel), id: "echo-1", index: 1 }], meta);
+    expect(scan.echoes[0]?.substats).toHaveLength(4);
+    expect(scan.echoes[0]?.lowConfidence).toContain("substats");
+    expect(validate(scan), JSON.stringify(validate.errors)).toBe(true);
+  });
+
+  it("doesn't flag substats when the count matches the level", () => {
+    const { scan } = buildScan([{ ...extractEcho(sabercatPanel()), id: "echo-1", index: 1 }], meta);
+    expect(scan.echoes[0]?.lowConfidence).not.toContain("substats");
+    expect([0, 4, 5, 15, 24, 25].map(expectedSubstatCount)).toEqual([0, 0, 1, 3, 4, 5]);
   });
 
   it("skips echoes it couldn't identify and counts them", () => {
