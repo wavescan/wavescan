@@ -50,6 +50,17 @@ describe("scan.v1.json", () => {
     expect(validate(badCost)).toBe(false);
   });
 
+  it("accepts an unknown rarity as null, but not an out-of-range one", () => {
+    const unknown = clone(example);
+    unknown.echoes[0].rank = null;
+    unknown.echoes[0].lowConfidence = ["rank"];
+    expect(validate(unknown), JSON.stringify(validate.errors)).toBe(true);
+
+    const tooHigh = clone(example);
+    tooHigh.echoes[0].rank = 6;
+    expect(validate(tooHigh)).toBe(false);
+  });
+
   it("rejects display names where registry keys are required", () => {
     const scan = clone(example);
     scan.echoes[0].echo = "Bell-Borne Geochelone";

@@ -92,7 +92,16 @@ async function copyScan() {
 
 const displayName = (c: EchoCandidate) =>
   c.slot.echo ? (getScannerEcho(c.slot.echo)?.name ?? c.slot.echo) : `Unknown ("${c.raw.name}")`;
-const isLow = (c: EchoCandidate, field: "name" | "set" | "mainStat" | "level") => c.confidence[field] === "low";
+const isLow = (c: EchoCandidate, field: "name" | "set" | "mainStat" | "level" | "rank") =>
+  c.confidence[field] === "low";
+/** Raw OCR text behind uncertain fields, so a wrong read can be reported and fixed. */
+const rawHint = (c: EchoCandidate) => {
+  const parts: string[] = [];
+  if (isLow(c, "level")) parts.push(`level "${c.raw.level}"`);
+  if (isLow(c, "mainStat") || isLow(c, "rank")) parts.push(`main stat "${c.raw.mainStat}"`);
+  if (isLow(c, "rank")) parts.push(`second stat "${c.raw.secondaryStat}"`);
+  return parts.length ? `Read as: ${parts.join(" · ")}` : null;
+};
 
 onBeforeUnmount(() => void stop());
 </script>
@@ -202,6 +211,10 @@ onBeforeUnmount(() => void stop());
                 class="ml-1 badge badge-sm"
                 :class="isLow(c, 'set') ? 'badge-warning' : 'badge-ghost'"
               >{{ c.slot.set ?? "set ?" }}</span>
+              <span
+                class="ml-1 badge badge-sm"
+                :class="isLow(c, 'rank') ? 'badge-warning' : 'badge-ghost'"
+              >{{ c.rank ? `${c.rank}★` : "rarity ?" }}</span>
             </div>
             <div class="opacity-80">
               <span :class="{ 'text-warning': isLow(c, 'mainStat') }">{{ c.slot.mainStatLabel || "main stat ?" }}</span>
@@ -215,6 +228,12 @@ onBeforeUnmount(() => void stop());
                   :class="{ 'text-warning': c.confidence.substats[i] === 'low' }"
                 >{{ s.subStat }} {{ s.subStatValue }}</span>
               </template>
+            </div>
+            <div
+              v-if="rawHint(c)"
+              class="text-xs opacity-60 font-mono"
+            >
+              {{ rawHint(c) }}
             </div>
           </div>
           <button
