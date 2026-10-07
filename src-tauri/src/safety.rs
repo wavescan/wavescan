@@ -29,10 +29,11 @@ use crate::traits::{GameWindow, InputDriver, Key, WindowFinder};
 pub const CONFIRMATION_PHRASE: &str = "I understand";
 
 /// Where the User ID is drawn, as fractions of the game's client area. Measured on 16:10
-/// captures at 2880×1800 and 2800×1752: the text spans x 0.886–0.972, y 0.985–0.996. The
-/// region adds padding on every side but stays below the Upgrade button (y < 0.95).
-///
-/// TODO(16:9): measure on 16:9 captures once we have them (docs/fixtures.md).
+/// captures at 2880×1800 and 2800×1752: the text spans x 0.886–0.972, y 0.985–0.996. On a
+/// fullscreen 16:9 recording at 1920×1080 it spans x 0.887–0.972, y 0.983–0.996 (it keeps
+/// its distance from the bottom edge, so it sits a little higher as a fraction). The region
+/// adds padding on every side at both shapes but stays below the Upgrade button (its text
+/// ends at y 0.937 at 16:9).
 pub const USER_ID_REGION: FracRect = FracRect::new(0.86, 0.975, 0.14, 0.025);
 
 /// Colour used to black out the User ID (opaque black, BGRA).
@@ -645,6 +646,18 @@ mod tests {
         assert!(r.x + r.width >= measured.x + measured.width);
         assert!(r.y + r.height >= measured.y + measured.height);
         assert!(r.y > 0.95, "must not cover the Upgrade button");
+    }
+
+    #[test]
+    fn user_id_region_covers_the_measured_16_9_text_with_padding() {
+        // Bounding box of the User ID text on a fullscreen 1920×1080 recording (see const docs).
+        let measured = FracRect::new(0.8865, 0.9833, 0.9719 - 0.8865, 0.9963 - 0.9833);
+        let r = USER_ID_REGION;
+        assert!(r.x < measured.x - 0.02, "left padding");
+        assert!(r.y < measured.y - 0.005, "top padding");
+        assert!(r.x + r.width >= measured.x + measured.width);
+        assert!(r.y + r.height >= measured.y + measured.height);
+        assert!(r.y > 0.937, "must not cover the Upgrade button");
     }
 
     #[test]

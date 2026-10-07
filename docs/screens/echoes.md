@@ -34,7 +34,7 @@ Measured notes for the echo inventory screen. Fixtures live in `fixtures/screens
   7. **Substats.** Only the revealed ones are shown, and a long label can wrap to two lines ("Resonance Skill DMG / Bonus").
   8. `Echo Skill` + description (truncated).
   9. `Equipped by <Name>`. **Plain text**, and its **y-position varies** with substat count and description length.
-- **User ID:** bottom-right, about x ≥ 88%, y ≥ 98% of the frame. **Never read; always masked** ([ADR 0013](../adr/0013-user-id-masking.md)).
+- **User ID:** bottom-right, about x ≥ 88%, y ≥ 98% of the frame (text x 0.886–0.972, y 0.985–0.996 at 16:10; y 0.983–0.996 at 16:9, measured on a fullscreen 1920×1080 recording). **Never read; always masked** ([ADR 0013](../adr/0013-user-id-masking.md)).
 
 These match the optimizer's 16:10 `layout.ts` ROIs (measured from the same account's captures), so they carry over unchanged.
 
