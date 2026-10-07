@@ -18,6 +18,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use wavescan_lib::frame::Frame;
 use wavescan_lib::regions::{self, RegionRead, RegionText};
+use wavescan_lib::traits::OcrEngine;
 use wavescan_lib::{platform, safety};
 
 /// Any error, printed by `main` (this is a developer tool, so a message is enough).
@@ -41,6 +42,7 @@ fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.as_slice() {
         [command, input, output] if command == "mask" => mask(Path::new(input), Path::new(output)),
+        [command, rest @ ..] if command == "experiment" => experiment(rest),
         [command, manifest, output] if command == "ocr" => {
             ocr(Path::new(manifest), Path::new(output))
         }
@@ -135,5 +137,66 @@ fn save_png(frame: &Frame, path: &Path) -> Result<()> {
     let mut writer = encoder.write_header()?;
     writer.write_image_data(&rgb)?;
     writer.finish()?;
+    Ok(())
+}
+
+// ---- TEMPORARY EXPERIMENT (branch exp/winocr-hp, never merged) ----
+
+/// Pads with `pad` pixels of the crop's top-left colour on every side.
+fn exp_pad(f: &Frame, pad: u32) -> Result<Frame> {
+    let (w, h) = (f.width() + 2 * pad, f.height() + 2 * pad);
+    let bg = f.pixel(0, 0).ok_or("empty")?;
+    let mut out = Vec::with_capacity((w * h * 4) as usize);
+    for y in 0..h {
+        for x in 0..w {
+            let px = if x >= pad && y >= pad && x < pad + f.width() && y < pad + f.height() {
+                f.pixel(x - pad, y - pad).ok_or("oob")?
+            } else {
+                bg
+            };
+            out.extend_from_slice(&px);
+        }
+    }
+    Ok(Frame::from_bgra(w, h, 0, out)?)
+}
+
+/// Nearest-neighbour scale by num/den.
+fn exp_scale(f: &Frame, num: u32, den: u32) -> Result<Frame> {
+    let (w, h) = (f.width() * num / den, f.height() * num / den);
+    let mut out = Vec::with_capacity((w * h * 4) as usize);
+    for y in 0..h {
+        for x in 0..w {
+            out.extend_from_slice(&f.pixel(x * den / num, y * den / num).ok_or("oob")?);
+        }
+    }
+    Ok(Frame::from_bgra(w, h, 0, out)?)
+}
+
+/// `experiment <png> <x> <y> <w> <h>`: OCRs one region with several variants and prints
+/// one GitHub annotation line.
+#[allow(clippy::print_stdout, reason = "temporary experiment")]
+pub fn experiment(args: &[String]) -> Result<()> {
+    let [image, x, y, w, h] = args else { return Err("args".into()) };
+    let frame = load_png(Path::new(image))?;
+    let region = wavescan_lib::geometry::FracRect::new(x.parse()?, y.parse()?, w.parse()?, h.parse()?);
+    let crop = frame.crop(region)?;
+    let engine = platform::create().ocr;
+    let variants: Vec<(&str, Frame)> = vec![
+        ("raw", crop.clone()),
+        ("pad8", exp_pad(&crop, 8)?),
+        ("pad24", exp_pad(&crop, 24)?),
+        ("x2", exp_scale(&crop, 2, 1)?),
+        ("pad24x2", exp_scale(&exp_pad(&crop, 24)?, 2, 1)?),
+        ("half", exp_scale(&crop, 1, 2)?),
+        ("pad24half", exp_scale(&exp_pad(&crop, 24)?, 1, 2)?),
+    ];
+    let mut msg = String::new();
+    for (name, v) in variants {
+        let lines = engine.recognize(&v)?;
+        let texts: Vec<String> = lines.iter().map(|l| l.text.clone()).collect();
+        msg.push_str(&format!("{name}: {texts:?} %0A"));
+    }
+    let base = Path::new(image).file_name().and_then(|s| s.to_str()).unwrap_or("?");
+    println!("::warning title=OCR {base} {x},{y}::{msg}");
     Ok(())
 }
