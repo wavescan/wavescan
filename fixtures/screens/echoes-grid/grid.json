@@ -1,0 +1,19 @@
+{
+  "notes": "Hand-checked grid goldens (docs/fixtures.md). rows: barTop (gold line / level bar edge) of each fully visible row, as frame y fractions, ±0.006. scrolls: the visible-row index shift between two frames of a manual scroll in a 2304x1440 recording (the matched rows were compared by eye).",
+  "frames": {
+    "echoes-grid/2304x1440/scroll-a-before": [0.345, 0.521, 0.697],
+    "echoes-grid/2304x1440/scroll-a-after": [0.341, 0.518, 0.694],
+    "echoes-grid/2304x1440/scroll-b-before": [0.394, 0.57, 0.749],
+    "echoes-grid/2304x1440/scroll-b-after": [0.25, 0.426, 0.602, 0.778],
+    "echoes/2880x1800/adam-smasher-plus25": [0.325, 0.501, 0.677],
+    "echoes/2880x1800/kronaclaw-plus25": [0.27, 0.446, 0.622, 0.798],
+    "echoes/2880x1800/thousand-puppet-pavilion-plus25": [0.237, 0.41, 0.589, 0.765],
+    "echoes/2880x1800/thousand-puppet-pavilion-plus25-toast": [0.237, 0.41, 0.589, 0.765],
+    "echoes/2880x1800/viridblaze-saurian-plus15": [0.24, 0.416, 0.593, 0.769]
+  },
+  "scrolls": [
+    { "before": "echoes-grid/2304x1440/scroll-a-before", "after": "echoes-grid/2304x1440/scroll-a-after", "shift": 2 },
+    { "before": "echoes-grid/2304x1440/scroll-b-before", "after": "echoes-grid/2304x1440/scroll-b-after", "shift": 2 },
+    { "before": "echoes-grid/2304x1440/scroll-a-before", "after": "echoes-grid/2304x1440/scroll-a-before", "shift": 0 }
+  ]
+}

@@ -8,6 +8,7 @@ Real game captures are the ground truth for this project. ROIs are measured from
 fixtures/
   screens/<screen>/<WxH>/<name>.png    full-size capture, User ID masked, one folder per resolution
   screens/<screen>/<WxH>/<name>.json   golden: what the image really shows (same basename)
+  screens/echoes-grid/<WxH>/<name>.png  grid frames for auto mode (masked), goldens in screens/echoes-grid/grid.json
   raw/                                 ignored by git: originals, videos, unmasked captures
 ```
 
@@ -68,7 +69,9 @@ Each field gets one outcome (`tests/support/fixtureCompare.ts`):
 
 Substats are matched by type and value, not position, so one dropped row doesn't make the rows after it look wrong. The run ends with an accuracy line (`correct / compared`). The release gate is **≥ 99%** (CLAUDE.md). When a fixture has problems, the test prints the raw OCR text of every region, which is usually enough to see what went wrong.
 
-It runs on CI's Windows and macOS runners after `cargo nextest`, so every change is checked against both OCR engines. It isn't part of `npm test`, because Linux (the Docker check) has no OS OCR. The Rust tool refuses any screenshot whose User ID area isn't masked, so an unmasked capture fails CI.
+`tests/gridReplay.fixtures.ts` does the same for the grid (auto mode): it samples `GRID_STRIP` through the Rust tool and checks the fully visible rows and scroll shifts in `screens/echoes-grid/grid.json`. It needs no OCR, so it also runs in the Docker container (`npx vitest run --config vitest.fixtures.config.ts tests/gridReplay.fixtures.ts` in `docker compose run --rm shell`).
+
+The fixture replay runs on CI's Windows and macOS runners after `cargo nextest`, so every change is checked against both OCR engines. It isn't part of `npm test`, because Linux (the Docker check) has no OS OCR. The Rust tool refuses any screenshot whose User ID area isn't masked, so an unmasked capture fails CI.
 
 ## Rules
 
@@ -83,6 +86,7 @@ It runs on CI's Windows and macOS runners after `cargo nextest`, so every change
 
 | Screen | Have | Still needed |
 |---|---|---|
+| Bag → Echoes grid | 16:10: 4 frames of a manual scroll at 2304×1440 (two before/after pairs), plus the echo fixtures' grids | 16:9 · the end of the list (last, partly filled row) · a scroll by the scanner itself |
 | Bag → Echoes | 16:10, Windows: 11 at 2880×1800 (5★ +15/+20/+25, one 4★, cost 1/3/4, wrapped labels, collab and "Reminiscence" names, an equipped echo, a toast over the grid), 1 at 2800×1752 (from a JPEG). Not in the repo yet: 2304×1440 | 16:9 at 1920×1080 / 2560×1440 / 3840×2160 · macOS · 3★/2★ echoes · +0/+5/+10 echoes · grid end-of-list |
 | Characters (v0.2) | none | see the roadmap checklist |
 | Weapons (v0.3) | none | see the roadmap checklist |
