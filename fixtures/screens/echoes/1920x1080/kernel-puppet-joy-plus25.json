@@ -1,0 +1,17 @@
+{
+  "echo": "KernelPuppetJoy",
+  "echoSet": "HeartofSwornVigil",
+  "cost": 1,
+  "rank": 5,
+  "level": 25,
+  "stat": "ATK",
+  "substats": [
+    { "type": "CritDMG", "value": 13.8 },
+    { "type": "CritRate", "value": 7.5 },
+    { "type": "DEF_FLAT", "value": 50 },
+    { "type": "ATK_FLAT", "value": 50 },
+    { "type": "ResonanceLiberationDMGBonus", "value": 7.9 }
+  ],
+  "equippedBy": "Hsin",
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar cropped, the bottom 58 px and right 2 px were off screen and are black). A row of Kernel Puppets in the grid has a bright crossbar that looks like a level-bar edge (auto mode grid). Set checked against the reference icon."
+}

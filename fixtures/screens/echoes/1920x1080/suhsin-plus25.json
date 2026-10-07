@@ -1,0 +1,17 @@
+{
+  "echo": "ReminiscenceSuhsintheInevitable",
+  "echoSet": "HeartofSwornVigil",
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritDMG",
+  "substats": [
+    { "type": "ResonanceLiberationDMGBonus", "value": 8.6 },
+    { "type": "CritDMG", "value": 16.2 },
+    { "type": "HeavyAttackDMGBonus", "value": 7.1 },
+    { "type": "ResonanceSkillDMGBonus", "value": 8.6 },
+    { "type": "EnergyRegen", "value": 10.8 }
+  ],
+  "equippedBy": "Hsin",
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar cropped, the bottom 58 px and right 2 px were off screen and are black). Top of the list. Two wrapped labels. Set checked against the reference icon."
+}

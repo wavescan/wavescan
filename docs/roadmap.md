@@ -46,11 +46,11 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] Watch mode UI: live counter, candidate list, low-confidence highlighting, remove misreads, copy scan JSON
 - [ ] Preview with ROI overlay; save to file
 - [ ] Auto mode: arming flow + warning, grid navigator, early stop by level, abort paths, "run as administrator" notice (Windows, ADR 0023) / Accessibility prompt (macOS)
-  - [x] Grid reader: visible rows, click targets, scroll matching (`src/auto/grid.ts`, 16:10 only)
+  - [x] Grid reader: visible rows, click targets, scroll matching (`src/auto/grid.ts`, 16:10 and 16:9)
   - [ ] Navigator state machine (click → read → next, scroll, end of list, stop level)
   - [ ] `auto_scroll` command + F8 stop hotkey (ADR)
   - [ ] Auto mode UI
-  - [ ] 16:9 grid measurements
+  - [x] 16:9 grid measurements (1920×1080 windowed; User ID position at 16:9 is still a best guess)
 - [ ] Fixture tests ≥ 99% field accuracy at every captured resolution, on both OCR engines
   - [x] Masked fixtures + goldens committed, replayed through the real OCR on CI's Windows and macOS runners (`npm run test:fixtures`, docs/fixtures.md)
 

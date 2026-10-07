@@ -11,7 +11,19 @@ Measured notes for the echo inventory screen. Fixtures live in `fixtures/screens
 | Video A (`2880x1800/…22-18-18.mp4`, Game Bar) | 2304×1440 @ 60 fps, 49 s | 16:10 | Manual click-through |
 | Video B (`…09-15-58 - Copy.mp4`) | 2304×1440 @ 120 fps, 69 s | 16:10 | Manual click-through + scroll |
 
-**Still needed:** 16:9 captures (1920×1080, 2560×1440, 3840×2160) and any **macOS (Apple Silicon)** capture.
+| 7 PNGs (Windows, **windowed** 1920×1080 on a 1920×1080 desktop, 2026-10-07) | 1920×1080 game area | 16:9 | Top of list, two mid-scrolls, +5/+15/+20/+25 echoes. Desktop screenshots, so they include the title bar (58 px) and the left border (2 px), and the window ran 58 px off the bottom and 2 px off the right of the screen. The fixtures are the game area rebuilt from them: crop x ≥ 2, y ≥ 58, paste at (0, 0) on a black 1920×1080 frame. The bottom 58 rows (footer edge and the **User ID**) are black |
+
+**Still needed:** 16:9 at 2560×1440 / 3840×2160 and a fullscreen 16:9 capture (to see the User ID), and any **macOS (Apple Silicon)** capture.
+
+## 16:9 vs 16:10
+
+Checked on the 1920×1080 captures (2026-10-07). The game scales its UI with the **width**, so:
+
+- **x** fractions are the same at both shapes (name x 0.6935, grid column 1 x 0.129, Upgrade x 0.876 all match).
+- Everything in the top part of the screen (header, detail panel, grid top) is **top-anchored**: in 1920-wide pixels it sits at the same y. As a fraction, y₁₆:₉ = y₁₆:₁₀ × 1.111. scanner-core's `regionForFrame` already does this, and every read region lands on its text at 1920×1080.
+- The footer (Sort by Level, Upgrade) is **bottom-anchored**: the same distance from the bottom in 1920-wide pixels (Upgrade: 90 px at both shapes). The grid's scrolling area ends above the footer, so its bottom edge is bottom-anchored too.
+- The extra height at 16:10 (120 px at 1920 wide) goes between the two, which is why the 16:10 grid shows about half a row more.
+- **User ID (best guess, not seen yet):** bottom-right, so assumed bottom-anchored like the footer: text at about y 0.983–0.996 at 16:9, inside `USER_ID_REGION` (y ≥ 0.975). The windowed captures had it off screen.
 
 ## Layout
 
@@ -67,11 +79,12 @@ This reproduces both ends of every in-game main stat range (e.g. cost 1 flat HP 
 
 ## Grid (auto mode)
 
-Measured 2026-10-07 on the 2880×1800 fixtures and a 2304×1440 scrolling recording (both 16:10), as fractions of the game area. `src/auto/grid.ts` holds the numbers. **16:9 isn't measured**, so auto mode refuses it until a capture exists.
+Measured 2026-10-07 on the 2880×1800 fixtures and a 2304×1440 scrolling recording (both 16:10), as fractions of the game area, then checked at 16:9 on the 1920×1080 captures. `src/auto/grid.ts` holds the numbers (`gridLayout`). Values below are 16:10. **At 16:9** every height is × 1.111 and the strip's bottom keeps its distance from the frame's bottom: strip y 0.1167–0.8389, row pitch 0.1967 (measured 211–212 px at 1080, i.e. 0.1954–0.1963), card art 0.131. Other shapes are refused.
 
 - **Columns** never move: 6 cards, centres at x = 0.130 + k × 0.092 (k = 0–5), each about 0.077 wide.
 - **Rows** scroll smoothly, so they can sit at any height. Each card is art (≈ 0.118 tall), then a bright gold line, then the dark level bar with "+25" (≈ 0.04). Row pitch 0.1753–0.1786.
-- **Finding rows:** sample `GRID_STRIP` (x 0.09–0.61, y 0.105–0.855) at 256 px wide and average each line's brightness. A drop of ≥ 55 (to ≤ 110) between neighbouring lines is a gold line → level bar edge (gold ≈ 180–215, bar ≈ 55–85). It was found in every frame checked.
+- **Finding rows:** sample the grid strip (x 0.09–0.61, y 0.105–0.855) at 256 px wide and average each line's brightness. A drop of ≥ 55 (to ≤ 110) between neighbouring lines is a gold line → level bar edge (gold ≈ 180–215, bar ≈ 55–85). It was found in every frame checked.
+- **Edges in the card art:** a row of Kernel Puppets has a bright crossbar across every card, about 0.05 above the gold line (16:9 fixture `kernel-puppet-joy-plus25`). In the 256-px sample it makes a drop of 50, just under the threshold, so a row of six identical crossbars could pass it. The gold line is always a card's lowest edge, so a drop with another one less than 0.6 of a row below it is ignored. The remaining edges must also be whole row pitches apart. If they disagree, the largest group that does is kept, and a tie gives no rows.
 - **Fully visible:** card top (edge − 0.118) ≥ 0.105 and bar bottom (edge + 0.04) ≤ 0.855, with 0.005 slack. Partly hidden rows are skipped and picked up after the next scroll.
 - **Click target:** column centre, half-way up the card art.
 - **Empty slots** (end of the list) can't be told from cards by the level bar: the grid fades out towards its bottom edge, which lightens the bars. The navigator checks that a click selected something instead.

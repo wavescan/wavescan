@@ -1,0 +1,13 @@
+{
+  "echo": "RocksteadyGuardian",
+  "echoSet": "RejuvenatingGlow",
+  "cost": 3,
+  "rank": 5,
+  "level": 5,
+  "stat": "EnergyRegen",
+  "substats": [
+    { "type": "ResonanceLiberationDMGBonus", "value": 10.1 }
+  ],
+  "equippedBy": "Verina",
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar cropped, the bottom 58 px and right 2 px were off screen and are black). +5 with 1 wrapped substat; one-digit level, so the set icon sits further left. The Echo Skill text fills the rest of the substat area. Set checked against the reference icon."
+}

@@ -9,28 +9,82 @@ import type { Sample } from "@/session/samples";
 // line right above its dark level bar ("+25"); that bright-to-dark edge is found in a
 // brightness profile of the grid strip and marks each row. Columns never move.
 //
-// Measured on 16:10 captures (2880×1800 fixtures and a 2304×1440 recording), as fractions of
-// the game area. See docs/screens/echoes.md "Grid". 16:9 isn't measured yet, so
-// `isGridMeasured` refuses it rather than guess.
-
-/** The strip sampled for row detection: every column, the whole scrolling area. */
-export const GRID_STRIP: RegionFrac = { x: 0.09, y: 0.105, width: 0.52, height: 0.75 };
+// Measured on 16:10 captures (2880×1800 fixtures and a 2304×1440 recording) and 16:9
+// captures (1920×1080), as fractions of the game area. The game scales its UI with the
+// width, so x is the same at both shapes and every height is aspect / 1.6 times the 16:10
+// one. The scrolling area's top follows the header (top-anchored) and its bottom follows
+// the footer (bottom-anchored). See docs/screens/echoes.md "Grid". Other shapes aren't
+// measured, so `gridLayout` refuses them rather than guess.
 
 /** Width the strip is sampled at (about 0.0033 of the screen height per pixel at 16:10). */
 export const GRID_SAMPLE_WIDTH = 256;
 
-/** Centre x of each of the 6 columns. */
+/** Centre x of each of the 6 columns (the same at 16:10 and 16:9). */
 export const COLUMN_X: readonly number[] = [0, 1, 2, 3, 4, 5].map((k) => 0.13 + k * 0.092);
 
 /** Half a card's width (cards are about 0.077 wide). */
 const CARD_HALF_WIDTH = 0.0385;
 
-/** Card art height above the gold line, and the level bar's height below it. */
-export const CARD_ART_HEIGHT = 0.118;
-export const LEVEL_BAR_HEIGHT = 0.04;
+/** The grid's geometry for one frame shape, as fractions of the game area. */
+export interface GridLayout {
+  /** The strip sampled for row detection: every column, the whole scrolling area. */
+  strip: RegionFrac;
+  /** Card art height above the gold line. */
+  cardArtHeight: number;
+  /** Level bar height below the gold line. */
+  levelBarHeight: number;
+  /** Distance between rows. */
+  rowPitch: number;
+  /** Edges closer than this are the same row. */
+  sameRow: number;
+  /** Small allowance when checking that a card is fully inside the scrolling area. */
+  edgeSlack: number;
+  /** How far a row may sit from a whole number of pitches from the other rows. */
+  pitchTolerance: number;
+}
 
-/** Distance between rows (measured 0.1753-0.1786). */
-export const ROW_PITCH = 0.177;
+/**
+ * The 16:10 grid. Strip x 0.09–0.61, y 0.105–0.855. Row pitch measured 0.1753–0.1786.
+ */
+export const GRID_16_10: GridLayout = {
+  strip: { x: 0.09, y: 0.105, width: 0.52, height: 0.75 },
+  cardArtHeight: 0.118,
+  levelBarHeight: 0.04,
+  rowPitch: 0.177,
+  sameRow: 0.03,
+  edgeSlack: 0.005,
+  pitchTolerance: 0.012,
+};
+
+/** Frame shapes the grid has been measured at, with the same snap tolerance as scanner-core. */
+const MEASURED_ASPECTS = [16 / 10, 16 / 9];
+const SNAP_TOLERANCE = 0.01;
+
+/** The 16:10 layout with every height scaled by `scale`, and the strip's bottom kept the same distance from the frame's bottom. */
+function scaledLayout(scale: number): GridLayout {
+  const ref = GRID_16_10;
+  const top = ref.strip.y * scale;
+  const bottom = 1 - (1 - (ref.strip.y + ref.strip.height)) * scale;
+  return {
+    strip: { x: ref.strip.x, y: top, width: ref.strip.width, height: bottom - top },
+    cardArtHeight: ref.cardArtHeight * scale,
+    levelBarHeight: ref.levelBarHeight * scale,
+    rowPitch: ref.rowPitch * scale,
+    sameRow: ref.sameRow * scale,
+    edgeSlack: ref.edgeSlack * scale,
+    pitchTolerance: ref.pitchTolerance * scale,
+  };
+}
+
+/**
+ * The grid layout for this game area, or null when its shape isn't 16:10 or 16:9 (auto mode
+ * refuses to click on an unmeasured layout).
+ */
+export function gridLayout(frame: FrameSize): GridLayout | null {
+  const aspect = MEASURED_ASPECTS.find((a) => Math.abs(frame.width / frame.height - a) < SNAP_TOLERANCE);
+  if (aspect === undefined) return null;
+  return aspect === 16 / 10 ? GRID_16_10 : scaledLayout(aspect / (16 / 10));
+}
 
 /**
  * Brightness drop (0-255, averaged across the strip) from the row above the edge to the
@@ -38,17 +92,6 @@ export const ROW_PITCH = 0.177;
  */
 const EDGE_DROP = 55;
 const EDGE_MAX_BELOW = 110;
-
-/** Edges closer than this are the same row. */
-const SAME_ROW = 0.03;
-
-/** Small allowance when checking that a card is fully inside the scrolling area. */
-const EDGE_SLACK = 0.005;
-
-/** Whether the grid layout has been measured for this frame shape (16:10 only so far). */
-export function isGridMeasured(frame: FrameSize): boolean {
-  return Math.abs(frame.width / frame.height - 1.6) < 0.01;
-}
 
 /** One fully visible row of cards. */
 export interface GridRow {
@@ -68,68 +111,97 @@ function lum(sample: Sample, x: number, y: number): number {
   return 0.299 * sample.rgba[i]! + 0.587 * sample.rgba[i + 1]! + 0.114 * sample.rgba[i + 2]!;
 }
 
-/** Converts a sample row/column back to frame fractions. */
-function frameY(sample: Sample, y: number): number {
-  return GRID_STRIP.y + ((y + 0.5) / sample.height) * GRID_STRIP.height;
+/** Converts a sample row back to a frame fraction, and frame fractions to sample pixels. */
+function frameY(layout: GridLayout, sample: Sample, y: number): number {
+  return layout.strip.y + ((y + 0.5) / sample.height) * layout.strip.height;
 }
-function sampleX(sample: Sample, x: number): number {
-  return Math.round(((x - GRID_STRIP.x) / GRID_STRIP.width) * sample.width);
+function sampleX(layout: GridLayout, sample: Sample, x: number): number {
+  return Math.round(((x - layout.strip.x) / layout.strip.width) * sample.width);
 }
-function sampleY(sample: Sample, y: number): number {
-  return Math.round(((y - GRID_STRIP.y) / GRID_STRIP.height) * sample.height);
+function sampleY(layout: GridLayout, sample: Sample, y: number): number {
+  return Math.round(((y - layout.strip.y) / layout.strip.height) * sample.height);
 }
 
-/**
- * Finds every gold-line / level-bar edge in a GRID_STRIP sample, top to bottom, as frame y
- * fractions. Includes rows that are only partly visible.
- */
-export function findRowEdges(sample: Sample): number[] {
+/** Every bright-to-dark drop in the strip's brightness profile, top to bottom. */
+function brightnessDrops(layout: GridLayout, sample: Sample): number[] {
   const profile: number[] = [];
   for (let y = 0; y < sample.height; y++) {
     let sum = 0;
     for (let x = 0; x < sample.width; x++) sum += lum(sample, x, y);
     profile.push(sum / sample.width);
   }
-  const edges: number[] = [];
+  const drops: number[] = [];
   for (let y = 1; y < sample.height - 1; y++) {
     const drop = profile[y - 1]! - profile[y + 1]!;
     if (drop < EDGE_DROP || profile[y + 1]! > EDGE_MAX_BELOW) continue;
-    const edge = frameY(sample, y);
-    const last = edges.at(-1);
-    if (last === undefined || edge - last > SAME_ROW) edges.push(edge);
+    const edge = frameY(layout, sample, y);
+    const last = drops.at(-1);
+    if (last === undefined || edge - last > layout.sameRow) drops.push(edge);
   }
-  return edges;
+  return drops;
+}
+
+/** Whether `a` and `b` are a whole number of row pitches apart. */
+function onPitch(layout: GridLayout, a: number, b: number): boolean {
+  const pitches = Math.abs(a - b) / layout.rowPitch;
+  return Math.abs(pitches - Math.round(pitches)) * layout.rowPitch <= layout.pitchTolerance;
 }
 
 /**
- * The fully visible rows in a GRID_STRIP sample, with a click target for each column. A row
+ * Finds every gold-line / level-bar edge in a grid strip sample, top to bottom, as frame y
+ * fractions. Includes rows that are only partly visible.
+ *
+ * Card art can make the same kind of drop: a row of Kernel Puppets has a bright crossbar
+ * across every card (16:9 fixture `kernel-puppet-joy-plus25`). Such a drop sits inside the
+ * card, above that card's real edge, so a drop with another one less than ~0.6 of a row
+ * below it is dropped. Then the edges have to be whole row pitches apart: when they don't
+ * agree (say a lone art edge in a row whose level bar is out of view), the largest group that
+ * does is kept, and a tie returns nothing rather than a guess.
+ */
+export function findRowEdges(layout: GridLayout, sample: Sample): number[] {
+  const drops = brightnessDrops(layout, sample);
+  const edges = drops.filter((y, i) => {
+    const below = drops[i + 1];
+    return below === undefined || below - y >= 0.6 * layout.rowPitch;
+  });
+  if (edges.length <= 1) return edges;
+  const groups = edges.map((anchor) => edges.filter((y) => onPitch(layout, anchor, y)));
+  const best = Math.max(...groups.map((g) => g.length));
+  const winners = groups.filter((g) => g.length === best);
+  const first = winners[0]!;
+  if (winners.some((g) => g[0] !== first[0])) return [];
+  return first;
+}
+
+/**
+ * The fully visible rows in a grid strip sample, with a click target for each column. A row
  * whose card top or level bar is cut off by the scrolling area is left out: clicking it
  * could scroll the grid by itself.
  */
-export function visibleRows(sample: Sample): GridRow[] {
-  const top = GRID_STRIP.y - EDGE_SLACK;
-  const bottom = GRID_STRIP.y + GRID_STRIP.height + EDGE_SLACK;
-  return findRowEdges(sample)
-    .filter((edge) => edge - CARD_ART_HEIGHT >= top && edge + LEVEL_BAR_HEIGHT <= bottom)
+export function visibleRows(layout: GridLayout, sample: Sample): GridRow[] {
+  const top = layout.strip.y - layout.edgeSlack;
+  const bottom = layout.strip.y + layout.strip.height + layout.edgeSlack;
+  return findRowEdges(layout, sample)
+    .filter((edge) => edge - layout.cardArtHeight >= top && edge + layout.levelBarHeight <= bottom)
     .map((barTop) => ({
       barTop,
-      targets: COLUMN_X.map((x, column) => ({ column, point: { x, y: barTop - CARD_ART_HEIGHT / 2 } })),
+      targets: COLUMN_X.map((x, column) => ({ column, point: { x, y: barTop - layout.cardArtHeight / 2 } })),
     }));
 }
 
 /** Small brightness thumbnails of a row's cards (4×4 per card), to recognise it after a scroll. */
-export function rowSignature(sample: Sample, row: GridRow): number[] {
+export function rowSignature(layout: GridLayout, sample: Sample, row: GridRow): number[] {
   const signature: number[] = [];
   const cells = 4;
   for (let column = 0; column < COLUMN_X.length; column++) {
     const left = COLUMN_X[column]! - CARD_HALF_WIDTH;
-    const artTop = row.barTop - CARD_ART_HEIGHT;
+    const artTop = row.barTop - layout.cardArtHeight;
     for (let cy = 0; cy < cells; cy++) {
       for (let cx = 0; cx < cells; cx++) {
-        const x0 = sampleX(sample, left + (cx / cells) * 2 * CARD_HALF_WIDTH);
-        const x1 = sampleX(sample, left + ((cx + 1) / cells) * 2 * CARD_HALF_WIDTH);
-        const y0 = sampleY(sample, artTop + (cy / cells) * CARD_ART_HEIGHT);
-        const y1 = sampleY(sample, artTop + ((cy + 1) / cells) * CARD_ART_HEIGHT);
+        const x0 = sampleX(layout, sample, left + (cx / cells) * 2 * CARD_HALF_WIDTH);
+        const x1 = sampleX(layout, sample, left + ((cx + 1) / cells) * 2 * CARD_HALF_WIDTH);
+        const y0 = sampleY(layout, sample, artTop + (cy / cells) * layout.cardArtHeight);
+        const y1 = sampleY(layout, sample, artTop + ((cy + 1) / cells) * layout.cardArtHeight);
         let sum = 0;
         let count = 0;
         for (let y = Math.max(0, y0); y < Math.min(sample.height, y1); y++) {
@@ -182,7 +254,3 @@ export function scrollShift(before: readonly (readonly number[])[], after: reado
   return fits.length === 1 ? fits[0]! : null;
 }
 
-/** The GRID_STRIP region for this frame (16:10 only, see `isGridMeasured`). */
-export function gridStripRegion(frame: FrameSize): RegionFrac | null {
-  return isGridMeasured(frame) ? GRID_STRIP : null;
-}
