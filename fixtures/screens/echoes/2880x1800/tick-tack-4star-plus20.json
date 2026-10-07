@@ -1,0 +1,28 @@
+{
+  "echo": "TickTack",
+  "echoSet": null,
+  "cost": 1,
+  "rank": 4,
+  "level": 20,
+  "stat": "DEF",
+  "substats": [
+    {
+      "type": "CritDMG",
+      "value": 21.0
+    },
+    {
+      "type": "ResonanceLiberationDMGBonus",
+      "value": 8.6
+    },
+    {
+      "type": "BasicAttackDMGBonus",
+      "value": 10.1
+    },
+    {
+      "type": "CritRate",
+      "value": 6.3
+    }
+  ],
+  "equippedBy": null,
+  "notes": "4-star (purple name). +20: 4 substats. Wrapped 'Resonance Liberation DMG Bonus'. Set unconfirmed (purple spiral icon, probably HavocEclipse)."
+}

@@ -1,0 +1,24 @@
+{
+  "echo": "ViridblazeSaurian",
+  "echoSet": "MoonlitClouds",
+  "cost": 3,
+  "rank": 5,
+  "level": 15,
+  "stat": "Electro",
+  "substats": [
+    {
+      "type": "HP_FLAT",
+      "value": 470
+    },
+    {
+      "type": "ATK_FLAT",
+      "value": 40
+    },
+    {
+      "type": "ATK",
+      "value": 9.4
+    }
+  ],
+  "equippedBy": null,
+  "notes": "+15: only 3 substats, Echo Skill text below them. Set inferred: same icon as the Bell-Borne fixture, and MoonlitClouds is the only set both can have (please confirm)."
+}

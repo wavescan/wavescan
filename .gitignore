@@ -4,10 +4,14 @@ dist/
 src-tauri/target/
 src-tauri/gen/
 
-# Large raw captures stay out of git (see docs/fixtures.md).
-# Commit downscaled, User-ID-masked crops + golden JSON instead.
+# Raw captures stay out of git (see docs/fixtures.md). Commit full-size, User-ID-masked
+# PNGs (`npm run fixtures:mask`) + golden JSON instead. Only PNG is allowed in screens/, so
+# an unmasked JPEG or video can't slip in.
 fixtures/**/*.mp4
 fixtures/**/*.mov
+fixtures/**/*.jpg
+fixtures/**/*.jpeg
+fixtures/**/*.webp
 fixtures/raw/
 
 # Debug frames written by "save debug frames"
@@ -27,10 +31,4 @@ debug-frames/
 .env
 .env.*
 
-# TEMPORARY: all fixture media is ignored until User IDs are masked
-# (docs/fixtures.md rule 1). Remove this block once masked copies exist.
-fixtures/**/*.png
-fixtures/**/*.jpg
-fixtures/**/*.jpeg
-fixtures/**/*.webp
 scripts/macos-probe/target/

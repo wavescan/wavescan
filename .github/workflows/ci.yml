@@ -71,6 +71,18 @@ jobs:
       - name: cargo nextest
         working-directory: src-tauri
         run: cargo nextest run --locked
+      # Fixture replay needs Windows' English OCR language. Runner images don't always
+      # ship it; installing it is a no-op when it's already there.
+      - name: Install the English OCR language (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $cap = Get-WindowsCapability -Online -Name 'Language.OCR~~~en-US~0.0.1.0'
+          if ($cap.State -ne 'Installed') { Add-WindowsCapability -Online -Name 'Language.OCR~~~en-US~0.0.1.0' }
+      # Replays fixtures/ screenshots through this OS's OCR and the real extraction, and
+      # fails on any silent misread (docs/fixtures.md).
+      - name: Fixture replay
+        run: npm run test:fixtures
 
   supply-chain:
     name: Supply chain (cargo deny, npm audit)

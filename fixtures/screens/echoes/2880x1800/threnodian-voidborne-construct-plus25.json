@@ -1,0 +1,32 @@
+{
+  "echo": "ReminiscenceThrenodianVoidborneConstruct",
+  "echoSet": "WishesofQuietSnowfall",
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritDMG",
+  "substats": [
+    {
+      "type": "ATK_FLAT",
+      "value": 30
+    },
+    {
+      "type": "DEF_FLAT",
+      "value": 60
+    },
+    {
+      "type": "CritDMG",
+      "value": 15.0
+    },
+    {
+      "type": "ATK",
+      "value": 7.9
+    },
+    {
+      "type": "DEF",
+      "value": 11.8
+    }
+  ],
+  "equippedBy": null,
+  "notes": "Long 'Reminiscence: ... - ...' name. Only one possible set."
+}
