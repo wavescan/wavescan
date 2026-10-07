@@ -4,7 +4,10 @@
 mod capture;
 mod input;
 mod ocr;
+mod process;
 mod window;
+
+pub(in crate::platform) use process::is_elevated;
 
 use crate::platform::Platform;
 

@@ -7,6 +7,7 @@ import type {
 } from "@/ipc/types";
 import { isSupportedAspect } from "./regions";
 import type { InputTestResult } from "./inputTest";
+import { describeEchoRead, uncertainFields, type EchoRead } from "./echoRead";
 import type { GameDataInfo } from "@/data/scannerData";
 
 // Builds the Diagnostics report testers paste back to us. It contains facts about the
@@ -16,7 +17,7 @@ import type { GameDataInfo } from "@/data/scannerData";
 export type CheckStatus = "pass" | "warn" | "fail" | "skipped";
 
 export interface Check {
-  id: "window" | "capture" | "aspect" | "frame-size" | "ocr" | "input";
+  id: "window" | "capture" | "aspect" | "frame-size" | "ocr" | "echo-read" | "input";
   label: string;
   status: CheckStatus;
   detail: string;
@@ -39,6 +40,8 @@ export interface DiagnosticsInput {
   candidates: WindowCandidate[];
   capture: Outcome<CaptureStatus> | null;
   ocr: OcrTest[];
+  /** The selected echo read like a scan; null if not run (e.g. capture failed). */
+  echoRead: Outcome<EchoRead> | null;
   /** Optional auto-mode input test; null if the tester didn't run it. */
   input: InputTestResult | null;
 }
@@ -55,11 +58,19 @@ export interface DiagnosticsReport {
   candidates: WindowCandidate[];
   capture: Outcome<CaptureStatus> | null;
   ocr: { id: string; label: string; ms?: number; size?: string; text?: string[]; error?: string }[];
+  echoRead: EchoRead | { error: string } | null;
   input: InputTestResult | null;
 }
 
 /** Frame rate below this is flagged: the game may be paused, minimised or throttled. */
 export const MIN_GOOD_FPS = 20;
+
+/** Windows only: whether Wavescan runs as administrator, which auto mode usually needs. */
+function adminNote(app: AppInfo | null): string {
+  if (app?.elevated === true) return ". Wavescan is running as administrator";
+  if (app?.elevated === false) return ". Wavescan is not running as administrator (auto mode usually needs it)";
+  return "";
+}
 
 export function buildChecks(input: DiagnosticsInput): Check[] {
   const checks: Check[] = [];
@@ -84,7 +95,7 @@ export function buildChecks(input: DiagnosticsInput): Check[] {
       status: win.value.focused ? "pass" : "warn",
       detail: `${width}×${height} at ${Math.round(win.value.scale_factor * 100)}% scale${
         win.value.focused ? "" : " (not focused; fine for watch mode)"
-      }`,
+      }${adminNote(input.app)}`,
     });
   }
 
@@ -150,6 +161,17 @@ export function buildChecks(input: DiagnosticsInput): Check[] {
     });
   }
 
+  const read = input.echoRead;
+  if (read) {
+    const unsure = read.ok && read.value.echo ? uncertainFields(read.value) : [];
+    checks.push({
+      id: "echo-read",
+      label: "Read the selected echo",
+      status: !read.ok ? "fail" : read.value.echo && unsure.length === 0 ? "pass" : "warn",
+      detail: read.ok ? describeEchoRead(read.value) : read.error,
+    });
+  }
+
   if (input.input) {
     checks.push({
       id: "input",
@@ -185,6 +207,11 @@ export function buildReport(input: DiagnosticsInput, now: Date = new Date()): Di
           }
         : { id, label, error: outcome.error },
     ),
+    echoRead: input.echoRead
+      ? input.echoRead.ok
+        ? input.echoRead.value
+        : { error: input.echoRead.error }
+      : null,
     input: input.input,
   };
 }

@@ -161,6 +161,8 @@ On the home screen, press **Run diagnostics**. With the game open on **Bag → E
 - find the game window
 - capture it smoothly
 - read the echo text
+- read the selected echo the same way a scan does (it shows what it found, such as "WhiffWhaff +0, 2★, main stat HP")
+- on Windows, tell whether Wavescan is running as administrator, which auto mode usually needs
 
 It shows a preview with your User ID blacked out and gives you a report you can copy. The report contains no pictures. The basic checks never click anything in the game.
 

@@ -9,6 +9,8 @@ export interface AppInfo {
   platform: "windows" | "macos" | "linux";
   /** Short commit id for CI-built tester/release builds; null for local builds. */
   build: string | null;
+  /** Windows: true if Wavescan runs as administrator. Null on macOS or if unknown. */
+  elevated: boolean | null;
 }
 
 /** Every error a Rust command can return, serialized as `{ kind, message }`. */
