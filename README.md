@@ -71,11 +71,11 @@ Auto mode clicks through your whole echo list for you. A full 3,000-echo bag tak
 
 To use it:
 
-1. In the scanner, open **Settings → Auto mode**, read the warning and type `I understand` to turn it on.
+1. In the scanner, open **Scan echoes → Auto mode**, read the warning and type `I understand`. You type it again for every auto scan.
    - *Windows:* auto mode needs the scanner to run as administrator, because Windows blocks clicks from normal apps into the game. Close the scanner, right-click it and choose **Run as administrator**. Watch mode never needs this.
    - *Mac:* macOS asks for **Accessibility** permission (needed to click). Watch mode never asks for this.
-2. Go to **Bag → Echoes** in the game, sorted by **Level**.
-3. Press **Start auto scan** and **don't touch the mouse or keyboard**.
+2. Go to **Bag → Echoes** in the game, sorted by **Level** (highest first). Choose which echoes to read: all of them, or only from a level up (for example **+25 only**). The scan stops at the first echo below that level.
+3. Press **Start auto scan** and **don't touch the mouse or keyboard**. The scanner scrolls back to the top of the list first, then reads every echo and scrolls down by itself.
 4. To stop at any time, **move the mouse** or press **F8**. The scanner stops immediately and keeps everything it read so far.
 
 ## Is it safe?

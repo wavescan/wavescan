@@ -10,8 +10,10 @@ import {
   stopCapture,
 } from "@/ipc/commands";
 import type { AppInfo } from "@/ipc/types";
+import type { ExtractedEcho } from "@/session/echoExtract";
 import { createEchoSession, type EchoCandidate, type EchoSession, type SessionStats } from "@/session/echoSession";
 import { buildScan } from "@/session/exportScan";
+import AutoModePanel from "@/views/AutoModePanel.vue";
 
 const props = defineProps<{ info: AppInfo | null }>();
 defineEmits<{ back: [] }>();
@@ -22,6 +24,11 @@ const watching = ref(false);
 const message = ref<string | null>(null);
 const copied = ref(false);
 const session = shallowRef<EchoSession | null>(null);
+/** Which tab is shown, and which mode the list's echoes came from last (for the export). */
+const mode = ref<"watch" | "auto">("watch");
+const scannedWith = ref<"watch" | "auto">("watch");
+const autoRunning = ref(false);
+const busy = computed(() => watching.value || autoRunning.value);
 let frame = { width: 0, height: 0 };
 let sizeTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -46,7 +53,10 @@ async function start() {
       sampleRegions,
       readRegions,
       frameSize: () => frame,
-      onCandidate: (c) => candidates.value.unshift(c),
+      onCandidate: (c) => {
+        scannedWith.value = "watch";
+        candidates.value.unshift(c);
+      },
       onStats: (s) => (stats.value = s),
       onError: (m) => (message.value = m),
     });
@@ -67,6 +77,18 @@ async function stop() {
   await stopCapture().catch(() => undefined);
 }
 
+/** Auto mode reports the size of the frames it read, for the export's `resolution`. */
+function setFrame(size: { width: number; height: number }) {
+  frame = size;
+}
+
+/** An echo read by auto mode: numbered after everything already in the list. */
+function addAutoEcho(echo: ExtractedEcho) {
+  scannedWith.value = "auto";
+  const index = (candidates.value[0]?.index ?? 0) + 1;
+  candidates.value.unshift({ ...echo, id: `auto-${index}`, index });
+}
+
 function remove(id: string) {
   candidates.value = candidates.value.filter((c) => c.id !== id);
 }
@@ -76,7 +98,7 @@ const built = computed(() =>
     scannerVersion: props.info?.version ?? "0.0.0",
     platform: props.info?.platform === "macos" ? "macos" : "windows",
     resolution: frame,
-    mode: "watch",
+    mode: scannedWith.value,
   }),
 );
 
@@ -111,24 +133,63 @@ onBeforeUnmount(() => void stop());
     <div class="card-body gap-4">
       <div class="flex items-center justify-between">
         <h1 class="card-title text-2xl">
-          Scan echoes <span class="badge badge-outline">watch mode</span>
+          Scan echoes
         </h1>
         <button
           class="btn btn-ghost btn-sm"
-          :disabled="watching"
+          :disabled="busy"
           @click="$emit('back')"
         >
           Back
         </button>
       </div>
 
-      <ol class="list-decimal list-inside text-sm opacity-80 space-y-1">
+      <div
+        role="tablist"
+        class="tabs tabs-boxed w-fit"
+      >
+        <button
+          role="tab"
+          class="tab"
+          :class="{ 'tab-active': mode === 'watch' }"
+          :disabled="busy"
+          @click="mode = 'watch'"
+        >
+          Watch mode
+        </button>
+        <button
+          role="tab"
+          class="tab"
+          :class="{ 'tab-active': mode === 'auto' }"
+          :disabled="busy"
+          @click="mode = 'auto'"
+        >
+          Auto mode
+        </button>
+      </div>
+
+      <AutoModePanel
+        v-if="mode === 'auto'"
+        :info="info"
+        :disabled="watching"
+        @echo="addAutoEcho"
+        @running="autoRunning = $event"
+        @frame="setFrame"
+      />
+
+      <ol
+        v-if="mode === 'watch'"
+        class="list-decimal list-inside text-sm opacity-80 space-y-1"
+      >
         <li>In Wuthering Waves, open <strong>Bag → Echoes</strong> (sorted by Level works best).</li>
         <li>Press <strong>Start watching</strong>, then click through your echoes in the game at any pace.</li>
         <li>Each new echo appears below. Wavescan never clicks anything in watch mode.</li>
       </ol>
 
-      <div class="flex flex-wrap items-center gap-3">
+      <div
+        v-if="mode === 'watch'"
+        class="flex flex-wrap items-center gap-3"
+      >
         <button
           v-if="!watching"
           class="btn btn-primary"
