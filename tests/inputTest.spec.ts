@@ -51,7 +51,7 @@ describe("click test", () => {
     const { deps } = fakeDeps(["Same", "Same", "Same"]);
     const result = await runInputTest(deps, CONFIRMATION_PHRASE, targets);
     expect(result.outcome).toBe("no-change");
-    expect(result.detail).toMatch(/administrator/);
+    expect(result.detail).toMatch(/needs Wavescan to run as administrator/);
   });
 
   it("stops at the first error, reports it, and still disarms", async () => {

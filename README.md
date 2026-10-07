@@ -72,7 +72,7 @@ Auto mode clicks through your whole echo list for you. A full 3,000-echo bag tak
 To use it:
 
 1. In the scanner, open **Settings → Auto mode**, read the warning and type `I understand` to turn it on.
-   - *Windows:* the game usually runs as administrator, and Windows then blocks clicks from normal apps. Close the scanner, right-click it and choose **Run as administrator**. This is only needed for auto mode.
+   - *Windows:* auto mode needs the scanner to run as administrator, because Windows blocks clicks from normal apps into the game. Close the scanner, right-click it and choose **Run as administrator**. Watch mode never needs this.
    - *Mac:* macOS asks for **Accessibility** permission (needed to click). Watch mode never asks for this.
 2. Go to **Bag → Echoes** in the game, sorted by **Level**.
 3. Press **Start auto scan** and **don't touch the mouse or keyboard**.
@@ -150,7 +150,7 @@ This shouldn't appear for signed releases. If it does, check that you downloaded
 Go to **System Settings → Privacy & Security → Accessibility**, turn on *Wavescan*, then try again.
 
 **Auto mode doesn't click anything (Windows)**
-The game is probably running as administrator, so Windows blocks the scanner's clicks. If you see "Windows didn't let Wavescan move the mouse", that's the cause. Close the scanner, right-click it, choose **Run as administrator** and try again.
+Auto mode needs the scanner to run as administrator. Without it, Windows blocks the scanner's clicks, sometimes without any error. Close the scanner, right-click it, choose **Run as administrator** and try again.
 
 **Some values are wrong**
 Fix them in the review screen before exporting, and please [report it](#reporting-a-bug) so we can improve the reader. Uncertain fields are shown in yellow with a grey "Read as: …" line underneath. Copying that line into your report helps a lot.
@@ -163,7 +163,7 @@ On the home screen, press **Run diagnostics**. With the game open on **Bag → E
 - capture it smoothly
 - read the echo text
 - read the selected echo the same way a scan does (it shows what it found, such as "WhiffWhaff +0, 2★, main stat HP")
-- on Windows, tell whether Wavescan is running as administrator, which auto mode usually needs
+- on Windows, tell whether Wavescan is running as administrator, which auto mode needs
 
 It shows a preview with your User ID blacked out and gives you a report you can copy. The report contains no pictures. The basic checks never click anything in the game.
 

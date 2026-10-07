@@ -57,9 +57,9 @@ export async function runInputTest(
       : {
           outcome: "no-change",
           detail:
-            "The echo details didn't change after clicking. If Wuthering Waves runs as " +
-            "administrator, run Wavescan as administrator too. Also check you're on " +
-            "Bag → Echoes with more than one echo.",
+            "The echo details didn't change after clicking. On Windows, the click test " +
+            "needs Wavescan to run as administrator (right-click it → Run as administrator). " +
+            "Also check you're on Bag → Echoes with more than one echo.",
           clicks,
         };
   } catch (error) {

@@ -9,11 +9,11 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] Tauri 2 + Vue 3 + TS + Tailwind/DaisyUI skeleton, `Cargo.toml [lints]` per ADR 0015, `deny.toml`
 - [x] CI (`ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc on `windows-latest` + `macos-14` (actions pinned by SHA, Dependabot)
 - [x] Trait seams + fakes (`traits.rs`, `testing.rs`) and the `safety` module with tests
-- [ ] **Spike, Windows:** find the window, WGC capture of the live game (borderless + fullscreen) at ≥30 fps, WinRT OCR on an echo panel crop, `SendInput` click lands in the game (with and without elevation)
+- [ ] **Spike, Windows:** find the window, WGC capture of the live game (borderless + fullscreen) at ≥30 fps, WinRT OCR on an echo panel crop, `SendInput` click lands in the game (as administrator, [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md))
   - [x] Window finder, WGC capture, WinRT OCR, and the Diagnostics screen are implemented (milestone 3)
   - [ ] Verified against the live game on Boot Camp (paste the Diagnostics report into the PR)
   - [x] `SendInput` driver + Diagnostics click test implemented (ADR 0017)
-  - [ ] Click test verified against the live game on Boot Camp (normal and as administrator)
+  - [x] Click test verified against the live game on Boot Camp as administrator (2026-10-07 report, build 5cecaaf). Without administrator isn't supported for auto mode (ADR 0023)
 - [ ] **Spike, macOS (Apple Silicon):** SCK window capture, Vision OCR, `CGEventPost` click lands in the game.
   - [x] Adapters implemented (ADR 0018); compiled on CI's macOS runner
   - [ ] Verified by a community tester (Diagnostics report + click test) No Apple Silicon Mac in-house, so this is validated by **Discord community testers**:
@@ -45,7 +45,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [ ] `classifyScreen` (detect Bag → Echoes vs other screens)
 - [x] Watch mode UI: live counter, candidate list, low-confidence highlighting, remove misreads, copy scan JSON
 - [ ] Preview with ROI overlay; save to file
-- [ ] Auto mode: arming flow + warning, grid navigator, early stop by level, abort paths, elevation/Accessibility prompts
+- [ ] Auto mode: arming flow + warning, grid navigator, early stop by level, abort paths, "run as administrator" notice (Windows, ADR 0023) / Accessibility prompt (macOS)
   - [x] Grid reader: visible rows, click targets, scroll matching (`src/auto/grid.ts`, 16:10 only)
   - [ ] Navigator state machine (click → read → next, scroll, end of list, stop level)
   - [ ] `auto_scroll` command + F8 stop hotkey (ADR)

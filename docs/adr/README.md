@@ -37,7 +37,7 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0003](./0003-rust-adapters-ts-brain-split.md) | Rust = thin OS adapters, TypeScript = scanning brain | accepted | | architecture, ipc |
 | [0004](./0004-native-os-ocr-with-tesseract-fallback.md) | Native OS OCR, tesseract.js as fallback | accepted | | ocr, performance |
 | [0005](./0005-window-capture-wgc-and-screencapturekit.md) | Window-only capture via Windows.Graphics.Capture and ScreenCaptureKit | accepted | 0018 (macOS crate choice) | capture, security |
-| [0006](./0006-watch-and-auto-modes-and-fair-play-risk.md) | Watch mode by default, auto mode opt-in, and the Fair Play risk | accepted | | input, security, product |
+| [0006](./0006-watch-and-auto-modes-and-fair-play-risk.md) | Watch mode by default, auto mode opt-in, and the Fair Play risk | accepted | 0023 (Windows elevation) | input, security, product |
 | [0007](./0007-shared-scanner-core-package.md) | Share scanning logic with the web app via `@wuthering-tools/scanner-core` | accepted | 0019 (name, data injection) | architecture, reuse |
 | [0008](./0008-scan-json-schema-v1.md) | `WutheringToolsScan` JSON schema v1 | accepted | | schema, interop |
 | [0009](./0009-handoff-via-file-and-clipboard-no-server.md) | Hand off via file or clipboard, never a server | accepted | | interop, privacy |
@@ -48,9 +48,10 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0014](./0014-gpl-3-license.md) | License under GPL-3.0-or-later | accepted | | legal |
 | [0015](./0015-rust-code-standards.md) | Rust code standards for a non-Rust maintainer | accepted | | rust, process, testing |
 | [0016](./0016-diagnostics-screen-and-capture-commands.md) | Diagnostics screen, capture/OCR commands, and window matching without touching the game | accepted | | capture, ocr, privacy, testing |
-| [0017](./0017-input-spike-and-auto-mode-commands.md) | Input spike: auto-mode commands, Windows `SendInput`, and verifying clicks by their effect | accepted | | input, security, testing |
+| [0017](./0017-input-spike-and-auto-mode-commands.md) | Input spike: auto-mode commands, Windows `SendInput`, and verifying clicks by their effect | accepted | 0023 (elevation advice) | input, security, testing |
 | [0018](./0018-macos-adapters.md) | macOS adapters: ScreenCaptureKit (via objc2), Vision, Core Graphics events, and a type-check probe | accepted | | capture, ocr, input, macos, testing |
 | [0019](./0019-consume-scanner-core-with-injected-data.md) | Consume `@wutheringtools/scanner-core` from npm, with game data supplied by Wavescan | accepted | | architecture, reuse, data |
 | [0020](./0020-game-data-snapshot-and-source.md) | Bundle a game-data snapshot; refresh it from wutheringtools.com | accepted | | data, network, privacy |
 | [0021](./0021-batched-region-reads-with-pinned-frames.md) | Batched region reads with pinned frames | accepted | | capture, ocr, ipc |
 | [0022](./0022-set-icon-matching-with-bundled-references.md) | Set-icon matching against bundled reference icons | accepted | | data, ocr, accuracy |
+| [0023](./0023-auto-mode-requires-administrator-on-windows.md) | Auto mode on Windows needs Wavescan to run as administrator | accepted | | input, security, product, windows |

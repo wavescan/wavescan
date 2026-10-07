@@ -28,6 +28,7 @@ Ship **two modes on one pipeline**:
   - It aborts instantly on physical mouse movement (cursor drift between our clicks), the F8 hotkey, or the game losing focus. Everything read so far is kept.
   - Waits are driven by frame changes (wait until the stats fingerprint is stable for 2 frames), never fixed sleeps.
   - Windows: if the game is elevated, offer to restart the scanner elevated, for auto mode only. macOS: request Accessibility only when the user first arms auto mode.
+    **Superseded 2026-10-07 (Windows part):** see ADR 0023. Auto mode always needs Wavescan to run as administrator, and the user starts it that way.
 - **Never:** memory reading, DLL injection, game file access, packet inspection.
 
 ## Consequences
