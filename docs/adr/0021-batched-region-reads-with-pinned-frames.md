@@ -30,6 +30,7 @@ Calling `ocr_region` once per region from TypeScript would be slow, because each
   - Fingerprints come from scanner-core, the same code WT's browser scanner uses.
 - Cons:
   - Only the most recently sampled frame is pinned (one frame of memory). A caller that samples again before reading gets `FrameExpired` and must retry. That's the intended behaviour, because the newer frame is what's on screen.
+    **Superseded 2026-10-07:** see [ADR 0025](./0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md). The last 4 sampled frames stay readable, so auto mode can read one echo while clicking the next.
 
 ## Related
 

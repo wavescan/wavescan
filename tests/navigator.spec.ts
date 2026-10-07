@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GRID_16_10 } from "@/auto/grid";
-import { createNavigator, measureMove, type GridPosition, type NavigatorOptions } from "@/auto/navigator";
+import { MAX_READS_IN_FLIGHT, createNavigator, measureMove, type GridPosition, type NavigatorOptions } from "@/auto/navigator";
 import { createFakeGame, fakeEchoes, type FakeEcho, type FakeGameOptions } from "./support/fakeGame";
 
 // The auto-mode navigator against a pretend echo grid (tests/support/fakeGame.ts): it has
@@ -65,6 +65,42 @@ describe("navigator", () => {
     const { result, ids } = await scan({ echoes: fakeEchoes(60, levels) }, { minLevel: 20 });
     expect(result.reason).toBe("below-min-level");
     expect(ids).toEqual(range(24));
+  });
+
+  it("clicks the next echo while the last one is read, at most two reads at once, in order", async () => {
+    const { result, ids, fake } = await scan({ echoes: fakeEchoes(40), readTurns: 3 });
+    expect(result.reason).toBe("end-of-list");
+    expect(ids).toEqual(range(40));
+    expect(fake.log.maxReadsInFlight).toBe(MAX_READS_IN_FLIGHT);
+  });
+
+  it("with slow reads, still stops at the first echo below the minimum and reports nothing after it", async () => {
+    const levels = (i: number) => (i < 15 ? 25 : i === 15 ? 20 : 25);
+    const { result, ids } = await scan({ echoes: fakeEchoes(40, levels), readTurns: 3 }, { minLevel: 25 });
+    expect(result.reason).toBe("below-min-level");
+    expect(ids).toEqual(range(15));
+  });
+
+  it("counts a read that fails as an error and keeps going", async () => {
+    const fake = createFakeGame({ echoes: fakeEchoes(12) });
+    const read: number[] = [];
+    let reads = 0;
+    const navigator = createNavigator<FakeEcho>(
+      {
+        ...fake.deps,
+        onEcho: (echo) => read.push(echo.id),
+        readEcho: async (seq, setIcon) => {
+          reads += 1;
+          if (reads === 4) throw new Error("that frame is no longer available; sample again");
+          return fake.deps.readEcho(seq, setIcon);
+        },
+      },
+      { minLevel: 0 },
+    );
+    const result = await navigator.run();
+    expect(result.reason).toBe("end-of-list");
+    expect(result.errors).toBe(1);
+    expect(read).toEqual([0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11]);
   });
 
   it("reports an echo whose level couldn't be read, and keeps going", async () => {

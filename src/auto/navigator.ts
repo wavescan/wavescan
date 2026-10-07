@@ -134,6 +134,14 @@ const NOMINAL_NOTCH_ROWS = 1 / 8;
 /** Same tolerance as `onPitch` in grid.ts, for matching edges between two reads. */
 const SAME_EDGE = 0.003;
 
+/**
+ * Most echo reads (OCR) running at once. A read starts as soon as its panel settles, and the
+ * next card is clicked while it runs; when this many are still running, the next click waits
+ * for the oldest. Rust keeps the last few sampled frames readable (`regions::PINNED_FRAMES`,
+ * ADR 0025), and a read takes its frame as soon as it starts.
+ */
+export const MAX_READS_IN_FLIGHT = 2;
+
 /** Fingerprint sample width (STATS_FINGERPRINT_GRID is 64 cells wide), as in watch mode. */
 const PANEL_SAMPLE_WIDTH = 128;
 
@@ -308,33 +316,83 @@ export function createNavigator<Echo extends { level: number | null }>(
     }
   }
 
-  /** Reads one row's cards, left to right. Throws Stop at an echo below the minimum level. */
-  async function readRow(frame: FrameSize, row: GridRow, rowNumber: number) {
+  /** Set by a read that found an echo below the minimum level; ends the run. */
+  let belowMin: StopSignal | null = null;
+  /** Reads not reported yet, oldest first. */
+  const inFlight: Promise<void>[] = [];
+  /** The last read's report, so results are reported in list order. */
+  let reported: Promise<void> = Promise.resolve();
+
+  /**
+   * Starts reading the echo in frame `seq` without waiting for it. Results are reported in
+   * the order the reads started. Once one is below the minimum level, it and every later one
+   * are dropped and the run ends at the next check.
+   */
+  function startRead(seq: number, setIcon: Sample | undefined, position: GridPosition) {
+    // Called now, so Rust takes the frame while it's still pinned.
+    const read = deps.readEcho(seq, setIcon).then(
+      (echo) => ({ echo }),
+      () => ({ echo: null }),
+    );
+    const report = reported.then(async () => {
+      const { echo } = await read;
+      if (belowMin) return;
+      if (!echo) {
+        progress.errors += 1;
+      } else if (echo.level !== null && echo.level < options.minLevel) {
+        belowMin = stopWith(
+          "below-min-level",
+          `Reached an echo at +${echo.level}, below the minimum of +${options.minLevel}. Done.`,
+        );
+        return;
+      } else {
+        progress.echoes += 1;
+        deps.onEcho(echo, position);
+      }
+      publish();
+    });
+    reported = report;
+    inFlight.push(report);
+  }
+
+  /** Throws the below-minimum stop once a read has found one. */
+  function checkBelowMin() {
+    if (belowMin) throw belowMin;
+  }
+
+  /** Waits until fewer than MAX_READS_IN_FLIGHT reads are running. */
+  async function makeRoomForRead() {
+    while (inFlight.length >= MAX_READS_IN_FLIGHT) await inFlight.shift();
+  }
+
+  /** Waits for every read to be reported (before the run returns, however it ends). */
+  async function finishReads() {
+    while (inFlight.length > 0) await inFlight.shift();
+  }
+
+  /**
+   * Clicks one row's cards, left to right, starting a read for each new panel. Returns how
+   * many clicks showed a new echo. Throws the below-minimum stop as soon as a read finds one.
+   */
+  async function readRow(frame: FrameSize, row: GridRow, rowNumber: number): Promise<number> {
     progress.row = rowNumber;
+    let shown = 0;
     for (const { column, point } of row.targets) {
+      checkBelowMin();
+      await makeRoomForRead();
+      checkBelowMin();
       const panel = await clickAndWait(frame, point);
       if (panel === "unchanged") {
         progress.unchanged += 1;
       } else if (panel === "unsettled") {
         progress.errors += 1;
       } else {
-        try {
-          const echo = await deps.readEcho(panel.seq, panel.setIcon);
-          if (echo.level !== null && echo.level < options.minLevel) {
-            throw stopWith(
-              "below-min-level",
-              `Reached an echo at +${echo.level}, below the minimum of +${options.minLevel}. Done.`,
-            );
-          }
-          progress.echoes += 1;
-          deps.onEcho(echo, { row: rowNumber, column });
-        } catch (error) {
-          if (isStop(error)) throw error;
-          progress.errors += 1;
-        }
+        shown += 1;
+        startRead(panel.seq, panel.setIcon, { row: rowNumber, column });
       }
       publish();
     }
+    return shown;
   }
 
   /** Thumbnails of every visible row, to tell two reads with the same row edges apart. */
@@ -393,10 +451,9 @@ export function createNavigator<Echo extends { level: number | null }>(
         for (const row of rows) {
           const number = rowNumber(row.barTop);
           if (number <= done) continue;
-          const before = progress.echoes;
-          await readRow(frame, row, number);
+          const shown = await readRow(frame, row, number);
           done = number;
-          if (number === 0 && progress.echoes - before < 2 && row.targets.length > 1 && progress.unchanged > 0) {
+          if (number === 0 && shown < 2 && row.targets.length > 1 && progress.unchanged > 0) {
             throw stopWith(
               "clicks-not-landing",
               "Clicking the first row didn't change the echo details. On Windows, run Wavescan as administrator. " +
@@ -410,6 +467,7 @@ export function createNavigator<Echo extends { level: number | null }>(
         // a slow frame can't end the run early.
         let stalls = 0;
         for (;;) {
+          checkBelowMin();
           const signatures = new Map(rows.map((row) => [rowNumber(row.barTop), rowSignature(layout, current.sample, row)]));
           const ticks = Math.max(1, Math.min(MAX_STEP_TICKS, Math.floor((STEP_ROWS * layout.rowPitch) / perTick)));
           await act(() => deps.scroll(wheelPoint, -ticks));
@@ -426,6 +484,8 @@ export function createNavigator<Echo extends { level: number | null }>(
                 done = number;
               }
             }
+            await finishReads();
+            checkBelowMin();
             publish();
             return { ...progress, reason: "end-of-list", detail: "Reached the end of the echo list." };
           }
@@ -450,6 +510,7 @@ export function createNavigator<Echo extends { level: number | null }>(
         }
       }
     } catch (error) {
+      await finishReads();
       publish();
       if (isStop(error)) return { ...progress, reason: error.navigatorStop, detail: error.detail };
       return { ...progress, reason: "aborted", detail: deps.errorMessage(error) };

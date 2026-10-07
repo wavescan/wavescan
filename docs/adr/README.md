@@ -52,7 +52,8 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0018](./0018-macos-adapters.md) | macOS adapters: ScreenCaptureKit (via objc2), Vision, Core Graphics events, and a type-check probe | accepted | | capture, ocr, input, macos, testing |
 | [0019](./0019-consume-scanner-core-with-injected-data.md) | Consume `@wutheringtools/scanner-core` from npm, with game data supplied by Wavescan | accepted | | architecture, reuse, data |
 | [0020](./0020-game-data-snapshot-and-source.md) | Bundle a game-data snapshot; refresh it from wutheringtools.com | accepted | | data, network, privacy |
-| [0021](./0021-batched-region-reads-with-pinned-frames.md) | Batched region reads with pinned frames | accepted | | capture, ocr, ipc |
+| [0021](./0021-batched-region-reads-with-pinned-frames.md) | Batched region reads with pinned frames | accepted | 0025 (frames kept pinned) | capture, ocr, ipc |
 | [0022](./0022-set-icon-matching-with-bundled-references.md) | Set-icon matching against bundled reference icons | accepted | | data, ocr, accuracy |
 | [0023](./0023-auto-mode-requires-administrator-on-windows.md) | Auto mode on Windows needs Wavescan to run as administrator | accepted | | input, security, product, windows |
 | [0024](./0024-f8-stop-key-and-auto-scroll.md) | F8 stop key via the global-shortcut plugin, and the `auto_scroll` command | accepted | | input, security, dependencies |
+| [0025](./0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md) | Keep the last few sampled frames pinned, so auto mode reads one echo while clicking the next | accepted | | capture, ocr, ipc, performance |

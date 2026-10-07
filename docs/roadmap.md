@@ -48,7 +48,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [ ] Auto mode: arming flow + warning, grid navigator, early stop by level, abort paths, "run as administrator" notice (Windows, ADR 0023) / Accessibility prompt (macOS)
   - [x] Grid reader: visible rows, click targets, scroll matching (`src/auto/grid.ts`, 16:10 and 16:9)
   - [x] Navigator state machine (click → read → next, scroll, end of list, stop level): `src/auto/navigator.ts`, against a fake grid
-  - [ ] Overlap reads with clicks (keep a few pinned frames, ADR 0021 follow-up)
+  - [x] Overlap reads with clicks ([ADR 0025](adr/0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md))
   - [x] `auto_scroll` command + F8 stop hotkey ([ADR 0024](adr/0024-f8-stop-key-and-auto-scroll.md))
   - [x] Auto mode UI: Scan echoes → Auto mode tab (`src/views/AutoModePanel.vue`, run by `src/auto/autoScan.ts`)
   - [x] 16:9 grid measurements (1920×1080)

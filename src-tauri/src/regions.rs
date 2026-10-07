@@ -5,6 +5,8 @@
 //! The layout fractions come from the TypeScript side (scanner-core's `layout.ts`); this
 //! module only crops, scales and reads. See `docs/architecture.md` §2.
 
+use std::collections::VecDeque;
+use std::sync::Arc;
 use std::time::Instant;
 
 use serde::{Deserialize, Serialize};
@@ -20,6 +22,51 @@ pub const MAX_REGIONS: usize = 16;
 
 /// Largest sample width the UI may request, in pixels. Fingerprints need far less.
 pub const MAX_SAMPLE_WIDTH: u32 = 256;
+
+/// How many recently sampled frames stay readable. `read_regions` takes its frame as soon as
+/// it's called and holds it while OCR runs, so a frame only has to survive the moment between
+/// the UI asking for a read and Rust picking the frame up. Meanwhile the UI may already be
+/// sampling again (auto mode clicks the next echo while the last one is read), and each new
+/// frame it samples would push out the last one. Four covers that gap with room to spare,
+/// and costs at most three extra frames of memory (about 20 MB each at 2880×1800).
+pub const PINNED_FRAMES: usize = 4;
+
+/// The last few distinct frames `sample` looked at, so `read` can read the exact frame that
+/// was judged stable (ADR 0021, ADR 0025). Sampling the same frame again doesn't use a slot.
+#[derive(Default)]
+pub struct PinnedFrames {
+    frames: VecDeque<Arc<Frame>>,
+}
+
+impl PinnedFrames {
+    /// Keeps `frame` readable, dropping the oldest frame once [`PINNED_FRAMES`] are kept.
+    pub fn pin(&mut self, frame: Arc<Frame>) {
+        if self
+            .frames
+            .back()
+            .is_some_and(|last| last.seq() == frame.seq())
+        {
+            return;
+        }
+        self.frames.push_back(frame);
+        while self.frames.len() > PINNED_FRAMES {
+            self.frames.pop_front();
+        }
+    }
+
+    /// The pinned frame with sequence number `seq`.
+    ///
+    /// # Errors
+    ///
+    /// [`Error::FrameExpired`] if it isn't one of the last [`PINNED_FRAMES`] sampled frames.
+    pub fn get(&self, seq: u64) -> Result<Arc<Frame>, Error> {
+        self.frames
+            .iter()
+            .find(|frame| frame.seq() == seq)
+            .cloned()
+            .ok_or(Error::FrameExpired)
+    }
+}
 
 /// One region to OCR, identified by a caller-chosen id (e.g. `"name"`).
 #[derive(Debug, Clone, PartialEq, Deserialize)]
@@ -142,6 +189,38 @@ mod tests {
 
     fn read_u32(bytes: &[u8], at: usize) -> u32 {
         u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap())
+    }
+
+    #[test]
+    fn pinned_frames_keep_the_last_few_distinct_frames() {
+        let mut pinned = PinnedFrames::default();
+        assert!(matches!(pinned.get(1), Err(Error::FrameExpired)));
+        for seq in 1..=4 {
+            pinned.pin(Arc::new(frame(seq)));
+        }
+        // Sampling the newest frame again doesn't push anything out.
+        pinned.pin(Arc::new(frame(4)));
+        assert_eq!(pinned.get(1).unwrap().seq(), 1);
+        assert_eq!(pinned.get(4).unwrap().seq(), 4);
+
+        pinned.pin(Arc::new(frame(5)));
+        assert!(matches!(pinned.get(1), Err(Error::FrameExpired)));
+        assert_eq!(pinned.get(2).unwrap().seq(), 2);
+        assert_eq!(pinned.get(5).unwrap().seq(), 5);
+        assert!(matches!(pinned.get(9), Err(Error::FrameExpired)));
+    }
+
+    #[test]
+    fn a_frame_being_read_survives_being_unpinned() {
+        let mut pinned = PinnedFrames::default();
+        pinned.pin(Arc::new(frame(1)));
+        let held = pinned.get(1).unwrap();
+        for seq in 2..=10 {
+            pinned.pin(Arc::new(frame(seq)));
+        }
+        assert!(matches!(pinned.get(1), Err(Error::FrameExpired)));
+        // A read that already took the frame keeps it until it's done.
+        assert_eq!(held.seq(), 1);
     }
 
     #[test]

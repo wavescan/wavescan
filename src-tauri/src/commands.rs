@@ -101,10 +101,10 @@ pub struct AppState {
     /// Starts disarmed on every launch; never persisted (ADR 0006).
     auto: Mutex<AutoMode>,
     capturing: AtomicBool,
-    /// The frame the last `sample_regions` call looked at. `read_regions` reads this exact
-    /// frame, so text always comes from the frame that was judged stable, even if the
-    /// game has moved on since.
-    pinned: Mutex<Option<Arc<Frame>>>,
+    /// The last few frames `sample_regions` looked at. `read_regions` reads one of these
+    /// exact frames, so text always comes from the frame that was judged stable, even if
+    /// the game (or the next sample) has moved on since.
+    pinned: Mutex<regions::PinnedFrames>,
     /// Whether the F8 stop key is claimed (set by `hotkey::sync`).
     stop_key_active: AtomicBool,
 }
@@ -120,7 +120,7 @@ impl AppState {
             input: platform.input,
             auto: Mutex::new(AutoMode::default()),
             capturing: AtomicBool::new(false),
-            pinned: Mutex::new(None),
+            pinned: Mutex::new(regions::PinnedFrames::default()),
             stop_key_active: AtomicBool::new(false),
         }
     }
@@ -304,25 +304,26 @@ impl AppState {
     pub fn sample_regions(&self, regions: &[FracRect], max_width: u32) -> Result<Vec<u8>, Error> {
         let frame = self.latest_frame()?;
         let bytes = regions::sample(&frame, regions, max_width)?;
-        *self.pinned.lock().unwrap_or_else(PoisonError::into_inner) = Some(frame);
+        self.pinned
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .pin(frame);
         Ok(bytes)
     }
 
-    /// The pinned frame, if its sequence number is `seq`.
+    /// One of the last few sampled frames, if its sequence number is `seq`.
     fn pinned_frame(&self, seq: u64) -> Result<Arc<Frame>, Error> {
         self.pinned
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
-            .clone()
-            .filter(|frame| frame.seq() == seq)
-            .ok_or(Error::FrameExpired)
+            .get(seq)
     }
 
     /// See [`read_regions`]. Blocking: call from a worker thread.
     ///
     /// # Errors
     ///
-    /// [`Error::FrameExpired`] if `seq` isn't the pinned frame, [`Error::InvalidRegion`],
+    /// [`Error::FrameExpired`] if `seq` isn't one of the pinned frames, [`Error::InvalidRegion`],
     /// or an OCR error.
     pub fn read_regions(&self, seq: u64, regions: &[RegionRead]) -> Result<Vec<RegionText>, Error> {
         let frame = self.pinned_frame(seq)?;
@@ -547,7 +548,8 @@ pub fn sample_regions(
         .map(tauri::ipc::Response::new)
 }
 
-/// OCRs `regions` of the frame pinned by the last `sample_regions` call (sequence `seq`).
+/// OCRs `regions` of frame `seq`, one of the last few frames `sample_regions` looked at
+/// (`regions::PINNED_FRAMES`). Takes the frame before OCR starts and holds it until done.
 ///
 /// # Errors
 ///
