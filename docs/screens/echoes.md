@@ -17,7 +17,7 @@ Measured notes for the echo inventory screen. Fixtures live in `fixtures/screens
 
 - **Left rail:** bag category icons.
 - **Header:** `Echoes  2969/3000`. This gives the **total count**, so auto mode knows when it's done and can show progress.
-- **Grid:** **6 columns**, about 4.5 rows visible. Each cell shows:
+- **Grid:** **6 columns**, about 4.5 rows visible. On the 16:10 reference, column centres are x ≈ 0.130, 0.222, … (pitch ≈ 0.092) and the first row's cells span y 0.115–0.265 (centre 0.19). The diagnostics click test clicks the first two cells, since that row is the only one guaranteed to exist on a small inventory. Each cell shows:
   - an equipped-character avatar (top-left)
   - a lock icon
   - cost (`4`/`3`/`1`, right)
@@ -46,7 +46,7 @@ These match the optimizer's 16:10 `layout.ts` ROIs (measured from the same accou
 | level | OCR of `+NN` in **`LEVEL_ROW`** (`src/session/echoRegions.ts`: x 0.69, y 0.16, w 0.0355, h 0.035 on the 16:10 reference) | Measured text span x 0.696–0.721, y 0.168–0.187 on every fixture at 2880×1800 and 2800×1752; ends before `SET_ICON_BOX`. Values 0–25, otherwise null + low confidence |
 | set | Taken from the echo when it can only belong to one set; otherwise set-icon matching *(planned, PR D)* | Until then multi-set echoes export `echoSet: null` + `lowConfidence: ["echoSet"]` |
 | cost | OCR `COST n`, cross-checked with `inferCostFromSecondaryStat` | The secondary value is level-dependent, so only use the inference at +25 |
-| main stat | OCR label → `normalizeStatLabel`. OCR lines are put in reading order first (`src/session/ocrText.ts`) | Windows OCR can return a row's value before its label ("2.8%", "HP"), which scanner-core can't parse (2026-10-06 report) | The value is level-dependent. Store the key, and let the app compute the value from cost/rank/level |
+| main stat | OCR label → `normalizeStatLabel`. OCR lines are put in reading order first (`src/session/ocrText.ts`). The main and secondary rows are OCR'd with 0.005 extra height above and below (`padStatRow` in `src/session/echoRegions.ts`): scanner-core's rows are cut tight to the text, and Windows OCR misread a +0 "3.7%" touching the crop edge as "S. IYO", which dropped the main stat (2026-10-07 report) | Windows OCR can return a row's value before its label ("2.8%", "HP"), which scanner-core can't parse (2026-10-06 report) | The value is level-dependent. Store the key, and let the app compute the value from cost/rank/level |
 | substats | Label column + value column paired by line y (`parseSubstatColumns`) | 0–5 rows, wrapped labels, snap to `subStatsTable` |
 | equippedBy | Search the lower panel for the `Equipped by` anchor, then OCR the rest of that line → match against `allCharactersList` + aliases | Variant names like "Yangyang: Xuanling" need an alias map. A missing line means `null` |
 | rank (rarity) | Worked out from the numbers: the secondary stat at the read level, cross-checked with the main stat (`src/session/echoRank.ts`, see [Rarity](#rarity)) | Needs the level. Main-stat-only matches and disagreements export low confidence, and anything ambiguous exports `rank: null` |

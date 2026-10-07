@@ -21,6 +21,20 @@ import type { RegionRead } from "@/ipc/types";
  */
 export const LEVEL_ROW: RegionFrac = { x: 0.69, y: 0.16, width: 0.0355, height: 0.035 };
 
+/**
+ * Extra height above and below the main and secondary stat rows. scanner-core's rows are
+ * cut tight to the text (0.028 tall). Windows OCR misreads text that touches a crop's
+ * edge, e.g. a +0 "3.7%" came back as "S. IYO" (2026-10-07 report), which loses the whole
+ * main stat. 0.005 (9 px at 1800 tall) keeps clear of the next row, which starts 0.0373
+ * below. See docs/screens/echoes.md.
+ */
+export const STAT_ROW_PAD_Y = 0.005;
+
+/** Grows a single-line stat row by `STAT_ROW_PAD_Y` above and below. */
+export function padStatRow(row: RegionFrac): RegionFrac {
+  return { ...row, y: row.y - STAT_ROW_PAD_Y, height: row.height + 2 * STAT_ROW_PAD_Y };
+}
+
 /** Region ids used by the echo extractor. */
 export type EchoRegionId =
   | "name"
@@ -34,8 +48,8 @@ export type EchoRegionId =
 const READ_REGIONS: Record<EchoRegionId, RegionFrac> = {
   name: NAME_BLOCK,
   level: LEVEL_ROW,
-  mainStat: MAIN_STAT_ROW,
-  secondaryStat: SECONDARY_STAT_ROW,
+  mainStat: padStatRow(MAIN_STAT_ROW),
+  secondaryStat: padStatRow(SECONDARY_STAT_ROW),
   substatLabels: SUBSTAT_LABEL_COLUMN,
   substatValues: SUBSTAT_VALUE_COLUMN,
   substatBlock: SUBSTAT_BLOCK,
