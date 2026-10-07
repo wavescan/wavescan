@@ -6,7 +6,8 @@
 //!   (`npm run fixtures:mask`).
 //! - `ocr <manifest.json> <out.json>`: reads the requested regions of each screenshot with
 //!   this OS's OCR engine, through `regions::read` exactly like the app does on a live
-//!   frame, and writes the text as JSON. `tests/fixtureReplay.fixtures.ts` runs this
+//!   frame, and writes the text as JSON. Entries can also ask for `regions::sample` images
+//!   (the set icon), which need no OCR, so those work on any OS (even the Linux container). `tests/fixtureReplay.fixtures.ts` runs this
 //!   (`npm run test:fixtures`).
 //!
 //! Run from `src-tauri/` with `cargo run --example fixtures -- <command> ...`.
@@ -17,24 +18,32 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use wavescan_lib::frame::Frame;
+use wavescan_lib::geometry::FracRect;
 use wavescan_lib::regions::{self, RegionRead, RegionText};
 use wavescan_lib::{platform, safety};
 
 /// Any error, printed by `main` (this is a developer tool, so a message is enough).
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-/// One screenshot to read: its path and the regions to OCR (computed on the TS side).
+/// One screenshot to read: its path, the regions to OCR and the regions to sample (all
+/// computed on the TS side). Either list may be empty.
 #[derive(Deserialize)]
 struct ManifestEntry {
     image: PathBuf,
     regions: Vec<RegionRead>,
+    #[serde(default)]
+    samples: Vec<FracRect>,
+    #[serde(default)]
+    sample_width: u32,
 }
 
-/// The text read from one screenshot, in the same shape the app's `read_regions` returns.
+/// What was read from one screenshot: text in the shape the app's `read_regions` returns,
+/// and `sample_regions` bytes (decode with `decodeSamples`), or null if none were asked for.
 #[derive(Serialize)]
 struct OcrEntry {
     image: PathBuf,
     regions: Vec<RegionText>,
+    samples: Option<Vec<u8>>,
 }
 
 fn main() -> Result<()> {
@@ -76,11 +85,21 @@ fn ocr(manifest: &Path, output: &Path) -> Result<()> {
             )
             .into());
         }
-        let regions = regions::read(&frame, &entry.regions, engine.as_ref())
-            .map_err(|e| format!("{}: {e}", entry.image.display()))?;
+        let failed = |e: wavescan_lib::Error| format!("{}: {e}", entry.image.display());
+        let regions = if entry.regions.is_empty() {
+            Vec::new()
+        } else {
+            regions::read(&frame, &entry.regions, engine.as_ref()).map_err(failed)?
+        };
+        let samples = if entry.samples.is_empty() {
+            None
+        } else {
+            Some(regions::sample(&frame, &entry.samples, entry.sample_width).map_err(failed)?)
+        };
         results.push(OcrEntry {
             image: entry.image,
             regions,
+            samples,
         });
     }
     serde_json::to_writer_pretty(BufWriter::new(File::create(output)?), &results)?;

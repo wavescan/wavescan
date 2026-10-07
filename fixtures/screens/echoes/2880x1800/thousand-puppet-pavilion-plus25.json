@@ -1,6 +1,6 @@
 {
   "echo": "ThousandPuppetPavilion",
-  "echoSet": null,
+  "echoSet": "SongofFeatheredTrace",
   "cost": 4,
   "rank": 5,
   "level": 25,
@@ -28,5 +28,5 @@
     }
   ],
   "equippedBy": "Suisui",
-  "notes": "Set unconfirmed: SongofFeatheredTrace or FlowerofTingedYearning."
+  "notes": "Set checked against the reference icon."
 }

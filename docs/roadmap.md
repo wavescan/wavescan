@@ -40,7 +40,8 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 
 - [x] Watch-mode echo session: sample → scanner-core fingerprints/stability → read pinned frame → extract (scanner-core parsing + level) → dedupe → export (`src/session/`)
 - [x] Rarity from the main and secondary stat values at the read level
-- [ ] Set-icon matching for multi-set echoes, "Equipped by" (PR D)
+- [x] Set-icon matching for multi-set echoes (ADR 0022)
+- [ ] "Equipped by"
 - [ ] `classifyScreen` (detect Bag → Echoes vs other screens)
 - [x] Watch mode UI: live counter, candidate list, low-confidence highlighting, remove misreads, copy scan JSON
 - [ ] Preview with ROI overlay; save to file

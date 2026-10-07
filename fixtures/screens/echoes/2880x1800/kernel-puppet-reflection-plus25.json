@@ -1,6 +1,6 @@
 {
   "echo": "KernelPuppetReflection",
-  "echoSet": null,
+  "echoSet": "HeartofEvilsPurge",
   "cost": 1,
   "rank": 5,
   "level": 25,
@@ -28,5 +28,5 @@
     }
   ],
   "equippedBy": "Qingxiao",
-  "notes": "Set unconfirmed: HeartofEvilsPurge or FlowerofTingedYearning."
+  "notes": "Set checked against the reference icon."
 }

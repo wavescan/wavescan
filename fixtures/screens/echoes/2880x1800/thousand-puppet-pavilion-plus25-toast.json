@@ -1,6 +1,6 @@
 {
   "echo": "ThousandPuppetPavilion",
-  "echoSet": null,
+  "echoSet": "SongofFeatheredTrace",
   "cost": 4,
   "rank": 5,
   "level": 25,
@@ -28,5 +28,5 @@
     }
   ],
   "equippedBy": "Suisui",
-  "notes": "A 'Smart Discard' toast covers the bottom of the grid (not the panel). Set unconfirmed: SongofFeatheredTrace or FlowerofTingedYearning."
+  "notes": "A 'Smart Discard' toast covers the bottom of the grid (not the panel). Set checked against the reference icon."
 }

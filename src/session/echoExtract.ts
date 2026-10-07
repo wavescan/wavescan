@@ -10,7 +10,8 @@ import type { RegionText } from "@/ipc/types";
 import type { EchoRegionId } from "./echoRegions";
 import { inferMainStatKey, inferRank, rowValue } from "./echoRank";
 import { readingOrder } from "./ocrText";
-import { toCoreLines } from "./samples";
+import { toCoreLines, type Sample } from "./samples";
+import { matchSetIcon } from "./setIcon";
 
 /** One echo read from the screen, with per-field confidence. */
 export interface ExtractedEcho {
@@ -32,6 +33,8 @@ export interface ExtractedEcho {
   signature: string;
   /** Raw OCR text, kept to explain low-confidence fields in the review UI. */
   raw: { name: string; level: string; mainStat: string; secondaryStat: string };
+  /** Set-icon match score per candidate set, when the icon had to be matched. */
+  setScores: Record<string, number> | null;
 }
 
 /** The panel's wording for a stat key ("HP" → "HP", "Electro" → "Electro DMG Bonus"). */
@@ -52,13 +55,14 @@ export function parseLevel(text: string): number | null {
  * Turns the OCR results for one echo panel into an echo, using scanner-core for every
  * game-specific decision (name matching, cost, stat parsing, substat validation).
  *
- * Set: taken directly when the identified echo can only belong to one set. Otherwise
- * it's left null (low confidence) until set-icon matching lands.
+ * Set: taken directly when the identified echo can only belong to one set. Otherwise it's
+ * matched from `setIcon` (the `setIconSearchRegion` sample) among the echo's possible sets,
+ * and left null (low confidence) when no set clearly wins or there's no sample.
  *
  * Main stat: when only its value was read (Windows OCR drops a lone "HP" label), it's
  * worked out from the value, cost, rarity and level (`inferMainStatKey`) and flagged low.
  */
-export function extractEcho(results: RegionText[]): ExtractedEcho {
+export function extractEcho(results: RegionText[], setIcon?: Sample): ExtractedEcho {
   const byId = new Map(results.map((r) => [r.id as EchoRegionId, r]));
   const text = (id: EchoRegionId, joiner = " ") =>
     readingOrder(byId.get(id)?.lines ?? [])
@@ -72,7 +76,9 @@ export function extractEcho(results: RegionText[]): ExtractedEcho {
   const secondaryStatText = text("secondaryStat");
 
   const identity = resolveEchoByNameAndCost(nameText, secondaryStatText);
-  const matchedSet = identity.candidateSets.length === 1 ? (identity.candidateSets[0] ?? null) : null;
+  const sets = identity.candidateSets;
+  const iconMatch = sets.length > 1 && setIcon ? matchSetIcon(setIcon, sets) : null;
+  const matchedSet = sets.length === 1 ? (sets[0] ?? null) : (iconMatch?.set ?? null);
 
   const parsed = parseEchoCandidate({
     nameText,
@@ -117,5 +123,6 @@ export function extractEcho(results: RegionText[]): ExtractedEcho {
     rank: rank.rank,
     signature: `${computeSignature(slot)}|L${level ?? "?"}|R${rank.rank ?? "?"}`,
     raw: { name: nameText, level: levelText, mainStat: mainStatText, secondaryStat: secondaryStatText },
+    setScores: iconMatch?.scores ?? null,
   };
 }

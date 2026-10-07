@@ -1,6 +1,6 @@
 {
   "echo": "ReminiscenceFleurdelys",
-  "echoSet": null,
+  "echoSet": "WindwardPilgrimage",
   "cost": 4,
   "rank": 5,
   "level": 25,
@@ -28,5 +28,5 @@
     }
   ],
   "equippedBy": "Cartethyia",
-  "notes": "2800x1752, converted from a JPEG screenshot (compression artefacts). Set unconfirmed: GustsofWelkin or WindwardPilgrimage."
+  "notes": "2800x1752, converted from a JPEG screenshot (compression artefacts). The filename looks like an Android screenshot, and the layout differs slightly (set icon ~10% bigger and lower). Set checked against the reference icon."
 }
