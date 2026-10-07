@@ -1,6 +1,6 @@
 {
   "echo": "ReminiscenceKronaclaw",
-  "echoSet": null,
+  "echoSet": "ChromaticFoam",
   "cost": 3,
   "rank": 5,
   "level": 25,
@@ -28,5 +28,5 @@
     }
   ],
   "equippedBy": null,
-  "notes": "Set unconfirmed: TrailblazingStar or ChromaticFoam."
+  "notes": "Set checked against the reference icon."
 }

@@ -5,6 +5,7 @@ import { INPUT_TEST_TARGETS, isSupportedAspect } from "@/diagnostics/regions";
 import type { GameWindow, RegionRead, RegionText } from "@/ipc/types";
 import { describeEchoRead, readEchoForDiagnostics } from "@/diagnostics/echoRead";
 import { loadBundledScannerData } from "@/data/scannerData";
+import { encodeSamples, flatSample, iconSample } from "./support/samplePayload";
 
 const window: GameWindow = {
   id: 1234,
@@ -191,12 +192,8 @@ describe("diagnostics echo read", () => {
     loadBundledScannerData();
   });
 
-  /** A sample_regions payload with no images: only the pinned frame's seq matters here. */
-  function pinOnly(seq: number): ArrayBuffer {
-    const buffer = new ArrayBuffer(12);
-    new DataView(buffer).setBigUint64(0, BigInt(seq), true);
-    return buffer;
-  }
+  /** A sample_regions payload: two fingerprint areas, then Whiff Whaff's Rejuvenating Glow icon. */
+  const pinned = (seq: number) => encodeSamples(seq, [flatSample(), flatSample(), iconSample("RejuvenatingGlow")]);
 
   const lines = (...texts: string[]) =>
     texts.map((text, i) => ({ text, bounds: { x: 0, y: i * 40, width: 300, height: 30 } }));
@@ -204,7 +201,7 @@ describe("diagnostics echo read", () => {
   function fakeGame(mainStat: string[]) {
     const reads: number[] = [];
     const deps = {
-      sampleRegions: async () => pinOnly(42),
+      sampleRegions: async () => pinned(42),
       readRegions: async (seq: number, regions: RegionRead[]): Promise<RegionText[]> => {
         reads.push(seq);
         const text: Record<string, string[]> = {
@@ -226,7 +223,7 @@ describe("diagnostics echo read", () => {
     expect(read.regions.mainStat).toEqual(["HP 2.8%"]);
     expect(read.ms).toBe(13);
     expect(read.echo).toMatchObject({ echo: "WhiffWhaff", rank: 2, level: 0, stat: "HP" });
-    expect(describeEchoRead(read)).toBe("WhiffWhaff +0, 2★, main stat HP");
+    expect(describeEchoRead(read)).toBe("WhiffWhaff +0, 2★, main stat HP, set RejuvenatingGlow");
 
     const input = { ...healthy(), echoRead: { ok: true as const, value: read } };
     expect(statusOf(input, "echo-read")).toBe("pass");

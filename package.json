@@ -18,8 +18,9 @@
     "test:fixtures": "vitest run --config vitest.fixtures.config.ts",
     "lint": "eslint . && vue-tsc -b",
     "check": "docker compose run --rm check",
-    "data:update": "node scripts/update-scanner-data.mjs",
-    "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask"
+    "data:update": "node scripts/update-scanner-data.mjs && node scripts/update-set-icons.mjs",
+    "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask",
+    "data:set-icons": "node scripts/update-set-icons.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.1",
@@ -39,6 +40,7 @@
     "eslint": "^10.12.0",
     "eslint-plugin-vue": "^10.11.1",
     "globals": "^17.13.0",
+    "sharp": "0.35.5",
     "tailwindcss": "^4.3.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.71.0",

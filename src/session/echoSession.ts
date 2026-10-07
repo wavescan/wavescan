@@ -8,6 +8,7 @@ import {
 } from "@wutheringtools/scanner-core";
 import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
 import { echoReadRegions, fingerprintRegions } from "./echoRegions";
+import { setIconSearchRegion } from "./setIcon";
 import { extractEcho, type ExtractedEcho } from "./echoExtract";
 import { decodeSamples, type Sample } from "./samples";
 
@@ -64,11 +65,13 @@ export function createEchoSession(deps: EchoSessionDeps) {
     const frame = deps.frameSize();
     let samples;
     try {
-      samples = decodeSamples(await deps.sampleRegions(fingerprintRegions(frame), SAMPLE_WIDTH));
+      // The set icon is sampled with the fingerprints, so it comes from the frame that's read.
+      const regions = [...fingerprintRegions(frame), setIconSearchRegion(frame)];
+      samples = decodeSamples(await deps.sampleRegions(regions, SAMPLE_WIDTH));
     } catch {
       return; // no frame yet, or the window is momentarily unavailable
     }
-    const [panel, statsArea] = samples.images;
+    const [panel, statsArea, setIcon] = samples.images;
     if (!panel || !statsArea) return;
 
     const fingerprints = {
@@ -80,7 +83,7 @@ export function createEchoSession(deps: EchoSessionDeps) {
 
     reading = true;
     try {
-      const echo = extractEcho(await deps.readRegions(samples.seq, echoReadRegions(frame)));
+      const echo = extractEcho(await deps.readRegions(samples.seq, echoReadRegions(frame)), setIcon);
       if (seen.has(echo.signature)) {
         stats.duplicates += 1;
       } else {

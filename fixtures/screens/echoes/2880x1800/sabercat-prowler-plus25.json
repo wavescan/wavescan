@@ -1,6 +1,6 @@
 {
   "echo": "SabercatProwler",
-  "echoSet": null,
+  "echoSet": "PactofNeonlightLeap",
   "cost": 3,
   "rank": 5,
   "level": 25,
@@ -28,5 +28,5 @@
     }
   ],
   "equippedBy": null,
-  "notes": "'Resonance Skill DMG Bonus' wraps onto two lines. Set unconfirmed (3 possible)."
+  "notes": "'Resonance Skill DMG Bonus' wraps onto two lines. Set checked against the reference icon."
 }

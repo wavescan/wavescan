@@ -59,8 +59,8 @@ flowchart LR
 2. **Fingerprint** (Rust): tiny luma grids of the panel and stats regions, which are cheap to compare. They're sent to TS with each frame tick.
 3. **`ScanSession`** (TS) runs the existing `stability.ts` gate. It acts only on a *stable and novel* frame: the panel stopped changing and differs from the last one read.
 4. **`classifyScreen`** finds which screen this is (v0.1: `bag.echoes`, or `unknown`) from anchor text/regions.
-5. The **extractor** for that screen asks Rust for the crops it needs (`crop_regions` with ROI fractions from `scanner-core` `layout.ts`). Rust crops, upscales, and OCRs each one natively, then returns text + line boxes. Set icons come back as small bitmaps for template matching.
-6. The extractor feeds that into `scanner-core` (`parseEchoCandidate`, `matchSetFirst`, `resolveEchoByNameAndCost`, substat snapping) → a `ScanCandidate` with per-field `high|low` confidence.
+5. The **extractor** for that screen asks Rust for the crops it needs (`crop_regions` with ROI fractions from `scanner-core` `layout.ts`). Rust crops, upscales, and OCRs each one natively, then returns text + line boxes. The set icon comes back as a small bitmap, sampled from the same frame as the fingerprints, and is matched against bundled reference icons ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)).
+6. The extractor feeds that into `scanner-core` (`parseEchoCandidate`, `resolveEchoByNameAndCost`, substat snapping) and `src/session/setIcon.ts` (the echo's 2–3 possible sets only) → a candidate with per-field `high|low` confidence.
 7. **Dedupe** by signature (`dedupe.ts`) → candidate store → the live UI list.
 8. On export: candidates → `WutheringToolsScan` JSON (validated against `schema/scan.v1.json`).
 
@@ -174,7 +174,7 @@ Adding a host means: ADR → this table → the README table → CSP `connect-sr
 
 Game data (echo names, sets, costs, stat tables, characters, weapons) comes from Wuthering Tools, which publishes it as `https://www.wutheringtools.com/scanner-data.json` on every deploy ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)).
 
-- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
+- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). The same command refreshes `src/data/set-icons.json`, 32×32 copies of each set's icon for set matching ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)). That download happens on the developer's machine, never in the app. `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
 - **Runtime refresh** *(planned)*: opt-in, signed, and fails safe to the bundled snapshot, so new echoes are recognised without an app update.
 
 ## 9. Output & handoff

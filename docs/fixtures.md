@@ -44,7 +44,7 @@ One JSON per echo screenshot, using the scan file's keys ([`schema/scan.v1.json`
 }
 ```
 
-- `echoSet: null` means **not confirmed yet**, so it isn't compared. The game shows the set only as an icon, so fill it in only when you're sure (one-set echoes, or checked in game).
+- `echoSet: null` means **not confirmed yet**, so it isn't compared. The game shows the set only as an icon: compare it with the reference icons (the `icon` URLs in `src/data/scanner-data.json` → `echoSets`) or check in game.
 - `equippedBy` is the character key, or `null` when the panel has no "Equipped by" line.
 - Rarity: gold name = 5, purple = 4, blue = 3, green = 2.
 
