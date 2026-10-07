@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.1",
-    "@wutheringtools/scanner-core": "0.1.1",
+    "@wutheringtools/scanner-core": "0.1.2",
     "vue": "^3.5.43"
   },
   "devDependencies": {
