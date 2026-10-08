@@ -1,14 +1,17 @@
 import {
   computeSignature,
+  normalizeStatLabel,
   parseEchoCandidate,
+  parseStatRow,
   resolveEchoByNameAndCost,
   scannerGameData,
   type FieldConfidence,
   type ParsedEchoSlot,
 } from "@wutheringtools/scanner-core";
 import type { RegionText } from "@/ipc/types";
-import type { EchoRegionId } from "./echoRegions";
+import { SUBSTAT_ROW_IDS, type EchoRegionId } from "./echoRegions";
 import { inferMainStatKey, inferRank, rowValue } from "./echoRank";
+import { expectedSubstatCount } from "./exportScan";
 import { readingOrder } from "./ocrText";
 import { toCoreLines } from "./samples";
 import { matchHpLabel } from "./hpLabel";
@@ -54,6 +57,27 @@ export function parseLevel(text: string): number | null {
 }
 
 /**
+ * The five per-row substat crops' text for scanner-core's fallback pass, or undefined when
+ * they weren't read. A row is passed as "" when it can't hold a substat (below the
+ * echo's level, e.g. the Echo Skill text on a +0 echo) or doesn't read as a known stat:
+ * scanner-core's `parseStatRow` falls back to its first label-and-number guess, so a line
+ * of description like "dealing 80.96%" would otherwise count as a row.
+ */
+export function substatRowTexts(
+  rowText: (id: EchoRegionId) => string | null,
+  level: number | null,
+): string[] | undefined {
+  const texts = SUBSTAT_ROW_IDS.map(rowText);
+  if (texts.every((t) => t === null)) return undefined;
+  const rows = level === null ? SUBSTAT_ROW_IDS.length : expectedSubstatCount(level);
+  return texts.map((text, i) => {
+    if (!text || i >= rows) return "";
+    const row = parseStatRow(text);
+    return row && normalizeStatLabel(row.rawLabel) ? text : "";
+  });
+}
+
+/**
  * Turns the OCR results for one echo panel into an echo, using scanner-core for every
  * game-specific decision (name matching, cost, stat parsing, substat validation).
  *
@@ -77,6 +101,7 @@ export function extractEcho(results: RegionText[], samples: PanelSamples = {}): 
 
   const nameText = text("name");
   const levelText = text("level");
+  const level = parseLevel(levelText);
   const mainStatText = text("mainStat");
   const secondaryStatText = text("secondaryStat");
 
@@ -91,12 +116,12 @@ export function extractEcho(results: RegionText[], samples: PanelSamples = {}): 
     secondaryStatText,
     substatLabelLines: toCoreLines(byId.get("substatLabels")?.lines ?? []),
     substatValueLines: toCoreLines(byId.get("substatValues")?.lines ?? []),
+    substatTexts: substatRowTexts((id) => (byId.has(id) ? text(id, "\n") : null), level),
     substatBlockText: text("substatBlock", "\n"),
     matchedSet,
     preResolvedEcho: identity.echo,
   });
 
-  const level = parseLevel(levelText);
   const cost = parsed.slot.cost === null ? null : Number(parsed.slot.cost);
   const mainStatValue = rowValue(mainStatText);
   const rankInput = { cost, level, secondaryValue: rowValue(secondaryStatText), mainStatValue };

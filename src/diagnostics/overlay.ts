@@ -36,6 +36,11 @@ const TEXT_LABELS: Record<EchoRegionId, string> = {
   substatLabels: "substat names",
   substatValues: "substat values",
   substatBlock: "substats (fallback)",
+  substatRow1: "substat row 1 (fallback)",
+  substatRow2: "substat row 2 (fallback)",
+  substatRow3: "substat row 3 (fallback)",
+  substatRow4: "substat row 4 (fallback)",
+  substatRow5: "substat row 5 (fallback)",
 };
 
 /** Every box to draw for a frame of this size, in drawing order (big boxes first). */
