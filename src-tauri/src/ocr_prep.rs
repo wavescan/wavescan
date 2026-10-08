@@ -93,16 +93,14 @@ pub fn unscale_bounds(bounds: Rect, scale: u32) -> Rect {
 /// Each pixel's brightness (0–255), using the same weights as Wuthering Tools
 /// (0.299 R + 0.587 G + 0.114 B).
 fn grey_levels(image: &Frame) -> Vec<f64> {
-    image
-        .pixels()
-        .chunks_exact(BYTES_PER_PIXEL)
-        .map(luma)
-        .collect()
+    // A frame is always whole pixels, so there's no leftover part to handle.
+    let (pixels, _) = image.pixels().as_chunks::<BYTES_PER_PIXEL>();
+    pixels.iter().map(luma).collect()
 }
 
 /// Brightness of one BGRA pixel.
-fn luma(bgra: &[u8]) -> f64 {
-    0.114 * f64::from(bgra[0]) + 0.587 * f64::from(bgra[1]) + 0.299 * f64::from(bgra[2])
+fn luma(&[blue, green, red, _]: &[u8; BYTES_PER_PIXEL]) -> f64 {
+    0.114 * f64::from(blue) + 0.587 * f64::from(green) + 0.299 * f64::from(red)
 }
 
 /// For output pixel `index` of an image enlarged `scale` times from `source_len` pixels:
