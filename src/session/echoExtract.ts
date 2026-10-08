@@ -10,7 +10,9 @@ import type { RegionText } from "@/ipc/types";
 import type { EchoRegionId } from "./echoRegions";
 import { inferMainStatKey, inferRank, rowValue } from "./echoRank";
 import { readingOrder } from "./ocrText";
-import { toCoreLines, type Sample } from "./samples";
+import { toCoreLines } from "./samples";
+import { matchHpLabel } from "./hpLabel";
+import type { PanelSamples } from "./panelSamples";
 import { matchSetIcon } from "./setIcon";
 
 /** One echo read from the screen, with per-field confidence. */
@@ -56,13 +58,16 @@ export function parseLevel(text: string): number | null {
  * game-specific decision (name matching, cost, stat parsing, substat validation).
  *
  * Set: taken directly when the identified echo can only belong to one set. Otherwise it's
- * matched from `setIcon` (the `setIconSearchRegion` sample) among the echo's possible sets,
- * and left null (low confidence) when no set clearly wins or there's no sample.
+ * matched from `samples.setIcon` among the echo's possible sets, and left null (low
+ * confidence) when no set clearly wins or there's no sample.
  *
- * Main stat: when only its value was read (Windows OCR drops a lone "HP" label), it's
- * worked out from the value, cost, rarity and level (`inferMainStatKey`) and flagged low.
+ * Main stat: when OCR found no label (Windows OCR drops a lone "HP"), `samples.mainStatLabel`
+ * is checked for an "HP" label (`matchHpLabel`): high confidence when the value also fits
+ * HP at the read rarity and level, low otherwise. Failing that, the stat is worked out from
+ * the value, cost, rarity and level (`inferMainStatKey`) and flagged low.
  */
-export function extractEcho(results: RegionText[], setIcon?: Sample): ExtractedEcho {
+export function extractEcho(results: RegionText[], samples: PanelSamples = {}): ExtractedEcho {
+  const { setIcon, mainStatLabel: labelSample } = samples;
   const byId = new Map(results.map((r) => [r.id as EchoRegionId, r]));
   const text = (id: EchoRegionId, joiner = " ") =>
     readingOrder(byId.get(id)?.lines ?? [])
@@ -100,6 +105,13 @@ export function extractEcho(results: RegionText[], setIcon?: Sample): ExtractedE
   let mainStatConfidence = parsed.confidence.mainStat;
   let mainStatKey = mainStatLabel ? (scannerGameData().verboseStatLabelMap[mainStatLabel] ?? null) : null;
   let rank = inferRank({ ...rankInput, mainStatKey });
+  if (!mainStatLabel && labelSample && matchHpLabel(labelSample).hp) {
+    mainStatKey = "HP";
+    mainStatLabel = labelForStatKey(mainStatKey);
+    rank = inferRank({ ...rankInput, mainStatKey });
+    // High rank confidence with a main value read means that value fits HP at this rarity.
+    mainStatConfidence = mainStatValue !== null && rank.confidence === "high" ? "high" : "low";
+  }
   if (!mainStatLabel) {
     const inferred = inferMainStatKey({ cost, level, rank: rank.rank, value: mainStatValue });
     if (inferred) {

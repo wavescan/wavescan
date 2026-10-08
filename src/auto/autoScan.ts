@@ -2,7 +2,7 @@ import type { FrameSize } from "@wutheringtools/scanner-core";
 import type { AutoModeStatus, FracPoint, FracRect, RegionRead, RegionText } from "@/ipc/types";
 import { extractEcho, type ExtractedEcho } from "@/session/echoExtract";
 import { echoReadRegions } from "@/session/echoRegions";
-import type { Sample } from "@/session/samples";
+import type { PanelSamples } from "@/session/panelSamples";
 import {
   createNavigator,
   type GridPosition,
@@ -46,7 +46,7 @@ export interface AutoScanDeps<Echo extends { level: number | null }> {
   scroll(target: FracPoint, ticks: number): Promise<unknown>;
   sampleRegions(regions: FracRect[], maxWidth: number): Promise<ArrayBuffer>;
   /** Reads the echo in frame `seq` of a `frame`-sized capture (see `readEchoWith`). */
-  readEcho(seq: number, frame: FrameSize, setIcon: Sample | undefined): Promise<Echo>;
+  readEcho(seq: number, frame: FrameSize, samples: PanelSamples): Promise<Echo>;
   sleep(ms: number): Promise<void>;
   now(): number;
   errorMessage(error: unknown): string;
@@ -68,8 +68,8 @@ export interface AutoScanCallbacks<Echo> {
 
 /** `readEcho` for the app: OCR the echo regions of the pinned frame and extract the echo. */
 export function readEchoWith(readRegions: (seq: number, regions: RegionRead[]) => Promise<RegionText[]>) {
-  return async (seq: number, frame: FrameSize, setIcon: Sample | undefined): Promise<ExtractedEcho> =>
-    extractEcho(await readRegions(seq, echoReadRegions(frame)), setIcon);
+  return async (seq: number, frame: FrameSize, samples: PanelSamples): Promise<ExtractedEcho> =>
+    extractEcho(await readRegions(seq, echoReadRegions(frame)), samples);
 }
 
 const EMPTY: NavigatorProgress = { echoes: 0, unchanged: 0, errors: 0, row: 0 };
@@ -114,7 +114,7 @@ export function createAutoScan<Echo extends { level: number | null }>(
         {
           frameSize: () => frame,
           sampleRegions: deps.sampleRegions,
-          readEcho: (seq, setIcon) => deps.readEcho(seq, frame, setIcon),
+          readEcho: (seq, samples) => deps.readEcho(seq, frame, samples),
           click: deps.click,
           scroll: deps.scroll,
           sleep: deps.sleep,
