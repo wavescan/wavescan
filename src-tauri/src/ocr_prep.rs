@@ -95,11 +95,11 @@ pub fn unscale_bounds(bounds: Rect, scale: u32) -> Rect {
 fn grey_levels(image: &Frame) -> Vec<f64> {
     // A frame is always whole pixels, so there's no leftover part to handle.
     let (pixels, _) = image.pixels().as_chunks::<BYTES_PER_PIXEL>();
-    pixels.iter().map(luma).collect()
+    pixels.iter().copied().map(luma).collect()
 }
 
 /// Brightness of one BGRA pixel.
-fn luma(&[blue, green, red, _]: &[u8; BYTES_PER_PIXEL]) -> f64 {
+fn luma([blue, green, red, _]: [u8; BYTES_PER_PIXEL]) -> f64 {
     0.114 * f64::from(blue) + 0.587 * f64::from(green) + 0.299 * f64::from(red)
 }
 
