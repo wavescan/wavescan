@@ -93,3 +93,39 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - **Check on load.** Fetch `scanner-data.json` (and the set icons) from wutheringtools.com at startup, opt-in.
   - **Fetch on request.** A "Check for new game data" button, so nothing goes out unless the user asks.
   - Any runtime fetch adds an outbound connection, so it needs an ADR (ADR 0010). It also needs a signature check against a key built into the app, a fallback to the bundled data if anything is off, a Settings → Network toggle, and the README connections table. The set icons are images from the assets site, so they need the same treatment.
+
+## Ideas (unscheduled)
+
+Not planned into a phase yet. Pick from here when a phase has room, and move an item into the phase when it's scheduled.
+
+**Look and feel**
+
+- **App icon.** `src-tauri/icons/source.svg` is the placeholder from the scaffold (gold scan brackets on navy). Design a real one, then regenerate every size with `npm run tauri icon` (Windows `.ico`, macOS `.icns`, PNGs).
+- **Installer look.** Research what Tauri allows: NSIS installer images and language (Windows), the DMG background and icon layout (macOS). Keep it honest and plain: no bundled extras, and no "run as administrator" by default (only auto mode needs it, ADR 0023).
+- **App UI research.** The screens are functional DaisyUI cards today. Ideas to explore:
+  - a home screen that walks a first-time user through Diagnostics → scan → import
+  - a richer echo list: set icons, rarity colours, sorting, a filter to show only flagged echoes
+  - a live preview with the read regions drawn on it (Phase 2 lists this too)
+  - light/dark theme following the OS
+  - visual consistency with Wuthering Tools
+- **Accessibility.** Keyboard navigation and screen-reader labels, plus contrast that doesn't rely on yellow alone for "please check".
+
+**Scanning**
+
+- **Fix misreads before export.** Let the user correct a flagged field in the list instead of only removing the echo. Wuthering Tools' import review already covers this; decide which side should own it.
+- **Resume or partial auto scans.** Start from a chosen row, or continue after a stop, instead of always starting from the top.
+- **Detect problems up front.** Detect a non-English game, HDR, an unsupported window shape, or the wrong screen, and say so before scanning (`classifyScreen` in Phase 2 covers part of this).
+- **When a game patch moves the layout.** A quick routine for re-measuring regions and adding fixtures, and a clear "this game version isn't supported yet" message instead of misreads.
+- **Measure real-game timing.** Record the time per echo in auto mode on real machines (Phase 0's "ms per stage"), and tune `UNCHANGED_AFTER_MS` and the read limit from it.
+
+**Trust and support**
+
+- **In-app update prompt.** The signed updater is decided (ADR 0011, Phase 6), but not how it's shown: an "update available" banner, what's in it, and never updating without asking.
+- **About screen.** Version, data version, licence (GPL-3.0), third-party licences, and links to the source and the README's "Is it safe?" section.
+- **Keep an eye on Kuro's Fair Play guidance.** ADR 0006 says to revisit auto mode if Kuro publishes anything. Decide who checks, and where the decision gets recorded.
+
+**Project**
+
+- **GitHub issue templates** for bug reports (asking for the Diagnostics report and a masked screenshot) and wrong reads.
+- **A short landing page** (or the README's top section) with screenshots, for sharing on Discord and Reddit.
+- **Linux / Steam Deck:** out of scope for now (window capture under Proton is different). Write that down so it isn't re-asked.
