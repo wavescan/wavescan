@@ -1,0 +1,11 @@
+{
+  "echo": "WhiffWhaff",
+  "echoSet": "RejuvenatingGlow",
+  "cost": 1,
+  "rank": 2,
+  "level": 0,
+  "stat": "HP",
+  "substats": [],
+  "equippedBy": null,
+  "notes": "HP main stat (\"HP 2.8%\") with a flat HP secondary (\"HP 114\"): Windows OCR reads neither \"HP\" label, so the main stat comes from the label's shape (src/session/hpLabel.ts, 2026-10-08 report). Rank 2 (green name) at +0, no substats. A stack of one (\"Owned: 1\" under COST). Set from the player's own list (2026-10-08 report) and the auto scan of the same account."
+}

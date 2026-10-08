@@ -8,12 +8,14 @@ import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
 import { extractEcho } from "@/session/echoExtract";
 import { echoReadRegions } from "@/session/echoRegions";
 import { toScanEcho } from "@/session/exportScan";
-import { decodeSamples, type Sample } from "@/session/samples";
+import { mainStatLabelRegion } from "@/session/hpLabel";
+import type { PanelSamples } from "@/session/panelSamples";
+import { decodeSamples } from "@/session/samples";
 import { setIconSearchRegion } from "@/session/setIcon";
 import { compareEcho, summarize, type FieldResult, type GoldenEcho } from "./support/fixtureCompare";
 
 // Fixture replay (docs/fixtures.md): every committed echo screenshot that has a golden JSON
-// goes through the app's real pipeline (regions → this OS's OCR, plus the set-icon sample
+// goes through the app's real pipeline (regions → this OS's OCR, plus the set-icon and label samples
 // → scanner-core extraction and set matching → export) and is compared with its golden,
 // field by field.
 //
@@ -50,7 +52,7 @@ function findFixtures(): Fixture[] {
         image: join(SCREEN_DIR, sizeDir, `${base}.png`),
         golden: JSON.parse(readFileSync(join(SCREEN_DIR, sizeDir, file), "utf8")) as GoldenEcho,
         regions: echoReadRegions(frame),
-        samples: [setIconSearchRegion(frame)],
+        samples: [setIconSearchRegion(frame), mainStatLabelRegion(frame)],
       });
     }
   }
@@ -58,7 +60,7 @@ function findFixtures(): Fixture[] {
 }
 
 const fixtures = findFixtures();
-const ocrByImage = new Map<string, { regions: RegionText[]; setIcon: Sample | undefined }>();
+const ocrByImage = new Map<string, { regions: RegionText[]; samples: PanelSamples }>();
 const allResults: FieldResult[] = [];
 
 beforeAll(() => {
@@ -77,8 +79,8 @@ beforeAll(() => {
   );
   const results = JSON.parse(readFileSync(output, "utf8")) as { image: string; regions: RegionText[]; samples: number[] }[];
   for (const r of results) {
-    const setIcon = decodeSamples(Uint8Array.from(r.samples).buffer).images[0];
-    ocrByImage.set(r.image, { regions: r.regions, setIcon });
+    const [setIcon, mainStatLabel] = decodeSamples(Uint8Array.from(r.samples).buffer).images;
+    ocrByImage.set(r.image, { regions: r.regions, samples: { setIcon, mainStatLabel } });
   }
 });
 
@@ -103,7 +105,7 @@ describe("fixture replay: echoes", () => {
       const regions = read?.regions ?? [];
       const ocrText = Object.fromEntries(regions.map((r) => [r.id, r.lines.map((l) => l.text)]));
 
-      const extracted = extractEcho(regions, read?.setIcon);
+      const extracted = extractEcho(regions, read?.samples);
       const echo = toScanEcho({ ...extracted, id: "echo-1", index: 1 }, 1);
       const results = compareEcho(fixture.golden, echo);
       allResults.push(...results);

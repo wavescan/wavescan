@@ -7,9 +7,8 @@ import {
   type FrameSize,
 } from "@wutheringtools/scanner-core";
 import type { FracPoint, FracRect } from "@/ipc/types";
-import { fingerprintRegions } from "@/session/echoRegions";
+import { panelSampleRegions, splitPanelSamples, type PanelSamples } from "@/session/panelSamples";
 import { decodeSamples, type Sample } from "@/session/samples";
-import { setIconSearchRegion } from "@/session/setIcon";
 import {
   GRID_SAMPLE_WIDTH,
   SAME_ROW_DISTANCE,
@@ -86,8 +85,8 @@ export interface NavigatorDeps<Echo extends { level: number | null }> {
   /** Size of the captured game frame. */
   frameSize(): FrameSize;
   sampleRegions(regions: FracRect[], maxWidth: number): Promise<ArrayBuffer>;
-  /** Reads the echo shown in frame `seq` (the frame the panel settled in). */
-  readEcho(seq: number, setIcon: Sample | undefined): Promise<Echo>;
+  /** Reads the echo shown in frame `seq` (the frame the panel settled in), with that frame's pixel samples. */
+  readEcho(seq: number, samples: PanelSamples): Promise<Echo>;
   /** Guarded auto-mode click. Rejects when auto mode aborts. */
   click(target: FracPoint): Promise<unknown>;
   /** Guarded auto-mode wheel scroll; negative `ticks` scroll down. Rejects when auto mode aborts. */
@@ -251,15 +250,14 @@ export function createNavigator<Echo extends { level: number | null }>(
   }
 
   async function samplePanel(frame: FrameSize) {
-    const regions = [...fingerprintRegions(frame), setIconSearchRegion(frame)];
-    const samples = decodeSamples(await deps.sampleRegions(regions, PANEL_SAMPLE_WIDTH));
-    const [panel, stats, setIcon] = samples.images;
+    const samples = decodeSamples(await deps.sampleRegions(panelSampleRegions(frame), PANEL_SAMPLE_WIDTH));
+    const { panel, stats, extras } = splitPanelSamples(samples.images);
     if (!panel || !stats) return null;
     const fingerprints: FrameFingerprints = {
       panel: computeFingerprint(asImageData(panel), PANEL_FINGERPRINT_GRID),
       stats: computeFingerprint(asImageData(stats), STATS_FINGERPRINT_GRID),
     };
-    return { seq: samples.seq, fingerprints, setIcon };
+    return { seq: samples.seq, fingerprints, extras };
   }
 
   /**
@@ -336,9 +334,9 @@ export function createNavigator<Echo extends { level: number | null }>(
    * the order the reads started. Once one is below the minimum level, it and every later one
    * are dropped and the run ends at the next check.
    */
-  function startRead(seq: number, setIcon: Sample | undefined, position: GridPosition) {
+  function startRead(seq: number, extras: PanelSamples, position: GridPosition) {
     // Called now, so Rust takes the frame while it's still pinned.
-    const read = deps.readEcho(seq, setIcon).then(
+    const read = deps.readEcho(seq, extras).then(
       (echo) => ({ echo }),
       () => ({ echo: null }),
     );
@@ -396,7 +394,7 @@ export function createNavigator<Echo extends { level: number | null }>(
         progress.errors += 1;
       } else {
         shown += 1;
-        startRead(panel.seq, panel.setIcon, { row: rowNumber, column });
+        startRead(panel.seq, panel.extras, { row: rowNumber, column });
       }
       publish();
     }

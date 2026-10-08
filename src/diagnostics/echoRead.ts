@@ -1,9 +1,9 @@
 import type { FrameSize } from "@wutheringtools/scanner-core";
 import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
-import { echoReadRegions, fingerprintRegions } from "@/session/echoRegions";
+import { echoReadRegions } from "@/session/echoRegions";
 import { extractEcho } from "@/session/echoExtract";
+import { panelSampleRegions, splitPanelSamples } from "@/session/panelSamples";
 import { decodeSamples } from "@/session/samples";
-import { setIconSearchRegion } from "@/session/setIcon";
 import { toScanEcho, type ScanEcho } from "@/session/exportScan";
 
 // Reads the selected echo exactly the way a scan does (same regions, same parsing) so a
@@ -31,11 +31,11 @@ const SAMPLE_WIDTH = 128;
 
 export async function readEchoForDiagnostics(deps: EchoReadDeps, frame: FrameSize): Promise<EchoRead> {
   // Sampling pins the frame, so every region is read from the same picture. The set icon
-  // is sampled with it (its pixels are only compared, never stored or reported).
-  const regions = [...fingerprintRegions(frame), setIconSearchRegion(frame)];
-  const { seq, images } = decodeSamples(await deps.sampleRegions(regions, SAMPLE_WIDTH));
+  // and main-stat label are sampled with it (their pixels are only compared, never stored
+  // or reported).
+  const { seq, images } = decodeSamples(await deps.sampleRegions(panelSampleRegions(frame), SAMPLE_WIDTH));
   const results = await deps.readRegions(seq, echoReadRegions(frame));
-  const extracted = extractEcho(results, images[2]);
+  const extracted = extractEcho(results, splitPanelSamples(images).extras);
   return {
     regions: Object.fromEntries(results.map((r) => [r.id, r.lines.map((l) => l.text)])),
     ms: Math.round(Math.max(0, ...results.map((r) => r.elapsed_ms))),
