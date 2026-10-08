@@ -13,6 +13,11 @@ import { encodeSamples } from "./samplePayload";
 export interface FakeEcho {
   id: number;
   level: number | null;
+  /**
+   * Echoes with the same `look` draw the same details panel (the same echo and main stat
+   * at +0 in different sets differ only by a small set icon). Defaults to the echo's index.
+   */
+  look?: number;
 }
 
 export interface FakeGameOptions {
@@ -141,19 +146,20 @@ export function createFakeGame(options: FakeGameOptions) {
 
   const panels = new Map<string, Sample>();
 
-  /** Panel pixels: noise seeded by the selected echo, so each echo has its own fingerprint. */
+  /** Panel pixels: noise seeded by the selected echo's look, so each look has its own fingerprint. */
   function renderPanel(width: number, height: number, salt: number): Sample {
-    const key = `${selected}/${salt}`;
+    const look = echoes[selected]?.look ?? selected;
+    const key = `${look}/${salt}`;
     const known = panels.get(key);
     if (known) return known;
-    const sample = drawPanel(width, height, salt);
+    const sample = drawPanel(width, height, salt, look);
     panels.set(key, sample);
     return sample;
   }
 
-  function drawPanel(width: number, height: number, salt: number): Sample {
+  function drawPanel(width: number, height: number, salt: number, look: number): Sample {
     const rgba = new Uint8ClampedArray(width * height * 4);
-    let state = (selected + 1) * 7919 + salt;
+    let state = (look + 1) * 7919 + salt;
     for (let i = 0; i < width * height; i++) {
       state = (state * 1103515245 + 12345) % 2147483648;
       const v = 30 + (state % 200);

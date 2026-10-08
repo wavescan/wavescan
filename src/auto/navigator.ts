@@ -262,7 +262,15 @@ export function createNavigator<Echo extends { level: number | null }>(
     return { seq: samples.seq, fingerprints, setIcon };
   }
 
-  const detector = createStableFrameDetector();
+  /**
+   * Compares each panel with the one shown just before it only (no history of earlier
+   * echoes). Every click here is a different card, so "seen before" only has to mean "the
+   * click didn't change the panel". With history on, an echo that looked like any earlier
+   * one was skipped: the same echo and main stat at +0 in another set differs only by its
+   * small set icon (2026-10-08 report). Watch mode keeps the history, because there the
+   * user can go back to an echo already read.
+   */
+  const detector = createStableFrameDetector({ historySize: 0 });
   /**
    * True until the first click is done. The echo selected before the run starts is marked as
    * seen (`primePanel`), so a stale panel can't be read for the first card. If the first click
