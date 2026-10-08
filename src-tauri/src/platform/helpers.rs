@@ -82,6 +82,45 @@ pub(crate) fn union_bounds(boxes: &[(f32, f32, f32, f32)]) -> Option<Rect> {
     ))
 }
 
+/// Where the game area (the window's client area) sits inside a captured window frame, in
+/// frame pixels, clipped to the frame. `None` if none of it is inside the frame.
+///
+/// A windowed capture covers the whole visible window: title bar and borders included.
+/// `window` is that visible area and `client` the game area, both in screen pixels, so the
+/// game area starts at their difference. We work this out ourselves because
+/// `windows-capture`'s `buffer_without_title_bar` assumes the client size is unscaled and
+/// crops nothing when Windows display scaling is above 100% (2026-10-08 report: a
+/// 1920×1080 game at 200% came through as 1924×1140, and every read region was shifted).
+#[cfg_attr(
+    not(windows),
+    allow(
+        dead_code,
+        reason = "used by the Windows adapters; unit-tested on every OS"
+    )
+)]
+pub(crate) fn client_area_in_frame(
+    frame_width: u32,
+    frame_height: u32,
+    window: Rect,
+    client: Rect,
+) -> Option<Rect> {
+    let left = i64::from(client.x) - i64::from(window.x);
+    let top = i64::from(client.y) - i64::from(window.y);
+    // The frame can lag a resize by a frame or two, so clip rather than trust the sizes.
+    let right = (left + i64::from(client.width)).min(i64::from(frame_width));
+    let bottom = (top + i64::from(client.height)).min(i64::from(frame_height));
+    let (left, top) = (left.max(0), top.max(0));
+    if right <= left || bottom <= top {
+        return None;
+    }
+    Some(Rect::new(
+        i32::try_from(left).ok()?,
+        i32::try_from(top).ok()?,
+        u32::try_from(right - left).ok()?,
+        u32::try_from(bottom - top).ok()?,
+    ))
+}
+
 /// Converts a whole-number pixel coordinate from an OCR engine to `i32`.
 #[allow(
     clippy::cast_possible_truncation,
@@ -251,6 +290,51 @@ mod tests {
             pid: 1,
             frame: (0.0, 0.0, w, w * 0.625),
         }
+    }
+
+    // 2026-10-08 report: 1920×1080 game at 200% scale in a window, captured as 1924×1140
+    // (2 px borders, 58 px title bar). Client origin from the diagnostic: (480, 320).
+    #[test]
+    fn crops_title_bar_and_borders_from_a_windowed_capture() {
+        let window = Rect::new(478, 262, 1924, 1140);
+        let client = Rect::new(480, 320, 1920, 1080);
+        assert_eq!(
+            client_area_in_frame(1924, 1140, window, client),
+            Some(Rect::new(2, 58, 1920, 1080))
+        );
+    }
+
+    #[test]
+    fn borderless_capture_is_left_whole() {
+        let screen = Rect::new(0, 0, 2880, 1800);
+        assert_eq!(
+            client_area_in_frame(2880, 1800, screen, screen),
+            Some(screen)
+        );
+    }
+
+    #[test]
+    fn crop_is_clipped_to_a_frame_that_lags_a_resize() {
+        let window = Rect::new(100, 100, 1924, 1140);
+        let client = Rect::new(102, 158, 1920, 1080);
+        // The frame is still the old, smaller size.
+        assert_eq!(
+            client_area_in_frame(1600, 1000, window, client),
+            Some(Rect::new(2, 58, 1598, 942))
+        );
+    }
+
+    #[test]
+    fn client_area_outside_the_frame_gives_no_crop() {
+        let window = Rect::new(0, 0, 800, 600);
+        assert_eq!(
+            client_area_in_frame(800, 600, window, Rect::new(900, 0, 100, 100)),
+            None
+        );
+        assert_eq!(
+            client_area_in_frame(800, 600, window, Rect::new(0, 0, 0, 0)),
+            None
+        );
     }
 
     #[test]

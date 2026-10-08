@@ -1,5 +1,7 @@
 //! Captures the game window with Windows.Graphics.Capture via the `windows-capture` crate
 //! (ADR 0005). Window-only, cursor excluded, yellow border off where Windows allows it.
+//! Each frame is cropped to the game area, so a windowed game's title bar and borders never
+//! reach the rest of the app.
 //!
 //! Several capture options (border, cursor, secondary windows, frame-rate cap) only exist on
 //! newer Windows builds, and `windows-capture` refuses to start if we ask for one the OS lacks.
@@ -19,10 +21,11 @@ use windows_capture::settings::{
 use windows_capture::window::Window;
 
 use super::hwnd_from_id;
+use super::window::client_area_in_frame;
 use crate::error::Error;
 use crate::frame::Frame;
 use crate::stats::FpsCounter;
-use crate::traits::{FrameSource, GameWindow};
+use crate::traits::{FrameSource, GameWindow, WindowId};
 
 type HandlerError = Box<dyn std::error::Error + Send + Sync>;
 
@@ -45,20 +48,30 @@ impl Shared {
     }
 }
 
+/// What the capture thread is started with: where to put frames, and which window they
+/// come from (to find its game area in each frame).
+#[derive(Clone)]
+struct Flags {
+    shared: Arc<Shared>,
+    window: WindowId,
+}
+
 /// Receives frames on the capture thread.
 struct Handler {
     shared: Arc<Shared>,
+    window: WindowId,
     /// Reused between frames to avoid reallocating when the GPU buffer has row padding.
     scratch: Vec<u8>,
 }
 
 impl GraphicsCaptureApiHandler for Handler {
-    type Flags = Arc<Shared>;
+    type Flags = Flags;
     type Error = HandlerError;
 
     fn new(ctx: Context<Self::Flags>) -> Result<Self, Self::Error> {
         Ok(Self {
-            shared: ctx.flags,
+            shared: ctx.flags.shared,
+            window: ctx.flags.window,
             scratch: Vec::new(),
         })
     }
@@ -68,8 +81,20 @@ impl GraphicsCaptureApiHandler for Handler {
         frame: &mut WgcFrame,
         _control: InternalCaptureControl,
     ) -> Result<(), Self::Error> {
-        // Windowed mode includes the title bar; drop it so frames match the client area.
-        let buffer = frame.buffer_without_title_bar()?;
+        // A windowed capture includes the title bar and borders; keep only the game area.
+        // (Not `buffer_without_title_bar`: it crops nothing when display scaling is above
+        // 100%, see `helpers::client_area_in_frame`.) If the window is closing and has no
+        // game area, the whole frame is kept; the window is about to go away anyway.
+        let (frame_width, frame_height) = (frame.width(), frame.height());
+        let buffer =
+            match client_area_in_frame(hwnd_from_id(self.window), frame_width, frame_height) {
+                Some(area) if (area.width, area.height) != (frame_width, frame_height) => {
+                    let left = area.x.unsigned_abs();
+                    let top = area.y.unsigned_abs();
+                    frame.buffer_crop(left, top, left + area.width, top + area.height)?
+                }
+                _ => frame.buffer()?,
+            };
         let (width, height) = (buffer.width(), buffer.height());
         let pixels = buffer.as_nopadding_buffer(&mut self.scratch).to_vec();
         let seq = self.shared.seq.fetch_add(1, Ordering::Relaxed) + 1;
@@ -166,7 +191,7 @@ fn choose_options(support: Support, max_fps: u32) -> Options {
 }
 
 impl WgcCapture {
-    fn settings(&self, window: &GameWindow, options: Options) -> Settings<Arc<Shared>, Window> {
+    fn settings(&self, window: &GameWindow, options: Options) -> Settings<Flags, Window> {
         Settings::new(
             Window::from_raw_hwnd(hwnd_from_id(window.id).0),
             options.cursor,
@@ -175,7 +200,10 @@ impl WgcCapture {
             options.interval,
             DirtyRegionSettings::Default,
             ColorFormat::Bgra8,
-            Arc::clone(&self.shared),
+            Flags {
+                shared: Arc::clone(&self.shared),
+                window: window.id,
+            },
         )
     }
 }

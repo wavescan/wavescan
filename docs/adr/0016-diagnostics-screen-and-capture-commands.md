@@ -34,6 +34,7 @@ This milestone also adds the first commands that expose capture and OCR to the U
 
   It contains **no images**. A unit test asserts no image data appears in the report.
 - **Windows capture** uses `buffer_without_title_bar` so windowed-mode frames match the client area. The Diagnostics "captured area matches the game" check flags any mismatch, which tells us whether more cropping is needed.
+  **Superseded 2026-10-08:** see ADR 0026 (that function crops nothing above 100% display scaling; Wavescan now crops to the client area itself).
 
 ## Consequences
 

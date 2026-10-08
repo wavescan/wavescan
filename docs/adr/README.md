@@ -47,7 +47,7 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0013](./0013-user-id-masking.md) | Never read the User ID, and mask it in any saved frame | accepted | | privacy |
 | [0014](./0014-gpl-3-license.md) | License under GPL-3.0-or-later | accepted | | legal |
 | [0015](./0015-rust-code-standards.md) | Rust code standards for a non-Rust maintainer | accepted | | rust, process, testing |
-| [0016](./0016-diagnostics-screen-and-capture-commands.md) | Diagnostics screen, capture/OCR commands, and window matching without touching the game | accepted | | capture, ocr, privacy, testing |
+| [0016](./0016-diagnostics-screen-and-capture-commands.md) | Diagnostics screen, capture/OCR commands, and window matching without touching the game | accepted | 0026 (title-bar crop) | capture, ocr, privacy, testing |
 | [0017](./0017-input-spike-and-auto-mode-commands.md) | Input spike: auto-mode commands, Windows `SendInput`, and verifying clicks by their effect | accepted | 0023 (elevation advice) | input, security, testing |
 | [0018](./0018-macos-adapters.md) | macOS adapters: ScreenCaptureKit (via objc2), Vision, Core Graphics events, and a type-check probe | accepted | | capture, ocr, input, macos, testing |
 | [0019](./0019-consume-scanner-core-with-injected-data.md) | Consume `@wutheringtools/scanner-core` from npm, with game data supplied by Wavescan | accepted | | architecture, reuse, data |
@@ -57,3 +57,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0023](./0023-auto-mode-requires-administrator-on-windows.md) | Auto mode on Windows needs Wavescan to run as administrator | accepted | | input, security, product, windows |
 | [0024](./0024-f8-stop-key-and-auto-scroll.md) | F8 stop key via the global-shortcut plugin, and the `auto_scroll` command | accepted | | input, security, dependencies |
 | [0025](./0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md) | Keep the last few sampled frames pinned, so auto mode reads one echo while clicking the next | accepted | | capture, ocr, ipc, performance |
+| [0026](./0026-crop-windows-captures-to-the-client-area.md) | Crop Windows captures to the game area ourselves | accepted | | capture, windows, accuracy |
