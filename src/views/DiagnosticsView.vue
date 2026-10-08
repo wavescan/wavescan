@@ -19,7 +19,8 @@ import {
 } from "@/ipc/commands";
 import type { AppInfo } from "@/ipc/types";
 import type { GameDataInfo } from "@/data/scannerData";
-import { decodePreview } from "@/diagnostics/preview";
+import { drawOverlay, overlayBoxes } from "@/diagnostics/overlay";
+import { decodePreview, type DecodedPreview } from "@/diagnostics/preview";
 import { INPUT_TEST_TARGETS, OCR_TEST_REGIONS } from "@/diagnostics/regions";
 import { CONFIRMATION_PHRASE, runInputTest } from "@/diagnostics/inputTest";
 import { readEchoForDiagnostics } from "@/diagnostics/echoRead";
@@ -40,6 +41,12 @@ const checks = ref<Check[]>([]);
 const reportText = ref("");
 const copied = ref(false);
 const canvas = ref<HTMLCanvasElement | null>(null);
+/** The last preview (User ID already masked by Rust), kept so the boxes can be toggled. */
+let lastPreview: DecodedPreview | null = null;
+/** True once a preview has been drawn (`lastPreview` itself isn't reactive). */
+const lastPreviewShown = ref(false);
+const showRegions = ref(true);
+const pictureCopied = ref(false);
 const confirmation = ref("");
 const inputRunning = ref(false);
 /** The last diagnostics run, so the input test can add to the same report. */
@@ -63,12 +70,40 @@ const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve,
 async function drawPreview() {
   const target = canvas.value;
   if (!target) return;
-  const preview = decodePreview(await getCapturePreview(target.clientWidth || 640));
+  lastPreview = decodePreview(await getCapturePreview(target.clientWidth || 640));
+  lastPreviewShown.value = true;
+  repaint();
+}
+
+/** Draws the last preview, with the boxes Wavescan reads on top when they're switched on. */
+function repaint() {
+  const target = canvas.value;
+  const preview = lastPreview;
+  if (!target || !preview) return;
   target.width = preview.width;
   target.height = preview.height;
-  target
-    .getContext("2d")
-    ?.putImageData(new ImageData(preview.rgba, preview.width, preview.height), 0, 0);
+  const context = target.getContext("2d");
+  if (!context) return;
+  context.putImageData(new ImageData(preview.rgba, preview.width, preview.height), 0, 0);
+  if (showRegions.value) {
+    const size = { width: preview.width, height: preview.height };
+    drawOverlay(context, overlayBoxes(size), preview.width, preview.height);
+  }
+  pictureCopied.value = false;
+}
+
+/** Copies the preview as shown (masked, with or without boxes) for a bug report. */
+async function copyPicture() {
+  const target = canvas.value;
+  if (!target) return;
+  try {
+    const blob = await new Promise<Blob | null>((resolve) => target.toBlob(resolve, "image/png"));
+    if (!blob) throw new Error("no picture");
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+    pictureCopied.value = true;
+  } catch {
+    pictureCopied.value = false;
+  }
 }
 
 function publish(input: DiagnosticsInput) {
@@ -243,6 +278,34 @@ const badge: Record<Check["status"], string> = {
         </li>
       </ul>
 
+      <div
+        v-if="checks.length && lastPreviewShown"
+        class="flex flex-wrap items-center gap-3 text-sm"
+      >
+        <label class="label cursor-pointer gap-2">
+          <input
+            v-model="showRegions"
+            type="checkbox"
+            class="checkbox checkbox-sm"
+            @change="repaint"
+          >
+          <span>Show what Wavescan reads</span>
+        </label>
+        <button
+          class="btn btn-sm"
+          @click="copyPicture"
+        >
+          {{ pictureCopied ? "Copied ✓" : "Copy picture" }}
+        </button>
+        <span
+          v-if="showRegions"
+          class="text-xs opacity-70"
+        >
+          Green: text it reads. Blue: icons it compares. Dashed: where it watches for changes.
+          Red: your User ID, blacked out and never read. On Bag → Echoes, each box should sit
+          on its text.
+        </span>
+      </div>
       <canvas
         ref="canvas"
         class="w-full rounded border border-base-300 bg-base-200"
