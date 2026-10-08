@@ -32,7 +32,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] 0.1.1 (Node-compatible ESM) released with provenance via staged Trusted Publishing; Wavescan pinned to it (ADR 0019)
 - [x] WT: `scanner-data.json` published on every deploy (WT ADR 0035)
 - [x] Wavescan: bundled snapshot + loader + `data:update` (ADR 0020)
-- [ ] Signed runtime refresh (opt-in)
+- [ ] Signed runtime refresh (opt-in): moved to [Later](#later) ("Keeping game data current"), not needed for v0.1
 
 **Exit:** the optimizer's Vitest + Cypress suites are green, and the scanner repo imports the package.
 
@@ -87,3 +87,9 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - a character with a skin
 - **v0.3 Weapons (Phase 5):** weapon grid + detail.
 - More languages (native OCR already supports them, but name tables need localisation), ultrawide.
+- **Keeping game data current between releases** (not a top priority). New echoes and sets arrive about every 6 weeks. Today they reach users only through a new Wavescan release: update WT, run `npm run data:update`, merge, release (ADR 0020, ADR 0022). An old build still scans safely: an unknown echo is left out of the export and counted, and a set with no reference icon is exported as `null` and flagged, never guessed. Options, not decided:
+  - **Scheduled CI job** that runs `data:update` and opens a PR when the data changed. No app change and no new network call; it only shortens the maintainer's routine.
+  - **Tell the user the build is stale.** Show it when the scan hits echoes the data doesn't know, or when the data snapshot is older than the current game patch. Point to the Releases page.
+  - **Check on load.** Fetch `scanner-data.json` (and the set icons) from wutheringtools.com at startup, opt-in.
+  - **Fetch on request.** A "Check for new game data" button, so nothing goes out unless the user asks.
+  - Any runtime fetch adds an outbound connection, so it needs an ADR (ADR 0010). It also needs a signature check against a key built into the app, a fallback to the bundled data if anything is off, a Settings → Network toggle, and the README connections table. The set icons are images from the assets site, so they need the same treatment.
