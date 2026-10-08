@@ -29,6 +29,17 @@ describe("navigator", () => {
     expect(result.errors).toBe(0);
   });
 
+  // 2026-10-08 report: nine +0 echoes; the 4th (Hoartoise, ATK, Freezing Frost) and 6th
+  // (Hoartoise, ATK, Celestial Light) have the same panel apart from the small set icon.
+  // The 6th used to count as "unchanged" because it looked like an echo read earlier.
+  it("reads an echo that looks like one read earlier, as long as the one before it differs", async () => {
+    const echoes = fakeEchoes(9, 0).map((echo) => (echo.id === 5 ? { ...echo, look: 3 } : echo));
+    const { result, ids } = await scan({ echoes });
+    expect(result.reason).toBe("end-of-list");
+    expect(ids).toEqual(range(9));
+    expect(result.unchanged).toBe(3); // the empty slots after the last echo
+  });
+
   it("reads a short list that fits on screen without scrolling", async () => {
     const { result, ids } = await scan({ echoes: fakeEchoes(14) });
     expect(result.reason).toBe("end-of-list");

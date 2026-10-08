@@ -78,6 +78,10 @@ To use it:
 3. Press **Start auto scan** and **don't touch the mouse or keyboard**. The scanner scrolls back to the top of the list first, then reads every echo and scrolls down by itself.
 4. To stop at any time, **move the mouse** or press **F8**. The scanner stops immediately and keeps everything it read so far.
 
+At the end of the list the scanner clicks the empty spaces in the last row and tries to scroll once more. That's how it makes sure it really is the end.
+
+**Known gap:** if two echoes next to each other look exactly the same on the details panel (same echo, same main stat, no substats yet, so mostly +0 echoes), the scanner can't tell it moved and reads only the first. That's true even when their sonata sets differ. Echoes with substats always differ, so it doesn't affect leveled echoes.
+
 ## Is it safe?
 
 We built the scanner so you don't have to trust us. You can check everything yourself.
