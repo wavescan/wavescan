@@ -10,6 +10,7 @@ use windows::core::HSTRING;
 
 use crate::error::Error;
 use crate::frame::Frame;
+use crate::ocr_prep::{ocr_scale, prepare_for_ocr, unscale_bounds};
 use crate::platform::union_bounds;
 use crate::traits::{OcrEngine, OcrLine};
 
@@ -33,7 +34,11 @@ impl OcrEngine for WinRtOcr {
             )));
         }
 
-        let bitmap = to_bitmap(image)?;
+        // Grey, more contrast and up to 3× bigger: Windows OCR misses short words and
+        // misreads "%" on the panel's small text otherwise (see `ocr_prep`). Line boxes are
+        // mapped back to the crop's own pixels below, so callers never see the enlargement.
+        let scale = ocr_scale(image.width(), image.height(), max);
+        let bitmap = to_bitmap(&prepare_for_ocr(image, scale)?)?;
         let result = engine
             .RecognizeAsync(&bitmap)
             .map_err(failed)?
@@ -57,7 +62,7 @@ impl OcrEngine for WinRtOcr {
             if let Some(bounds) = union_bounds(&boxes) {
                 out.push(OcrLine {
                     text: line.Text().map_err(failed)?.to_string_lossy(),
-                    bounds,
+                    bounds: unscale_bounds(bounds, scale),
                 });
             }
         }

@@ -43,6 +43,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src-tauri/src/commands.rs` | Tauri IPC commands (thin: validate → call trait → map error) |
 | `src-tauri/src/safety.rs` | `AutoMode` input guard (arming, bounds, abort detection, action cap), User ID mask + crop guard |
 | `src-tauri/src/frame.rs`, `geometry.rs` | Captured images (crop/fill) and pixel ↔ fraction geometry |
+| `src-tauri/src/ocr_prep.rs` | Grey/contrast/3× enlargement of a crop before Windows OCR (same recipe as WT) |
 | `src-tauri/src/testing.rs` | Fakes for the four traits (test-only) |
 | `src-tauri/examples/fixtures.rs` | Dev tool: mask fixture captures, OCR them for the fixture replay |
 | `src-tauri/capabilities/` | Tauri permission allow-list (keep minimal) |

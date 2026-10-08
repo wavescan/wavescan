@@ -11,6 +11,7 @@
 //! | [`safety`] | Gatekeeper for input (auto mode) and User ID privacy |
 //! | [`frame`] | In-memory captured images: crop, fill |
 //! | [`regions`] | Batched region sampling (change detection) and OCR for the scanner |
+//! | [`ocr_prep`] | Grey, contrast and 3× enlargement of a crop before Windows OCR reads it |
 //! | [`geometry`] | Pixel and fractional rectangles/points |
 //! | [`hotkey`] | The F8 stop key for auto mode (held only while armed) |
 //! | [`platform`] | Windows/macOS implementations of the traits |
@@ -23,6 +24,7 @@ pub mod error;
 pub mod frame;
 pub mod geometry;
 pub mod hotkey;
+pub mod ocr_prep;
 pub mod platform;
 pub mod regions;
 pub mod safety;

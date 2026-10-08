@@ -12,6 +12,7 @@ Measured notes for the echo inventory screen. Fixtures live in `fixtures/screens
 | Video B (`…09-15-58 - Copy.mp4`) | 2304×1440 @ 120 fps, 69 s | 16:10 | Manual click-through + scroll |
 
 | 7 PNGs (Windows, **windowed** 1920×1080 on a 1920×1080 desktop, 2026-10-07) | 1920×1080 game area | 16:9 | Top of list, two mid-scrolls, +5/+15/+20/+25 echoes. Desktop screenshots, so they include the title bar (58 px) and the left border (2 px), and the window ran 58 px off the bottom and 2 px off the right of the screen. The fixtures are the game area rebuilt from them: crop x ≥ 2, y ≥ 58, paste at (0, 0) on a black 1920×1080 frame. The bottom 58 rows (footer edge and the **User ID**) are black |
+| 36 PNGs (same setup as above, 2026-10-08, `fixtures/raw/2026-10-08_4pm_test/`) | 1920×1080 game area | 16:9 | A 36-echo manual scan of +25 echoes. Rebuilt the same way. 8 are fixtures, picked for what Windows OCR got wrong before the OCR prep (`ocr_prep.rs`): lone "HP"/"ATK" labels dropped (and one silent mismatch, `dreamless-hp-atk-plus25`), "44.0%" read as "44.00/0", the small-font Voidborne Construct name, a name half covered by art (Thousand-Puppet Pavilion) and an unread one-word name (Hecate) |
 
 **Still needed:** 16:9 at 2560×1440 / 3840×2160, and any **macOS (Apple Silicon)** capture.
 

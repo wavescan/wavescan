@@ -1,0 +1,32 @@
+{
+  "echo": "ReminiscenceFleurdelys",
+  "echoSet": null,
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritDMG",
+  "substats": [
+    {
+      "type": "CritRate",
+      "value": 6.3
+    },
+    {
+      "type": "HP_FLAT",
+      "value": 390
+    },
+    {
+      "type": "ATK",
+      "value": 10.1
+    },
+    {
+      "type": "CritDMG",
+      "value": 12.6
+    },
+    {
+      "type": "DEF_FLAT",
+      "value": 50
+    }
+  ],
+  "equippedBy": null,
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar and left border cropped; the bottom 58 px and right 2 px are black). 2026-10-08 report, screenshot #30. Windows OCR dropped the first row (Crit. Rate 6.3%) and the lone 'HP' label. Main stat '44.0%' read as '44.00/0'. Two possible sets, not confirmed."
+}
