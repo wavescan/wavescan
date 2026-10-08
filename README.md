@@ -174,6 +174,8 @@ On the home screen, press **Run diagnostics**. With the game open on **Bag → E
 
 It shows a preview with your User ID blacked out and gives you a report you can copy. The report contains no pictures. The basic checks never click anything in the game.
 
+The preview has boxes drawn on it showing exactly where Wavescan reads. Each box should sit on its text: the echo's name, level, stats and so on. If the boxes are shifted, Wavescan will misread, and a picture of that is the most useful thing you can send with a bug report. **Copy picture** copies the preview as shown (User ID still blacked out). Untick **Show what Wavescan reads** to hide the boxes.
+
 There's also an optional **click test** for auto mode. After the same Fair Play warning and typed confirmation as auto mode, it brings the game to the front and clicks the second and then the first echo in your grid, so you should see the selection move twice. Clicking only selects them; nothing is changed. Moving the mouse stops it instantly.
 
 ## Reporting a bug

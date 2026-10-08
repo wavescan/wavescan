@@ -45,6 +45,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [ ] `classifyScreen` (detect Bag → Echoes vs other screens)
 - [x] Watch mode UI: live counter, candidate list, low-confidence highlighting, remove misreads, copy scan JSON
 - [ ] Preview with ROI overlay; save to file
+  - [x] Diagnostics preview draws every read region, the pixel checks, the change checks and the User ID mask (`src/diagnostics/overlay.ts`), with "Copy picture". Saving to a file would need a new Tauri permission (ADR), so it's not done
 - [ ] Auto mode: arming flow + warning, grid navigator, early stop by level, abort paths, "run as administrator" notice (Windows, ADR 0023) / Accessibility prompt (macOS)
   - [x] Grid reader: visible rows, click targets, scroll matching (`src/auto/grid.ts`, 16:10 and 16:9)
   - [x] Navigator state machine (click → read → next, scroll, end of list, stop level): `src/auto/navigator.ts`, against a fake grid
