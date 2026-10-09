@@ -6,6 +6,7 @@ import {
   createStableFrameDetector,
   type FrameSize,
 } from "@wutheringtools/scanner-core";
+import { errorMessage } from "@/ipc/commands";
 import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
 import { echoReadRegions } from "./echoRegions";
 import { extractEcho, type ExtractedEcho } from "./echoExtract";
@@ -92,7 +93,7 @@ export function createEchoSession(deps: EchoSessionDeps) {
       }
     } catch (error) {
       stats.errors += 1;
-      deps.onError?.(error instanceof Error ? error.message : String(error));
+      deps.onError?.(errorMessage(error)); // Rust rejects with { kind, message }, not an Error
     } finally {
       reading = false;
       publish();
