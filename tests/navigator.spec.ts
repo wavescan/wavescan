@@ -87,6 +87,27 @@ describe("navigator", () => {
     expect(ids).toEqual(range(45));
   });
 
+  // 2026-10-09 report: 30 echoes at 1920×1080. Scrolling into the end of the list overshoots
+  // and springs back (fixtures/raw/scrolling.mp4). The slow end of the spring back looked
+  // settled, so the next scroll measured the grid moving down ("Measured -0.065 of a row")
+  // and stopped as lost track, without reading the last two rows.
+  // One test per case: each is a full scan, and together they're too slow for one test on CI.
+  for (const frame of [{ width: 1920, height: 1080 }, { width: 2880, height: 1800 }]) {
+    for (const count of [30, 36, 50]) {
+      it(`reads to the end when scrolling past it overshoots and springs back: ${count} echoes at ${frame.width}×${frame.height}`, async () => {
+        const { result, ids } = await scan({ echoes: fakeEchoes(count), frame, bounce: true });
+        expect(result.reason, result.detail).toBe("end-of-list");
+        expect(ids).toEqual(range(count));
+      });
+    }
+  }
+
+  it("reads to the end with the overshoot and input that shows up late", async () => {
+    const { result, ids } = await scan({ echoes: fakeEchoes(40), bounce: true, lag: 3 });
+    expect(result.reason, result.detail).toBe("end-of-list");
+    expect(ids).toEqual(range(40));
+  });
+
   it("stops at the first echo below the minimum level, without reporting it", async () => {
     // Sorted by level: 12 at +25, 12 at +20, then +15 and lower.
     const levels = (i: number) => (i < 12 ? 25 : i < 24 ? 20 : 15);
