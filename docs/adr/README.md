@@ -35,7 +35,7 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0001](./0001-record-architecture-decisions.md) | Record architecture decisions as ADRs | accepted | | process |
 | [0002](./0002-tauri-over-electron-and-dotnet.md) | Tauri 2 (Rust + webview) over Electron and .NET | accepted | | platform, distribution |
 | [0003](./0003-rust-adapters-ts-brain-split.md) | Rust = thin OS adapters, TypeScript = scanning brain | accepted | | architecture, ipc |
-| [0004](./0004-native-os-ocr-with-tesseract-fallback.md) | Native OS OCR, tesseract.js as fallback | accepted | | ocr, performance |
+| [0004](./0004-native-os-ocr-with-tesseract-fallback.md) | Native OS OCR, tesseract.js as fallback | accepted | 0027 (Windows engine) | ocr, performance |
 | [0005](./0005-window-capture-wgc-and-screencapturekit.md) | Window-only capture via Windows.Graphics.Capture and ScreenCaptureKit | accepted | 0018 (macOS crate choice) | capture, security |
 | [0006](./0006-watch-and-auto-modes-and-fair-play-risk.md) | Watch mode by default, auto mode opt-in, and the Fair Play risk | accepted | 0023 (Windows elevation) | input, security, product |
 | [0007](./0007-shared-scanner-core-package.md) | Share scanning logic with the web app via `@wuthering-tools/scanner-core` | accepted | 0019 (name, data injection) | architecture, reuse |
@@ -58,3 +58,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0024](./0024-f8-stop-key-and-auto-scroll.md) | F8 stop key via the global-shortcut plugin, and the `auto_scroll` command | accepted | | input, security, dependencies |
 | [0025](./0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md) | Keep the last few sampled frames pinned, so auto mode reads one echo while clicking the next | accepted | | capture, ocr, ipc, performance |
 | [0026](./0026-crop-windows-captures-to-the-client-area.md) | Crop Windows captures to the game area ourselves | accepted | | capture, windows, accuracy |
+| [0027](./0027-tesseract-reads-echo-text-on-windows.md) | Tesseract (tesseract.js) reads echo text on Windows | accepted | | ocr, accuracy, windows, security, dependencies |
