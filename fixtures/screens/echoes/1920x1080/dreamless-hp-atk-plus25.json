@@ -1,0 +1,32 @@
+{
+  "echo": "Dreamless",
+  "echoSet": "HavocEclipse",
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritDMG",
+  "substats": [
+    {
+      "type": "CritDMG",
+      "value": 15.0
+    },
+    {
+      "type": "CritRate",
+      "value": 9.3
+    },
+    {
+      "type": "HP",
+      "value": 7.9
+    },
+    {
+      "type": "ATK_FLAT",
+      "value": 40
+    },
+    {
+      "type": "HeavyAttackDMGBonus",
+      "value": 7.1
+    }
+  ],
+  "equippedBy": "Camellya",
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar and left border cropped; the bottom 58 px and right 2 px are black). 2026-10-08 report, screenshot #13. Silent misread before the OCR prep: Windows OCR dropped the lone 'HP' and 'ATK' labels and the values shifted onto the wrong labels (exported ATK 7.9%, Heavy Attack 11.6). Only one possible set."
+}

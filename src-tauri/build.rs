@@ -22,6 +22,7 @@ fn main() {
             "auto_scroll",
             "sample_regions",
             "read_regions",
+            "crop_regions",
         ]));
     if let Err(error) = tauri_build::try_build(attributes) {
         eprintln!("tauri build step failed: {error:#}");

@@ -7,7 +7,7 @@ There are two ways to work on Wavescan:
 | **Any machine with Docker** | Lint, type-check, unit tests, Rust lint/tests for the OS-independent code, supply-chain checks | Docker Desktop |
 | **Windows or an Apple Silicon Mac** | Run the actual app (`npm run tauri dev`) against the real game | Node 24, Rust, Tauri prerequisites |
 
-The app can't run inside Docker. It needs the real OS to find the game window, capture it, and use the built-in OCR. The container is Linux, and the game doesn't run there.
+The app can't run inside Docker. It needs the real OS to find the game window, capture it, and use the OS text reader. The container is Linux, and the game doesn't run there.
 
 ## 1. Checks with Docker (no Rust install needed)
 
@@ -20,6 +20,7 @@ This runs `scripts/check.sh`, the same steps as CI:
 - npm install
 - eslint + vue-tsc
 - vitest
+- the fixture replay through Tesseract (`npm run test:fixtures:tesseract`, the engine Windows uses)
 - vite build
 - `cargo fmt`
 - `cargo clippy -D warnings`

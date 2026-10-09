@@ -12,11 +12,11 @@ import {
   disarmAutoMode,
   errorMessage,
   getCaptureStatus,
-  readRegions,
   sampleRegions,
   startCapture,
   stopCapture,
 } from "@/ipc/commands";
+import { readEchoRegions } from "@/ocr/appReader";
 import type { AppInfo } from "@/ipc/types";
 import type { ExtractedEcho } from "@/session/echoExtract";
 
@@ -86,7 +86,7 @@ async function start() {
       click: autoClick,
       scroll: autoScroll,
       sampleRegions,
-      readEcho: readEchoWith(readRegions),
+      readEcho: readEchoWith(readEchoRegions),
       sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
       now: () => performance.now(),
       errorMessage,

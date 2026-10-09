@@ -1,9 +1,10 @@
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vitest/config";
 
-// `npm run test:fixtures`: replays the fixture screenshots through this OS's OCR
-// (tests/fixtureReplay.fixtures.ts). Kept out of `npm test` because it needs Windows or
-// macOS and a Rust toolchain. See docs/fixtures.md.
+// `npm run test:fixtures`: replays the fixture screenshots through the OCR engines
+// (tests/*.fixtures.ts): Tesseract on every OS, macOS Vision on macOS. Kept out of
+// `npm test` because it takes a minute or so, and the Vision and grid replays need a Rust
+// toolchain. See docs/fixtures.md.
 export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
@@ -11,7 +12,9 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.fixtures.ts"],
     environment: "node",
-    // The first run compiles the Rust OCR tool.
+    // Always print the accuracy lines and the OCR text of fixtures with problems.
+    silent: false,
+    // The first run compiles the Rust OCR tool; Tesseract reads every fixture in beforeAll.
     hookTimeout: 20 * 60_000,
   },
 });

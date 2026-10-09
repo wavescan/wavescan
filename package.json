@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:fixtures": "vitest run --config vitest.fixtures.config.ts",
+    "test:fixtures:tesseract": "vitest run --config vitest.fixtures.config.ts tests/tesseractReplay.fixtures.ts",
     "lint": "eslint . && vue-tsc -b",
     "check": "docker compose run --rm check",
     "data:update": "node scripts/update-scanner-data.mjs && node scripts/update-set-icons.mjs",
@@ -25,6 +26,7 @@
   "dependencies": {
     "@tauri-apps/api": "^2.12.1",
     "@wutheringtools/scanner-core": "0.1.2",
+    "tesseract.js": "6.0.1",
     "vue": "^3.5.43"
   },
   "devDependencies": {

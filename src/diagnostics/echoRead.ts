@@ -13,13 +13,21 @@ import { toScanEcho, type ScanEcho } from "@/session/exportScan";
 export interface EchoReadDeps {
   sampleRegions(regions: FracRect[], maxWidth: number): Promise<ArrayBuffer>;
   readRegions(seq: number, regions: RegionRead[]): Promise<RegionText[]>;
+  /** Which engine `readRegions` uses, e.g. "Tesseract". */
+  engineName(): Promise<string>;
+  /** Milliseconds clock (`performance.now` in the app). */
+  now(): number;
 }
 
 export interface EchoRead {
   /** OCR lines per scanner region (name, level, mainStat, …), in reading order of the API. */
   regions: Record<string, string[]>;
+  /** The OCR engine that read the text. */
+  engine: string;
   /** Slowest region, in milliseconds. */
   ms: number;
+  /** The whole read (every region, plus queueing and moving crops), in milliseconds. */
+  totalMs: number;
   /** The echo as it would be exported, or null if the echo couldn't be identified. */
   echo: ScanEcho | null;
   /** Set-icon match score per candidate set, when the icon had to be matched. */
@@ -34,11 +42,15 @@ export async function readEchoForDiagnostics(deps: EchoReadDeps, frame: FrameSiz
   // and main-stat label are sampled with it (their pixels are only compared, never stored
   // or reported).
   const { seq, images } = decodeSamples(await deps.sampleRegions(panelSampleRegions(frame), SAMPLE_WIDTH));
+  const started = deps.now();
   const results = await deps.readRegions(seq, echoReadRegions(frame));
+  const totalMs = Math.round(deps.now() - started);
   const extracted = extractEcho(results, splitPanelSamples(images).extras);
   return {
     regions: Object.fromEntries(results.map((r) => [r.id, r.lines.map((l) => l.text)])),
+    engine: await deps.engineName(),
     ms: Math.round(Math.max(0, ...results.map((r) => r.elapsed_ms))),
+    totalMs,
     echo: toScanEcho({ ...extracted, id: "diagnostics", index: 1 }, 1),
     setScores: extracted.setScores,
   };

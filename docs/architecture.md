@@ -18,7 +18,7 @@ flowchart LR
     WF[WindowFinder]
     FS[FrameSource<br/>WGC / ScreenCaptureKit]
     CR[crop + mask]
-    OCR[OcrEngine<br/>Windows.Media.Ocr / Vision]
+    OCR[OcrEngine<br/>Vision on macOS]
     IN[InputDriver<br/>SendInput / CGEventPost]
     SF[safety<br/>arm · clamp · abort]
   end
@@ -28,6 +28,7 @@ flowchart LR
     CL[classifyScreen]
     EX[extractors]
     NAV[auto navigator]
+    TESS[Tesseract reader<br/>web worker, Windows]
     CORE["@wutheringtools/scanner-core<br/>parse · match · layouts"]
   end
 
@@ -38,6 +39,7 @@ flowchart LR
   WF --> FS --> CR --> OCR
   CR -- small crops + fingerprints --> SS
   OCR -- text + boxes --> SS
+  CR -- full-size crops, Windows --> TESS -- text + boxes --> SS
   SS --> CL --> EX --> CORE
   SS --> NAV -- click / key requests --> SF --> IN -- OS input --> GW
   EX --> OUT -- file / clipboard --> WEB
@@ -47,7 +49,8 @@ flowchart LR
 
 | Layer | Owns | Doesn't own |
 |---|---|---|
-| Rust `platform/` | Finding the window, grabbing frames, cropping, native OCR, sending input | Any knowledge of echoes, stats, screens |
+| Rust `platform/` | Finding the window, grabbing frames, cropping, native OCR (macOS echoes, Diagnostics), sending input | Any knowledge of echoes, stats, screens |
+| TS `ocr/` | Which engine reads echo text, and the Tesseract reader (prep, settings, worker pool) | What the text means |
 | Rust `safety` | Whether input is allowed right now, clamping, abort, User ID masking | Deciding *what* to click |
 | TS `session/` | Screen classification, extraction, confidence, dedupe, output | OS calls |
 | TS `auto/` | What to click next and when the screen has settled | How a click is delivered |
@@ -59,12 +62,14 @@ flowchart LR
 2. **Fingerprint** (Rust): tiny luma grids of the panel and stats regions, which are cheap to compare. They're sent to TS with each frame tick.
 3. **`ScanSession`** (TS) runs the existing `stability.ts` gate. It acts only on a *stable and novel* frame: the panel stopped changing and differs from the last one read.
 4. **`classifyScreen`** finds which screen this is (v0.1: `bag.echoes`, or `unknown`) from anchor text/regions.
-5. The **extractor** for that screen asks Rust for the crops it needs (`crop_regions` with ROI fractions from `scanner-core` `layout.ts`). Rust crops, upscales, and OCRs each one natively, then returns text + line boxes. The set icon comes back as a small bitmap, sampled from the same frame as the fingerprints, and is matched against bundled reference icons ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)).
+5. The **extractor** for that screen reads the regions it needs (ROI fractions from `scanner-core` `layout.ts`) from that exact pinned frame, through `src/ocr/` ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)):
+   - **macOS:** `read_regions`. Rust crops each region and OCRs it with Vision, then returns text + line boxes.
+   - **Windows:** `crop_regions`. Rust returns the full-size crops (through `crop_outside_user_id`), and the Tesseract reader in a web worker (`src/ocr/tesseract.worker.ts`) prepares them like Wuthering Tools (grey, 3× enlarged, contrast ×1.5) and reads them with a pool of 3 tesseract.js workers. An empty name is read again in sparse-text mode. Text + line boxes come back in the same shape as `read_regions`. The set icon comes back as a small bitmap, sampled from the same frame as the fingerprints, and is matched against bundled reference icons ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)).
 6. The extractor feeds that into `scanner-core` (`parseEchoCandidate`, `resolveEchoByNameAndCost`, substat snapping) and `src/session/setIcon.ts` (the echo's 2–3 possible sets only) → a candidate with per-field `high|low` confidence.
 7. **Dedupe** by signature (`dedupe.ts`) → candidate store → the live UI list.
 8. On export: candidates → `WutheringToolsScan` JSON (validated against `schema/scan.v1.json`).
 
-The full frame never crosses IPC. Only fingerprints, small crops and text do ([ADR 0003](adr/0003-rust-adapters-ts-brain-split.md)).
+The full frame never crosses IPC. Only fingerprints, the regions being read and text do ([ADR 0003](adr/0003-rust-adapters-ts-brain-split.md)).
 
 ## 3. Watch vs auto: same pipeline, different driver
 
@@ -96,7 +101,7 @@ stateDiagram-v2
 
 ## 4. Rust trait seams
 
-Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs`. Tests use the fakes in `src-tauri/src/testing.rs`, which simulate the window (focus, minimise, close), the cursor and user mouse movement, OS input rejection, and replayed frames. Platform implementations live in `platform/` (`platform::create()` picks one per OS). **Windows** is implemented: Win32 window enumeration, `windows-capture` (WGC, cursor off, border off on Windows 11, cropped to the client area so a windowed game's title bar and borders are dropped at any display scaling ([ADR 0026](adr/0026-crop-windows-captures-to-the-client-area.md)); each optional setting is requested only when the Windows build supports it, otherwise the system default is kept), and `Windows.Media.Ocr` (en-US). **macOS** is implemented: `objc2-screen-capture-kit` (window list + single-window capture), Vision OCR, Core Graphics events, and Accessibility/Screen Recording checks with instructions ([ADR 0018](adr/0018-macos-adapters.md)). `platform/unsupported.rs` covers only Linux (the Docker check container).
+Everything OS-specific sits behind four traits in `src-tauri/src/traits.rs`. Tests use the fakes in `src-tauri/src/testing.rs`, which simulate the window (focus, minimise, close), the cursor and user mouse movement, OS input rejection, and replayed frames. Platform implementations live in `platform/` (`platform::create()` picks one per OS). **Windows** is implemented: Win32 window enumeration, `windows-capture` (WGC, cursor off, border off on Windows 11, cropped to the client area so a windowed game's title bar and borders are dropped at any display scaling ([ADR 0026](adr/0026-crop-windows-captures-to-the-client-area.md)); each optional setting is requested only when the Windows build supports it, otherwise the system default is kept), and `Windows.Media.Ocr` (en-US; Diagnostics "Read text" only, since echoes are read by Tesseract, [ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)). **macOS** is implemented: `objc2-screen-capture-kit` (window list + single-window capture), Vision OCR, Core Graphics events, and Accessibility/Screen Recording checks with instructions ([ADR 0018](adr/0018-macos-adapters.md)). `platform/unsupported.rs` covers only Linux (the Docker check container).
 
 Key types:
 
@@ -109,10 +114,10 @@ Key types:
 |---|---|---|---|
 | `WindowFinder` | Win32 `EnumWindows`, window class `UnrealWindow` + title | SCK shareable-content snapshot, app name / title | Fixed rect |
 | `FrameSource` | `windows-capture` (Windows.Graphics.Capture) | `objc2-screen-capture-kit` (SCStream, single-window filter) | PNGs/video frames from `fixtures/` |
-| `OcrEngine` | `Windows.Media.Ocr` via `windows` crate | Vision `VNRecognizeTextRequest` via `objc2-vision` | Canned text per crop |
+| `OcrEngine` | `Windows.Media.Ocr` via `windows` crate (Diagnostics only) | Vision `VNRecognizeTextRequest` via `objc2-vision` | Canned text per crop |
 | `InputDriver` | `SetCursorPos` + `SendInput` (scancodes) | `CGEvent` posts + Accessibility check | Records calls for assertions |
 
-([ADR 0004](adr/0004-native-os-ocr-with-tesseract-fallback.md), [ADR 0005](adr/0005-window-capture-wgc-and-screencapturekit.md))
+([ADR 0004](adr/0004-native-os-ocr-with-tesseract-fallback.md), [ADR 0005](adr/0005-window-capture-wgc-and-screencapturekit.md), [ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md))
 
 ## 5. IPC commands
 
@@ -135,6 +140,7 @@ Implemented (milestone 3). Each one is listed in `build.rs` and granted in `capa
 
 | `sample_regions` | `{ regions: FracRect[], maxWidth }` → raw bytes `[seq u64][count u32]` + per region `[w u32][h u32][RGBA]` | Small images for change detection (fingerprints computed in TS by scanner-core). **Pins** the sampled frame (the last 4 distinct frames stay pinned, [ADR 0025](adr/0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md)) |
 | `read_regions` | `{ seq, regions: RegionRead[] }` → `RegionText[]` | OCRs the **pinned** frame `seq` (so text matches the frame judged stable), one thread per region; `FrameExpired` if `seq` isn't one of the pinned frames |
+| `crop_regions` | `{ seq, regions: FracRect[] }` → raw bytes `[count u32]` + per region `[w u32][h u32][RGBA]` | Full-size crops of the **pinned** frame `seq` for the Tesseract reader (Windows), through `crop_outside_user_id`; held in memory only ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)) |
 
 *(Planned)*: `layout_check`, scroll/key commands (driver already supports them), F8 stop hotkey, `save_debug_frame` (setting-gated, masked).
 
@@ -143,7 +149,8 @@ Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `sr
 ## 6. Threads
 
 - **Capture thread** (owned by the capture crate) → latest frame kept in a single-slot buffer. Old frames are dropped, never queued.
-- **OCR worker pool** (Rust, 2–4 threads) runs the native OCR calls in parallel.
+- **OCR threads** (Rust, one per region) run the native OCR calls in parallel.
+- **Tesseract web worker** (Windows): prepares crops and runs a pool of 3 tesseract.js workers, so reading never blocks the UI. It starts on the first read (about a second) and gives up with an error if Tesseract hasn't started after 30 s.
 - **Tauri main thread** handles IPC only and never blocks on capture or OCR.
 - **Webview (TS)**: session logic. The TS queue keeps clicking (auto) separate from reading.
 
@@ -155,9 +162,9 @@ Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `sr
 | No memory/file access to the game | Nothing in the codebase opens the game process or install dir. Reviewed in PRs per CLAUDE.md |
 | Input gating | `safety::AutoMode`: armed (typed phrase) → window exists, focused, not minimised → cursor where we left it (else the user took over) → target inside the client rect → under the action cap. **Any failure aborts** until the user re-arms |
 | Abort | Cursor-drift check between our clicks, F8 global hotkey, focus-loss event |
-| User ID never read | `crop_outside_user_id` refuses OCR crops that overlap it. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
+| User ID never read | `crop_outside_user_id` refuses OCR crops (and the Tesseract reader's crops) that overlap it. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
 | Tauri capabilities | `src-tauri/capabilities/default.json`: only our commands + updater + dialog save + clipboard write |
-| CSP | `default-src 'self'`. No remote scripts or styles |
+| CSP | `default-src 'self'`. No remote scripts or styles. `script-src 'self' 'wasm-unsafe-eval'` lets the bundled Tesseract compile its WebAssembly (not JavaScript `eval`); `worker-src 'self'` and `connect-src 'self'` let its workers start and load the bundled core and model ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)) |
 | Least privilege | Admin (Windows, the user runs Wavescan as administrator: [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md)) / Accessibility (macOS) needed only for auto mode |
 | Supply chain | `cargo deny`, `npm audit`, lockfiles committed, signed + attested release builds ([ADR 0011](adr/0011-signing-provenance-and-updater.md)) |
 
@@ -171,6 +178,8 @@ Only these outbound connections exist. Each can be turned off in Settings ([ADR 
 | `www.wutheringtools.com` | `scanner-data.json` (game data refresh, *planned*) | Detached signature checked against a compiled-in public key. Falls back to the bundled snapshot ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)) |
 
 Adding a host means: ADR → this table → the README table → CSP `connect-src`.
+
+The Tesseract reader makes no connections: its worker script, WebAssembly core and model (`public/tesseract/`, served from the app at `/tesseract/` by the Vite config) all load from the app itself, and tesseract.js's default CDN is never used.
 
 ## 8. Game data freshness
 
@@ -186,6 +195,6 @@ Game data (echo names, sets, costs, stat tables, characters, weapons) comes from
 
 ## 10. Build & release
 
-- CI (`.github/workflows/ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc on `windows-latest` + `macos-14`.
+- CI (`.github/workflows/ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc, and the fixture replay (Tesseract on both, Vision on macOS) on `windows-latest` + `macos-14`.
 - Tester builds (`tester-build.yml`, on merge to `main`): unsigned (macOS ad-hoc signed) `.dmg` + NSIS `.exe` → rolling `tester-build` pre-release with SHA-256 sums. The commit id is compiled in as `WAVESCAN_BUILD`.
 - Release (`release.yml`, on tag): `tauri build` → sign (Azure Trusted Signing for Windows / Developer ID + notarization for macOS) → SHA-256 checksums + `actions/attest-build-provenance` → GitHub Release + updater manifest ([ADR 0011](adr/0011-signing-provenance-and-updater.md)).

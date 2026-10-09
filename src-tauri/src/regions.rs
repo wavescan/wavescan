@@ -1,5 +1,6 @@
 //! Reading parts of a captured frame for the scanner: small images for change detection
-//! (`sample`) and OCR text (`read`). Every crop goes through
+//! (`sample`), OCR text (`read`), and full-size crops for the webview's own OCR (`crops`,
+//! Tesseract on Windows, ADR 0027). Every crop goes through
 //! [`crate::safety::crop_outside_user_id`], so the User ID can never be sampled or read.
 //!
 //! The layout fractions come from the TypeScript side (scanner-core's `layout.ts`); this
@@ -122,6 +123,35 @@ pub fn sample(frame: &Frame, regions: &[FracRect], max_width: u32) -> Result<Vec
         out.extend_from_slice(&w.to_le_bytes());
         out.extend_from_slice(&h.to_le_bytes());
         out.extend_from_slice(&rgba);
+    }
+    Ok(out)
+}
+
+/// Full-size RGBA crops of `regions`, for OCR in the webview (Tesseract on Windows,
+/// ADR 0027). Encoded as:
+///
+/// `[count: u32 LE]` then, per region, `[width: u32 LE][height: u32 LE][RGBA]`.
+///
+/// Crops are not scaled: the reader does its own enlarging. They only travel to the
+/// webview's memory and are never written anywhere.
+///
+/// # Errors
+///
+/// [`Error::InvalidRegion`] if there are no regions, too many, or any region is invalid
+/// or overlaps the User ID.
+pub fn crops(frame: &Frame, regions: &[FracRect]) -> Result<Vec<u8>, Error> {
+    check_count(regions.len())?;
+    // Crop everything first, so a bad region fails before any bytes are built.
+    let crops = regions
+        .iter()
+        .map(|region| safety::crop_outside_user_id(frame, *region))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut out = Vec::new();
+    out.extend_from_slice(&u32::try_from(crops.len()).unwrap_or(0).to_le_bytes());
+    for crop in &crops {
+        out.extend_from_slice(&crop.width().to_le_bytes());
+        out.extend_from_slice(&crop.height().to_le_bytes());
+        out.extend_from_slice(&crop.to_rgba());
     }
     Ok(out)
 }
@@ -252,6 +282,34 @@ mod tests {
         let too_many = vec![NAME; MAX_REGIONS + 1];
         assert!(matches!(
             sample(&frame(1), &too_many, 64),
+            Err(Error::InvalidRegion)
+        ));
+    }
+
+    #[test]
+    fn crops_are_full_size_rgba_in_request_order() {
+        let bytes = crops(&frame(3), &[NAME, PANEL]).unwrap();
+        assert_eq!(read_u32(&bytes, 0), 2);
+        let name = NAME.to_pixels(2880, 1800).unwrap();
+        let (w1, h1) = (read_u32(&bytes, 4), read_u32(&bytes, 8));
+        assert_eq!((w1, h1), (name.width, name.height));
+        // RGBA order: the BGRA test colour [10, 20, 30] comes back as [30, 20, 10].
+        assert_eq!(&bytes[12..16], &[30, 20, 10, 255]);
+        let second = 12 + (w1 * h1 * 4) as usize;
+        let (w2, h2) = (read_u32(&bytes, second), read_u32(&bytes, second + 4));
+        assert!(w2 > w1 && h2 > h1, "the panel is bigger than the name");
+        assert_eq!(bytes.len(), second + 8 + (w2 * h2 * 4) as usize);
+    }
+
+    #[test]
+    fn crops_refuse_user_id_regions_and_bad_counts() {
+        assert!(matches!(
+            crops(&frame(1), &[NAME, USER_ID_OVERLAP]),
+            Err(Error::InvalidRegion)
+        ));
+        assert!(matches!(crops(&frame(1), &[]), Err(Error::InvalidRegion)));
+        assert!(matches!(
+            crops(&frame(1), &vec![NAME; MAX_REGIONS + 1]),
             Err(Error::InvalidRegion)
         ));
     }

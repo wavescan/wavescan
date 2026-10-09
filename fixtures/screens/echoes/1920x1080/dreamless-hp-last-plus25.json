@@ -1,0 +1,32 @@
+{
+  "echo": "Dreamless",
+  "echoSet": "HavocEclipse",
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritDMG",
+  "substats": [
+    {
+      "type": "BasicAttackDMGBonus",
+      "value": 9.4
+    },
+    {
+      "type": "DEF_FLAT",
+      "value": 50
+    },
+    {
+      "type": "CritRate",
+      "value": 6.9
+    },
+    {
+      "type": "ATK",
+      "value": 7.9
+    },
+    {
+      "type": "HP",
+      "value": 9.4
+    }
+  ],
+  "equippedBy": null,
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar and left border cropped; the bottom 58 px and right 2 px are black). 2026-10-08 report, screenshot #36. Lone 'HP' label on the last row was dropped by Windows OCR. Main stat '44.0%' read as '44.00/0'. Only one possible set."
+}

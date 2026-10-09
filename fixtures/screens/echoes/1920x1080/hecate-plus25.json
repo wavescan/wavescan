@@ -1,0 +1,32 @@
+{
+  "echo": "Hecate",
+  "echoSet": null,
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritRate",
+  "substats": [
+    {
+      "type": "ATK",
+      "value": 8.6
+    },
+    {
+      "type": "CritRate",
+      "value": 7.5
+    },
+    {
+      "type": "ResonanceSkillDMGBonus",
+      "value": 9.4
+    },
+    {
+      "type": "DEF_FLAT",
+      "value": 40
+    },
+    {
+      "type": "ATK_FLAT",
+      "value": 50
+    }
+  ],
+  "equippedBy": "Cantarella",
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar and left border cropped; the bottom 58 px and right 2 px are black). 2026-10-08 report, screenshot #32. Short one-word name; Windows OCR read nothing for it. Several possible sets, not confirmed."
+}

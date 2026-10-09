@@ -1,0 +1,32 @@
+{
+  "echo": "ReminiscenceThrenodianVoidborneConstruct",
+  "echoSet": "WishesofQuietSnowfall",
+  "cost": 4,
+  "rank": 5,
+  "level": 25,
+  "stat": "CritDMG",
+  "substats": [
+    {
+      "type": "ATK_FLAT",
+      "value": 30
+    },
+    {
+      "type": "DEF_FLAT",
+      "value": 60
+    },
+    {
+      "type": "CritDMG",
+      "value": 15.0
+    },
+    {
+      "type": "ATK",
+      "value": 7.9
+    },
+    {
+      "type": "DEF",
+      "value": 11.8
+    }
+  ],
+  "equippedBy": null,
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar and left border cropped; the bottom 58 px and right 2 px are black). 2026-10-08 report, screenshot #3. Long name drawn in a smaller font; Windows OCR read 'Reminiscence: Threncxlian - QStruct'. Main stat '44.0%' read as '44.00/0'. Only one possible set."
+}

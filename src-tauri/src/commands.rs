@@ -330,6 +330,17 @@ impl AppState {
         regions::read(&frame, regions, self.ocr.as_ref())
     }
 
+    /// See [`crop_regions`].
+    ///
+    /// # Errors
+    ///
+    /// [`Error::FrameExpired`] if `seq` isn't one of the pinned frames, or
+    /// [`Error::InvalidRegion`].
+    pub fn crop_regions(&self, seq: u64, regions: &[FracRect]) -> Result<Vec<u8>, Error> {
+        let frame = self.pinned_frame(seq)?;
+        regions::crops(&frame, regions)
+    }
+
     fn lock_auto(&self) -> std::sync::MutexGuard<'_, AutoMode> {
         self.auto.lock().unwrap_or_else(PoisonError::into_inner)
     }
@@ -567,6 +578,24 @@ pub async fn read_regions(
         .map_err(|e| Error::OcrFailed(format!("OCR task failed: {e}")))?
 }
 
+/// Full-size crops of `regions` of frame `seq` (one of the frames `sample_regions` pinned),
+/// for the webview's Tesseract reader on Windows (ADR 0027). Same User ID guard as
+/// [`read_regions`]. Returns binary data (see [`regions::crops`] for the layout).
+///
+/// # Errors
+///
+/// See [`AppState::crop_regions`].
+#[tauri::command]
+pub fn crop_regions(
+    state: tauri::State<'_, AppState>,
+    seq: u64,
+    regions: Vec<FracRect>,
+) -> Result<tauri::ipc::Response, Error> {
+    state
+        .crop_regions(seq, &regions)
+        .map(tauri::ipc::Response::new)
+}
+
 /// Recognises text in `crop` and times it.
 fn run_ocr(crop: &Frame, ocr: &(dyn OcrEngine + Send + Sync)) -> Result<OcrResult, Error> {
     let started = Instant::now();
@@ -799,6 +828,25 @@ mod tests {
         assert!(matches!(
             state.read_regions(seq + 1, &request),
             Err(Error::FrameExpired)
+        ));
+    }
+
+    #[test]
+    fn crop_regions_reads_only_a_pinned_frame_and_refuses_the_user_id() {
+        let state = state_with(vec![white_frame()], vec![]);
+        state.start_capture(30).unwrap();
+        let name = FracRect::new(0.685, 0.104, 0.27, 0.034);
+        assert!(matches!(
+            state.crop_regions(1, &[name]),
+            Err(Error::FrameExpired)
+        ));
+
+        state.sample_regions(&[name], 32).unwrap();
+        let bytes = state.crop_regions(1, &[name]).unwrap();
+        assert_eq!(u32::from_le_bytes(bytes[0..4].try_into().unwrap()), 1);
+        assert!(matches!(
+            state.crop_regions(1, &[FracRect::new(0.8, 0.9, 0.2, 0.1)]),
+            Err(Error::InvalidRegion)
         ));
     }
 

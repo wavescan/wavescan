@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeSamples, toCoreLines } from "@/session/samples";
+import { decodeCrops, decodeSamples, toCoreLines } from "@/session/samples";
 
 /** Builds a payload the way regions::sample does. */
 function encode(seq: number, images: { width: number; height: number; fill: number }[]): ArrayBuffer {
@@ -35,6 +35,19 @@ describe("decodeSamples", () => {
     padded.set(new Uint8Array(good));
     expect(() => decodeSamples(padded.buffer)).toThrow(/trailing/);
     expect(() => decodeSamples(new ArrayBuffer(4))).toThrow(/too short/);
+  });
+});
+
+describe("decodeCrops", () => {
+  it("decodes each crop, with no frame sequence in front", () => {
+    // regions::crops is a samples payload without the 8-byte sequence number.
+    const crops = encode(0, [{ width: 3, height: 2, fill: 5 }, { width: 1, height: 1, fill: 6 }]).slice(8);
+    expect(decodeCrops(crops).map((i) => [i.width, i.height, i.rgba.length, i.rgba[0]])).toEqual([
+      [3, 2, 24, 5],
+      [1, 1, 4, 6],
+    ]);
+    expect(() => decodeCrops(crops.slice(0, crops.byteLength - 1))).toThrow(/crops payload is truncated/);
+    expect(() => decodeCrops(new ArrayBuffer(2))).toThrow(/too short/);
   });
 });
 
