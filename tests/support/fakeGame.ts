@@ -13,11 +13,15 @@ import { encodeSamples } from "./samplePayload";
 export interface FakeEcho {
   id: number;
   level: number | null;
+  /** What the read reports as the echo's identity (`echo-<id>` from `fakeEchoes`). */
+  signature: string;
   /**
    * Echoes with the same `look` draw the same details panel (the same echo and main stat
    * at +0 in different sets differ only by a small set icon). Defaults to the echo's index.
    */
   look?: number;
+  /** The set icon drawn in the panel (its own sample). Defaults to the echo's look. */
+  set?: number;
 }
 
 export interface FakeGameOptions {
@@ -50,6 +54,11 @@ export interface FakeGameOptions {
    * ease moves less than a sample pixel per frame. Off by default.
    */
   bounce?: boolean;
+  /**
+   * The set icon sample changes every few frames by itself, like a big 3D model (Dreamless,
+   * Hecate) animating behind the icon. Off by default.
+   */
+  animatedSetIcon?: boolean;
 }
 
 /** Most a scroll past the end overshoots, as a share of a row (measured 0.27). */
@@ -58,6 +67,9 @@ const BOUNCE_ROWS = 0.27;
 const BOUNCE_HOLD_FRAMES = 4;
 /** Frames the spring back takes (about 300 ms at 60 fps). */
 const BOUNCE_FRAMES = 18;
+
+/** Frames each step of an animated set icon holds (`animatedSetIcon`). */
+const ANIMATION_FRAMES = 10;
 
 /** Same as `regions::PINNED_FRAMES` in Rust: how many recent frames a read can still use. */
 const PINNED_FRAMES = 4;
@@ -190,20 +202,26 @@ export function createFakeGame(options: FakeGameOptions) {
 
   const panels = new Map<string, Sample>();
 
-  /** Panel pixels: noise seeded by the selected echo's look, so each look has its own fingerprint. */
+  /**
+   * Panel pixels: noise seeded by the selected echo's look, so each look has its own
+   * fingerprint. The set icon sample (salt 3) is seeded by its set instead.
+   */
   function renderPanel(width: number, height: number, salt: number): Sample {
-    const look = echoes[selected]?.look ?? selected;
-    const key = `${look}/${salt}`;
+    const echo = echoes[selected];
+    const look = echo?.look ?? selected;
+    const set = echo?.set ?? look;
+    const seed = salt !== 3 ? look : options.animatedSetIcon ? set * 1000 + Math.floor(seq / ANIMATION_FRAMES) : set;
+    const key = `${seed}/${salt}`;
     const known = panels.get(key);
     if (known) return known;
-    const sample = drawPanel(width, height, salt, look);
+    const sample = drawPanel(width, height, salt, seed);
     panels.set(key, sample);
     return sample;
   }
 
-  function drawPanel(width: number, height: number, salt: number, look: number): Sample {
+  function drawPanel(width: number, height: number, salt: number, seed: number): Sample {
     const rgba = new Uint8ClampedArray(width * height * 4);
-    let state = (look + 1) * 7919 + salt;
+    let state = (seed + 1) * 7919 + salt;
     for (let i = 0; i < width * height; i++) {
       state = (state * 1103515245 + 12345) % 2147483648;
       const v = 30 + (state % 200);
@@ -257,5 +275,9 @@ export function createFakeGame(options: FakeGameOptions) {
 
 /** `count` echoes with ids 0, 1, 2, … and the given level (or levels by index). */
 export function fakeEchoes(count: number, level: number | ((index: number) => number | null) = 25): FakeEcho[] {
-  return Array.from({ length: count }, (_, id) => ({ id, level: typeof level === "number" ? level : level(id) }));
+  return Array.from({ length: count }, (_, id) => ({
+    id,
+    level: typeof level === "number" ? level : level(id),
+    signature: `echo-${id}`,
+  }));
 }

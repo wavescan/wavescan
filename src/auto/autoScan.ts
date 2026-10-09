@@ -6,6 +6,7 @@ import type { PanelSamples } from "@/session/panelSamples";
 import {
   createNavigator,
   type GridPosition,
+  type NavigatorEcho,
   type NavigatorProgress,
   type NavigatorResult,
   type NavigatorStop,
@@ -34,7 +35,7 @@ export interface AutoScanResult extends NavigatorProgress {
 }
 
 /** What an auto scan needs from the app (the IPC commands in the app, fakes in tests). */
-export interface AutoScanDeps<Echo extends { level: number | null }> {
+export interface AutoScanDeps<Echo extends NavigatorEcho> {
   startCapture(maxFps: number): Promise<unknown>;
   stopCapture(): Promise<unknown>;
   /** Size of the latest captured frame, or null before the first one. */
@@ -75,7 +76,7 @@ export function readEchoWith(readRegions: (seq: number, regions: RegionRead[]) =
 const EMPTY: NavigatorProgress = { echoes: 0, unchanged: 0, errors: 0, row: 0 };
 
 /** Creates a scan. Call `run()` once; `stop()` ends it after the current action. */
-export function createAutoScan<Echo extends { level: number | null }>(
+export function createAutoScan<Echo extends NavigatorEcho>(
   deps: AutoScanDeps<Echo>,
   options: AutoScanOptions,
   callbacks: AutoScanCallbacks<Echo>,

@@ -40,6 +40,50 @@ describe("navigator", () => {
     expect(result.unchanged).toBe(3); // the empty slots after the last echo
   });
 
+  // 2026-10-09 report (fixtures/raw/skipping-echoes-auto.mp4): three of 30 echoes skipped,
+  // each right after an echo with the same name, main stat and second stat at +0 in another
+  // set (Hoartoise DEF, Fusion Prism ATK, Snip Snap DEF). Only the set icon and "Owned"
+  // changed, too little for the panel fingerprints, so the click counted as "unchanged".
+  it("reads an echo whose panel differs from the one before it only by the set icon", async () => {
+    const echoes = fakeEchoes(9, 0).map((echo) => (echo.id === 3 || echo.id === 4 ? { ...echo, look: 2, set: echo.id } : echo));
+    const { result, ids } = await scan({ echoes });
+    expect(result.reason).toBe("end-of-list");
+    expect(ids).toEqual(range(9));
+    expect(result.unchanged).toBe(3); // the empty slots after the last echo
+  });
+
+  it("reads set-only changes with input that shows up late", async () => {
+    const echoes = fakeEchoes(40, 0).map((echo) => ({ ...echo, look: Math.floor(echo.id / 3), set: echo.id }));
+    const { result, ids } = await scan({ echoes, lag: 3 });
+    expect(result.reason).toBe("end-of-list");
+    expect(ids).toEqual(range(40));
+  });
+
+  // A big 3D model can animate behind the set icon. A changed icon then only gets the panel
+  // read again: the same echo as the one before it counts as unchanged, not as a second copy.
+  it("doesn't read an echo twice when its set icon area animates", async () => {
+    const { result, ids } = await scan({ echoes: fakeEchoes(50), animatedSetIcon: true });
+    expect(result.reason).toBe("end-of-list");
+    expect(ids).toEqual(range(50));
+    expect(result.unchanged).toBe(4); // the empty slots after the last echo
+  });
+
+  it("still stops when clicks don't reach the game and the set icon area animates", async () => {
+    const { result, ids } = await scan({ echoes: fakeEchoes(20), clicksLand: false, animatedSetIcon: true });
+    expect(result.reason).toBe("clicks-not-landing");
+    expect(ids).toEqual([0]); // the echo the game had already selected
+  });
+
+  // Two copies of the same +0 echo in the same set show exactly the same panel, so there's
+  // nothing to tell the second click apart from one that didn't land.
+  it("counts an exact copy of the echo before it as unchanged", async () => {
+    const echoes = fakeEchoes(9, 0).map((echo) => (echo.id === 4 ? { ...echo, look: 3 } : echo));
+    const { result, ids } = await scan({ echoes });
+    expect(result.reason).toBe("end-of-list");
+    expect(ids).toEqual([0, 1, 2, 3, 5, 6, 7, 8]);
+    expect(result.unchanged).toBe(4);
+  });
+
   // The game draws the selected card slightly larger, so a click can move its row's edge by
   // a sample pixel. That mustn't count as a scroll, least of all with only a row or two to
   // average over.
