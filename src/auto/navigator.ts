@@ -112,6 +112,14 @@ export const SCROLL_TIMEOUT_MS = 600;
  * a move of exactly whole rows would leave the row edges where they were and look like the top.
  */
 const TOP_TICKS = 37;
+/**
+ * How long the row edges have to stay put before the grid counts as settled after moving.
+ * Scrolling past the end of the list overshoots and eases back over about 300 ms, and near
+ * the end of that ease the edges move less than a sample pixel per frame, so two frames in a
+ * row can match while it's still moving (fixtures/raw/scrolling.mp4: holds of up to ~100 ms,
+ * at the turn and in the tail).
+ */
+export const SETTLE_QUIET_MS = 200;
 /** Longest wait for the grid to settle after it started moving. */
 const SETTLE_TIMEOUT_MS = 3000;
 /** Most scrolls to the top before giving up (3,000 echoes is 500 rows, 40 notches ≈ 5 rows). */
@@ -225,27 +233,32 @@ export function createNavigator<Echo extends { level: number | null }>(
   }
 
   /**
-   * Waits for the grid to move after a scroll and settle (the same edges in two frames).
+   * Waits for the grid to move after a scroll and settle: the same edges for SETTLE_QUIET_MS.
    * Returns the settled sample, or the unchanged one after SCROLL_TIMEOUT_MS.
    */
   async function waitForGrid(layout: GridLayout, before: readonly number[]) {
     const started = deps.now();
     let last = await sampleGrid(layout);
-    let lastEdges = findRowEdges(layout, last.sample);
-    let moved = !sameEdges(lastEdges, before);
+    /** The edges the grid is being timed at, and since when. Compared with every new frame, not just the previous one, so a slow drift adds up. */
+    let quietEdges = findRowEdges(layout, last.sample);
+    let quietSince = started;
+    let moved = !sameEdges(quietEdges, before);
     for (;;) {
-      if (!moved && deps.now() - started > SCROLL_TIMEOUT_MS) return { ...last, edges: lastEdges };
+      if (!moved && deps.now() - started > SCROLL_TIMEOUT_MS) return { ...last, edges: quietEdges };
+      if (moved && deps.now() - quietSince >= SETTLE_QUIET_MS) return { ...last, edges: findRowEdges(layout, last.sample) };
       if (deps.now() - started > SETTLE_TIMEOUT_MS) {
         throw stopWith("lost-track", "The echo grid didn't settle after scrolling.");
       }
       await deps.sleep(POLL_MS);
       const next = await sampleGrid(layout);
       if (next.seq === last.seq) continue;
-      const edges = findRowEdges(layout, next.sample);
-      if (moved && sameEdges(edges, lastEdges)) return { ...next, edges };
-      if (!sameEdges(edges, before)) moved = true;
       last = next;
-      lastEdges = edges;
+      const edges = findRowEdges(layout, next.sample);
+      if (!sameEdges(edges, before)) moved = true;
+      if (!sameEdges(edges, quietEdges)) {
+        quietEdges = edges;
+        quietSince = deps.now();
+      }
     }
   }
 

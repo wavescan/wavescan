@@ -43,7 +43,21 @@ export interface FakeGameOptions {
    * click moves that from row to row. 0 by default.
    */
   selectedDrop?: number;
+  /**
+   * Scrolling past either end of the list overshoots and springs back, like the real game
+   * (fixtures/raw/scrolling.mp4, 1920×1080): the grid jumps up to 0.27 of a row past the end
+   * in one frame, holds for a few frames, then eases back over about 300 ms. The tail of the
+   * ease moves less than a sample pixel per frame. Off by default.
+   */
+  bounce?: boolean;
 }
+
+/** Most a scroll past the end overshoots, as a share of a row (measured 0.27). */
+const BOUNCE_ROWS = 0.27;
+/** Frames the overshoot holds before springing back. */
+const BOUNCE_HOLD_FRAMES = 4;
+/** Frames the spring back takes (about 300 ms at 60 fps). */
+const BOUNCE_FRAMES = 18;
 
 /** Same as `regions::PINNED_FRAMES` in Rust: how many recent frames a read can still use. */
 const PINNED_FRAMES = 4;
@@ -68,6 +82,8 @@ export function createFakeGame(options: FakeGameOptions) {
   const art = options.art ?? ((echo: FakeEcho, cy: number) => 40 + ((echo.id * 37 + cy * 11) % 9) * 18);
 
   let offset = Math.min(maxOffset, (options.startRows ?? 0) * layout.rowPitch);
+  /** A spring back in progress: from `from` to `to`, starting at frame `start`. */
+  let spring: { from: number; to: number; start: number } | null = null;
   let selected = options.selected ?? 0;
   let seq = 0;
   let time = 0;
@@ -88,6 +104,27 @@ export function createFakeGame(options: FakeGameOptions) {
     time += 1;
     for (const p of pending.filter((p) => p.due < seq)) p.apply();
     pending.splice(0, pending.length, ...pending.filter((p) => p.due >= seq));
+    if (spring) {
+      // Ease-out cubic: fast at first, then less than a sample pixel per frame at the end.
+      const t = Math.min(1, Math.max(0, (seq - spring.start) / BOUNCE_FRAMES));
+      offset = spring.from + (spring.to - spring.from) * (1 - (1 - t) ** 3);
+      if (t === 1) spring = null;
+    }
+  }
+
+  /** Scrolls the grid by `by`, overshooting and springing back past either end when `bounce` is on. */
+  function scrollBy(by: number) {
+    // A scroll during a spring back starts from where the spring is heading.
+    const wanted = (spring ? spring.to : offset) + by;
+    const target = Math.min(maxOffset, Math.max(0, wanted));
+    spring = null;
+    if (!options.bounce || target === wanted) {
+      offset = target;
+      return;
+    }
+    const overshoot = Math.min(Math.abs(wanted - target), BOUNCE_ROWS * layout.rowPitch);
+    offset = target + Math.sign(wanted - target) * overshoot;
+    spring = { from: offset, to: target, start: seq + BOUNCE_HOLD_FRAMES };
   }
 
   const barTop = (row: number) => top0 + row * layout.rowPitch - offset;
@@ -205,9 +242,7 @@ export function createFakeGame(options: FakeGameOptions) {
     },
     async scroll(_target, ticks) {
       log.scrolls.push(ticks);
-      later(() => {
-        offset = Math.min(maxOffset, Math.max(0, offset - ticks * notch));
-      });
+      later(() => scrollBy(-ticks * notch));
     },
     async sleep(ms) {
       time += ms;
