@@ -37,6 +37,12 @@ export interface FakeGameOptions {
   art?: (echo: FakeEcho, cy: number) => number;
   /** How long a read (OCR) takes, in event-loop turns, so reads overlap the next clicks. */
   readTurns?: number;
+  /**
+   * How far the selected card's gold line sits below the others, in sample pixels. The game
+   * draws the selected card slightly larger, so its edge lands a pixel or so lower, and a
+   * click moves that from row to row. 0 by default.
+   */
+  selectedDrop?: number;
 }
 
 /** Same as `regions::PINNED_FRAMES` in Rust: how many recent frames a read can still use. */
@@ -101,13 +107,13 @@ export function createFakeGame(options: FakeGameOptions) {
     return null;
   }
 
-  /** The last strip drawn, reused until the grid scrolls (most samples see the same grid). */
-  let cached: { offset: number; sample: Sample } | null = null;
+  /** The last strip drawn, reused until the grid scrolls or the selection moves (most samples see the same grid). */
+  let cached: { offset: number; selected: number; sample: Sample } | null = null;
 
   function renderStrip(): Sample {
-    if (cached?.offset === offset) return cached.sample;
+    if (cached?.offset === offset && cached.selected === selected) return cached.sample;
     const sample = drawStrip();
-    cached = { offset, sample };
+    cached = { offset, selected, sample };
     return sample;
   }
 
@@ -130,7 +136,8 @@ export function createFakeGame(options: FakeGameOptions) {
           for (let row = Math.max(0, near); row <= Math.min(rowCount - 1, near + 1); row++) {
             const index = row * 6 + column;
             if (index >= echoes.length) continue;
-            const bar = barTop(row);
+            const drop = index === selected ? ((options.selectedDrop ?? 0) / height) * strip.height : 0;
+            const bar = barTop(row) + drop;
             const artTop = bar - layout.cardArtHeight;
             if (fy >= artTop && fy < bar - line) {
               value = art(echoes[index]!, Math.floor(((fy - artTop) / layout.cardArtHeight) * 4));
