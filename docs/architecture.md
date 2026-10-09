@@ -28,7 +28,7 @@ flowchart LR
     CL[classifyScreen]
     EX[extractors]
     NAV[auto navigator]
-    TESS[Tesseract reader<br/>web worker, Windows]
+    TESS[Tesseract reader<br/>tesseract.js workers, Windows]
     CORE["@wutheringtools/scanner-core<br/>parse · match · layouts"]
   end
 
@@ -64,7 +64,7 @@ flowchart LR
 4. **`classifyScreen`** finds which screen this is (v0.1: `bag.echoes`, or `unknown`) from anchor text/regions.
 5. The **extractor** for that screen reads the regions it needs (ROI fractions from `scanner-core` `layout.ts`) from that exact pinned frame, through `src/ocr/` ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)):
    - **macOS:** `read_regions`. Rust crops each region and OCRs it with Vision, then returns text + line boxes.
-   - **Windows:** `crop_regions`. Rust returns the full-size crops (through `crop_outside_user_id`), and the Tesseract reader in a web worker (`src/ocr/tesseract.worker.ts`) prepares them like Wuthering Tools (grey, 3× enlarged, contrast ×1.5) and reads them with a pool of 3 tesseract.js workers. An empty name is read again in sparse-text mode. Text + line boxes come back in the same shape as `read_regions`. The set icon comes back as a small bitmap, sampled from the same frame as the fingerprints, and is matched against bundled reference icons ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)).
+   - **Windows:** `crop_regions`. Rust returns the full-size crops (through `crop_outside_user_id`), and the Tesseract reader (`src/ocr/tesseract.ts`, started by the page) prepares them like Wuthering Tools (grey, 3× enlarged, contrast ×1.5) and reads them with a pool of 3 tesseract.js workers. An empty name is read again in sparse-text mode. Text + line boxes come back in the same shape as `read_regions`. The set icon comes back as a small bitmap, sampled from the same frame as the fingerprints, and is matched against bundled reference icons ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)).
 6. The extractor feeds that into `scanner-core` (`parseEchoCandidate`, `resolveEchoByNameAndCost`, substat snapping) and `src/session/setIcon.ts` (the echo's 2–3 possible sets only) → a candidate with per-field `high|low` confidence.
 7. **Dedupe** by signature (`dedupe.ts`) → candidate store → the live UI list.
 8. On export: candidates → `WutheringToolsScan` JSON (validated against `schema/scan.v1.json`).
@@ -150,7 +150,7 @@ Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `sr
 
 - **Capture thread** (owned by the capture crate) → latest frame kept in a single-slot buffer. Old frames are dropped, never queued.
 - **OCR threads** (Rust, one per region) run the native OCR calls in parallel.
-- **Tesseract web worker** (Windows): prepares crops and runs a pool of 3 tesseract.js workers, so reading never blocks the UI. It starts on the first read (about a second) and gives up with an error if Tesseract hasn't started after 30 s.
+- **Tesseract reader** (Windows): the page prepares the crops (about 12 ms per echo) and hands them to a pool of 3 tesseract.js workers, so the slow part (reading) never blocks the UI. The page starts those workers itself: started from inside another web worker, they never loaded on Windows (WebView2). It starts on the first read (about a second) and gives up with an error if Tesseract hasn't started after 30 s.
 - **Tauri main thread** handles IPC only and never blocks on capture or OCR.
 - **Webview (TS)**: session logic. The TS queue keeps clicking (auto) separate from reading.
 

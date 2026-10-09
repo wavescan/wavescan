@@ -1,15 +1,16 @@
 import { cropRegions, getAppInfo, readRegions } from "@/ipc/commands";
 import type { RegionRead, RegionText } from "@/ipc/types";
 import { createRegionReader, readEngineFor, readEngineLabel } from "./regionReader";
-import { createTesseractClient } from "./tesseractClient";
+import { createBundledTesseract } from "./tesseract";
 
 // The app's echo-text reader: the engine for this OS (`regionReader.ts`) wired to the real
-// Rust commands and the Tesseract web worker. Views pass `readEchoRegions` wherever a
+// Rust commands and the bundled Tesseract. Views pass `readEchoRegions` wherever a
 // `readRegions` function is expected.
 
-const tesseract = createTesseractClient(
-  () => new Worker(new URL("./tesseract.worker.ts", import.meta.url), { type: "module" }),
-);
+// Everything comes from the app itself. The URL is absolute because tesseract.js's workers
+// fetch the core and model from inside the worker, where "/tesseract" would resolve
+// against the worker script instead.
+const tesseract = createBundledTesseract(new URL("/tesseract", location.href).href);
 
 let engine: Promise<{ read: ReturnType<typeof createRegionReader>; label: string }> | null = null;
 
