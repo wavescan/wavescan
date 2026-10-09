@@ -44,7 +44,8 @@ export function findEchoFixtures(): EchoFixture[] {
 
 /**
  * Runs one fixture's OCR output through extraction and export, compares it with the golden,
- * and fails on a silent misread. Flagged and missing fields only count towards accuracy.
+ * and fails on a silent misread, or on a substat-count flag when every substat is right.
+ * Flagged and missing fields only count towards accuracy.
  * Prints the OCR text of every region when anything isn't correct.
  */
 export function checkEcho(fixture: EchoFixture, regions: RegionText[], samples: PanelSamples, results: FieldResult[]) {
@@ -60,6 +61,19 @@ export function checkEcho(fixture: EchoFixture, regions: RegionText[], samples: 
   }
   const wrong = fields.filter((r) => r.outcome === "wrong");
   expect(wrong, `silent misreads. OCR text:\n${JSON.stringify(ocrText, null, 2)}`).toEqual([]);
+
+  // Every substat right, yet the count flagged: the user is asked to check a correct echo
+  // (an untuned slot on a +5 echo did this, spearback-plus5).
+  const substatsRight =
+    echo !== null &&
+    echo.substats.length === fixture.golden.substats.length &&
+    fields.filter((r) => r.field.startsWith("substats[")).every((r) => r.outcome === "correct");
+  if (substatsRight) {
+    expect(
+      echo.lowConfidence ?? [],
+      `substats flagged although every substat is right. OCR text:\n${JSON.stringify(ocrText, null, 2)}`,
+    ).not.toContain("substats");
+  }
 }
 
 /** The accuracy line printed at the end of a replay. */

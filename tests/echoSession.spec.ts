@@ -3,7 +3,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { readFileSync } from "node:fs";
 import { loadBundledScannerData } from "@/data/scannerData";
-import { extractEcho, parseLevel, substatRowTexts } from "@/session/echoExtract";
+import { echoSkillRow, extractEcho, parseLevel, substatRowTexts } from "@/session/echoExtract";
 import { createEchoSession, type EchoCandidate } from "@/session/echoSession";
 import { buildScan, expectedSubstatCount } from "@/session/exportScan";
 import type { OcrLine, RegionText } from "@/ipc/types";
@@ -151,6 +151,22 @@ describe("substatRowTexts", () => {
   });
 });
 
+describe("echoSkillRow", () => {
+  const rows = (texts: (string | null)[]) => (id: string) => texts[Number(id.slice(-1)) - 1] ?? null;
+
+  it("finds the Echo Skill heading, also when the crop cuts it", () => {
+    expect(echoSkillRow(rows(["ho Skill", "mmon a Spearback to perform 5", null, null, null]))).toBe(0);
+    expect(echoSkillRow(rows(["Crit. Rate 6.3%", "noise\nEcho Skill", "", "", ""]))).toBe(1);
+    expect(echoSkillRow(rows(["ho Skill —", null, null, null, null]))).toBe(0);
+    expect(echoSkillRow(rows(["ho Skill_ -", null, null, null, null]))).toBe(0);
+  });
+
+  it("doesn't take a Skill stat for the heading", () => {
+    expect(echoSkillRow(rows(["Resonance Skill DMG Bonus 8.6%", "Resonance Skill", "ATK 40", "", ""]))).toBeNull();
+    expect(echoSkillRow(rows([null, null, null, null, null]))).toBeNull();
+  });
+});
+
 /** Encodes a sample_regions payload of two solid images (panel + stats). */
 function samples(seq: number, fill: number): ArrayBuffer {
   const sizes = [
@@ -273,6 +289,49 @@ describe("buildScan", () => {
     const { scan } = buildScan([{ ...extractEcho(sabercatPanel()), id: "echo-1", index: 1 }], meta);
     expect(scan.echoes[0]?.lowConfidence).not.toContain("substats");
     expect([0, 4, 5, 15, 24, 25].map(expectedSubstatCount)).toEqual([0, 0, 1, 3, 4, 5]);
+  });
+
+  /** Spearback +5 with no substats tuned (2026-10-09 diagnostics report, Tesseract text). */
+  function spearbackPanel(): RegionText[] {
+    const rowTexts = [
+      "ho Skill",
+      "mmon a Spearback to perform 5",
+      "nsecutive attacks. The first 4",
+      "acks deal 21.53% Physical DMG,",
+      "d the last deals 36.92% Physical",
+    ];
+    return [
+      region("name", [line("Spearback wt BS", 0)]),
+      region("level", [line("+5 3", 0)]),
+      region("mainStat", [line("HP 6.7%", 0)]),
+      region("secondaryStat", [line("ATK 21", 0)]),
+      region("substatLabels", [line("ho Skill", 0), line("mmon a Spearback to perfol", 34)]),
+      region("substatValues", [line("rm 5", 34), line("a I", 68)]),
+      region("substatBlock", rowTexts.slice(0, 4).map((t, i) => line(t, i * 34))),
+      ...rowTexts.map((t, i) => region(`substatRow${i + 1}`, [line(t, 0)])),
+    ];
+  }
+
+  it("doesn't flag an echo whose unlocked slot isn't tuned yet", () => {
+    const { scan } = buildScan([{ ...extractEcho(spearbackPanel()), id: "echo-1", index: 1 }], meta);
+    const echo = scan.echoes[0]!;
+    expect(echo).toMatchObject({ echo: "Spearback", level: 5, stat: "HP", substats: [] });
+    expect(echo.lowConfidence ?? []).not.toContain("substats");
+  });
+
+  it("flags missing substats when the Echo Skill heading isn't right after them", () => {
+    // +10 with one substat read, but the heading is two rows down: a row was lost.
+    const panel = spearbackPanel().map((r) => {
+      if (r.id === "level") return { ...r, lines: [line("+10", 0)] };
+      if (r.id === "substatRow1") return { ...r, lines: [line("Crit. Rate 6.3%", 0)] };
+      if (r.id === "substatRow2") return { ...r, lines: [line("ATK", 0)] };
+      if (r.id === "substatRow3") return { ...r, lines: [line("ho Skill", 0)] };
+      return r;
+    });
+    const extracted = extractEcho(panel);
+    expect(extracted.echoSkillRow).toBe(2);
+    const { scan } = buildScan([{ ...extracted, id: "echo-1", index: 1 }], meta);
+    expect(scan.echoes[0]?.lowConfidence).toContain("substats");
   });
 
   it("keeps a flat HP substat whose label Windows OCR dropped, flagged (scanner-core 0.1.2)", () => {

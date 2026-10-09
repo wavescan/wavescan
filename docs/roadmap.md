@@ -11,7 +11,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] Trait seams + fakes (`traits.rs`, `testing.rs`) and the `safety` module with tests
 - [ ] **Spike, Windows:** find the window, WGC capture of the live game (borderless + fullscreen) at ≥30 fps, WinRT OCR on an echo panel crop, `SendInput` click lands in the game (as administrator, [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md))
   - [x] Window finder, WGC capture, WinRT OCR, and the Diagnostics screen are implemented (milestone 3)
-  - [ ] Verified against the live game on Boot Camp (paste the Diagnostics report into the PR)
+  - [x] Verified against the live game on native Windows 10 (2026-10-09 report, build 02d28f2, in the PR): window found, 42 fps at 1920×1080 with 200% display scaling, captured area matches the window. WinRT read the echo panel, but its thin echo-name test region (519×38) came back empty. Only Diagnostics uses that region; scans read with Tesseract
   - [x] `SendInput` driver + Diagnostics click test implemented (ADR 0017)
   - [x] Click test verified against the live game on Boot Camp as administrator (2026-10-07 report, build 5cecaaf). Without administrator isn't supported for auto mode (ADR 0023)
 - [ ] **Spike, macOS (Apple Silicon):** SCK window capture, Vision OCR, `CGEventPost` click lands in the game.
@@ -55,9 +55,12 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - [x] 16:9 grid measurements (1920×1080)
 - [ ] Fixture tests ≥ 99% field accuracy at every captured resolution, on both OCR engines
   - [x] Masked fixtures + goldens committed, replayed through the real OCR on CI's Windows and macOS runners (`npm run test:fixtures`, docs/fixtures.md)
-  - [x] Windows reads echoes with Tesseract (ADR 0027): 100% of 272 fixture fields; still to check on live frames saved with "Save debug frames"
+  - [x] Windows reads echoes with Tesseract (ADR 0027): 100% of 278 fixture fields (28 fixtures). Live check on Windows, 2026-10-09: every echo right in the scans below
 
 **Exit:** a full auto scan + a watch scan on real accounts on Windows and Mac, spot-checking 50 echoes.
+
+- [x] Windows, 2026-10-09: auto scan of a whole bag (30 echoes) and a watch scan of 37 echoes (all +25, 5 substats), every field correct. The one false flag found (an untuned substat slot on a +5 echo marked "please check") is fixed, with the `spearback-plus5` fixture
+- [ ] macOS: waiting for a community tester
 
 ## Phase 4: Handoff + web import (optimizer repo)
 
@@ -74,6 +77,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 ## Phase 7: Closed beta → **v0.1 public**
 
 - [ ] Discord beta across resolutions (16:9 and 16:10), GPUs, Windows 10/11, macOS 13–15
+  - Cover what the Phase 2 check on Windows didn't: a bag big enough to scroll many times in auto mode (end of list and scroll recovery, #43 and #44), low-level echoes with some substats tuned, and echoes with more than one possible set
 - [ ] Fix the top misreads (each one gets a fixture), then release
 
 ## Later

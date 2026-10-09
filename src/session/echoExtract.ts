@@ -40,6 +40,11 @@ export interface ExtractedEcho {
   raw: { name: string; level: string; mainStat: string; secondaryStat: string };
   /** Set-icon match score per candidate set, when the icon had to be matched. */
   setScores: Record<string, number> | null;
+  /**
+   * Which substat row crop (0–4) shows the "Echo Skill" heading, or null if none does.
+   * Only tuned substats are shown, so the heading marks where the list really ends.
+   */
+  echoSkillRow: number | null;
 }
 
 /** The panel's wording for a stat key ("HP" → "HP", "Electro" → "Electro DMG Bonus"). */
@@ -78,6 +83,25 @@ export function substatRowTexts(
 }
 
 /**
+ * The "Echo Skill" heading under the stats, also when the crop cuts it to "ho Skill" or
+ * OCR reads the rule line after it as punctuation ("ho Skill —").
+ */
+const ECHO_SKILL_HEADING = /^\W*\S{0,4}\s*skill[\W_]*$/i;
+
+/**
+ * Which of the five substat row crops shows the "Echo Skill" heading, or null when none
+ * does (or they weren't read). Only tuned substats are shown, so on an echo levelled past
+ * an unlock without tuning, the heading sits right after the last substat. The heading is
+ * a line of its own; a stat such as "Resonance Skill DMG Bonus 8.6%" doesn't match.
+ */
+export function echoSkillRow(rowText: (id: EchoRegionId) => string | null): number | null {
+  const index = SUBSTAT_ROW_IDS.findIndex((id) =>
+    (rowText(id) ?? "").split("\n").some((l) => ECHO_SKILL_HEADING.test(l.trim())),
+  );
+  return index === -1 ? null : index;
+}
+
+/**
  * Turns the OCR results for one echo panel into an echo, using scanner-core for every
  * game-specific decision (name matching, cost, stat parsing, substat validation).
  *
@@ -104,6 +128,8 @@ export function extractEcho(results: RegionText[], samples: PanelSamples = {}): 
   const level = parseLevel(levelText);
   const mainStatText = text("mainStat");
   const secondaryStatText = text("secondaryStat");
+
+  const rowText = (id: EchoRegionId) => (byId.has(id) ? text(id, "\n") : null);
 
   const identity = resolveEchoByNameAndCost(nameText, secondaryStatText);
   const sets = identity.candidateSets;
@@ -161,5 +187,6 @@ export function extractEcho(results: RegionText[], samples: PanelSamples = {}): 
     signature: `${computeSignature(slot)}|L${level ?? "?"}|R${rank.rank ?? "?"}`,
     raw: { name: nameText, level: levelText, mainStat: mainStatText, secondaryStat: secondaryStatText },
     setScores: iconMatch?.scores ?? null,
+    echoSkillRow: echoSkillRow(rowText),
   };
 }
