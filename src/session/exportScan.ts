@@ -52,6 +52,12 @@ export function expectedSubstatCount(level: number): number {
   return Math.min(5, Math.floor(level / 5));
 }
 
+/** True when `count` substats is right for the level, or ends where the Echo Skill heading shows. */
+function substatCountFits(count: number, level: number, echoSkillRow: number | null): boolean {
+  const expected = expectedSubstatCount(level);
+  return count === expected || (count < expected && echoSkillRow === count);
+}
+
 function substatsOf(mapped: MappedEcho): { type: string; value: number; slot: number }[] {
   const out: { type: string; value: number; slot: number }[] = [];
   for (let i = 1; i <= 5; i++) {
@@ -72,7 +78,9 @@ function substatsOf(mapped: MappedEcho): { type: string; value: number; slot: nu
  *
  * `substats` is flagged when the count doesn't match the level. Otherwise a row the OCR
  * missed would silently import as an echo with fewer substats (Windows OCR drops a lone
- * "HP" label, found by the fixture replay on 2026-10-07).
+ * "HP" label, found by the fixture replay on 2026-10-07). Fewer is fine only when the
+ * "Echo Skill" heading is the very next row: the level unlocked a slot that wasn't tuned,
+ * so the game shows nothing there (Spearback +5 with no substats, 2026-10-09 report).
  */
 export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEcho | null {
   const [mapped] = mapParsedEchoes([candidate.slot], false);
@@ -88,7 +96,9 @@ export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEch
   if (c.set === "low" || !mapped.echoSet) low.add("echoSet");
   if (c.level === "low" || candidate.level === null) low.add("level");
   if (c.rank === "low" || candidate.rank === null) low.add("rank");
-  if (candidate.level !== null && substats.length !== expectedSubstatCount(candidate.level)) low.add("substats");
+  if (candidate.level !== null && !substatCountFits(substats.length, candidate.level, candidate.echoSkillRow)) {
+    low.add("substats");
+  }
   substats.forEach((s, i) => {
     if (c.substats[s.slot] === "low") low.add(`substats.${i}.value`);
   });
