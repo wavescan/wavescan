@@ -202,6 +202,7 @@ describe("diagnostics echo read", () => {
 
   function fakeGame(mainStat: string[]) {
     const reads: number[] = [];
+    let clock = 1000;
     const deps = {
       sampleRegions: async () => pinned(42),
       readRegions: async (seq: number, regions: RegionRead[]): Promise<RegionText[]> => {
@@ -212,8 +213,11 @@ describe("diagnostics echo read", () => {
           mainStat,
           secondaryStat: ["HP 114"],
         };
+        clock += 250;
         return regions.map((r) => ({ id: r.id, lines: lines(...(text[r.id] ?? [])), width: 400, height: 50, elapsed_ms: 12.6 }));
       },
+      engineName: async () => "Tesseract",
+      now: () => clock,
     };
     return { deps, reads };
   }
@@ -224,11 +228,16 @@ describe("diagnostics echo read", () => {
     expect(game.reads).toEqual([42]);
     expect(read.regions.mainStat).toEqual(["HP 2.8%"]);
     expect(read.ms).toBe(13);
+    expect(read.totalMs).toBe(250);
+    expect(read.engine).toBe("Tesseract");
     expect(read.echo).toMatchObject({ echo: "WhiffWhaff", rank: 2, level: 0, stat: "HP" });
     expect(describeEchoRead(read)).toBe("WhiffWhaff +0, 2★, main stat HP, set RejuvenatingGlow");
 
     const input = { ...healthy(), echoRead: { ok: true as const, value: read } };
     expect(statusOf(input, "echo-read")).toBe("pass");
+    expect(buildChecks(input).find((c) => c.id === "echo-read")?.detail).toBe(
+      "WhiffWhaff +0, 2★, main stat HP, set RejuvenatingGlow (Tesseract, 250 ms)",
+    );
     expect(buildReport(input).echoRead).toEqual(read);
   });
 

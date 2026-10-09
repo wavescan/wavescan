@@ -178,6 +178,20 @@ impl Frame {
         (out_w, out_h, out)
     }
 
+    /// A full-size copy converted to RGBA, the order the webview's image APIs use.
+    ///
+    /// Never call this on an unmasked frame that leaves the app; crop with
+    /// [`crate::safety::crop_outside_user_id`] first.
+    #[must_use]
+    pub fn to_rgba(&self) -> Vec<u8> {
+        let mut out = self.pixels.clone();
+        let (pixels, _) = out.as_chunks_mut::<BYTES_PER_PIXEL>();
+        for pixel in pixels {
+            pixel.swap(0, 2);
+        }
+        out
+    }
+
     /// Average BGRA colour of the source block `[x0, x1) × [y0, y1)`.
     fn average(&self, x0: u32, x1: u32, y0: u32, y1: u32) -> [u8; 4] {
         let mut sums = [0u64; 4];
@@ -316,6 +330,15 @@ mod tests {
         assert_eq!((w, h), (2, 2), "max_width larger than the frame keeps size");
         let (_, _, one) = frame.downscaled_rgba(1);
         assert_eq!(&one, &[100, 100, 100, 255], "average of the two halves");
+    }
+
+    #[test]
+    fn to_rgba_keeps_size_and_swaps_blue_and_red() {
+        let frame = Frame::solid(3, 2, 0, [10, 20, 30, 255]).unwrap();
+        let rgba = frame.to_rgba();
+        assert_eq!(rgba.len(), 3 * 2 * 4);
+        let (pixels, _) = rgba.as_chunks::<4>();
+        assert!(pixels.iter().all(|p| p == &[30, 20, 10, 255]));
     }
 
     #[test]

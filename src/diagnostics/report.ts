@@ -168,7 +168,9 @@ export function buildChecks(input: DiagnosticsInput): Check[] {
       id: "echo-read",
       label: "Read the selected echo",
       status: !read.ok ? "fail" : read.value.echo && unsure.length === 0 ? "pass" : "warn",
-      detail: read.ok ? describeEchoRead(read.value) : read.error,
+      detail: read.ok
+        ? `${describeEchoRead(read.value)} (${read.value.engine}, ${read.value.totalMs} ms)`
+        : read.error,
     });
   }
 

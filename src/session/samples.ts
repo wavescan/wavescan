@@ -20,24 +20,39 @@ export interface Samples {
  * Throws on truncated or inconsistent data.
  */
 export function decodeSamples(buffer: ArrayBuffer): Samples {
-  const view = new DataView(buffer);
   if (buffer.byteLength < 12) throw new Error("samples payload is too short");
-  const seq = Number(view.getBigUint64(0, true));
-  const count = view.getUint32(8, true);
+  const seq = Number(new DataView(buffer).getBigUint64(0, true));
+  return { seq, images: decodeImages(buffer, 8, "samples") };
+}
+
+/**
+ * Decodes `crop_regions` output (full-size crops for the Tesseract reader, see
+ * `src-tauri/src/regions.rs`): `[count u32]` then per region `[width u32][height u32][RGBA…]`.
+ * Throws on truncated or inconsistent data.
+ */
+export function decodeCrops(buffer: ArrayBuffer): Sample[] {
+  return decodeImages(buffer, 0, "crops");
+}
+
+/** `[count u32]` at `start`, then that many `[width u32][height u32][RGBA…]` images to the end. */
+function decodeImages(buffer: ArrayBuffer, start: number, what: string): Sample[] {
+  const view = new DataView(buffer);
+  if (buffer.byteLength < start + 4) throw new Error(`${what} payload is too short`);
+  const count = view.getUint32(start, true);
   const images: Sample[] = [];
-  let offset = 12;
+  let offset = start + 4;
   for (let i = 0; i < count; i++) {
-    if (offset + 8 > buffer.byteLength) throw new Error("samples payload is truncated");
+    if (offset + 8 > buffer.byteLength) throw new Error(`${what} payload is truncated`);
     const width = view.getUint32(offset, true);
     const height = view.getUint32(offset + 4, true);
     const length = width * height * 4;
     offset += 8;
-    if (offset + length > buffer.byteLength) throw new Error("samples payload is truncated");
+    if (offset + length > buffer.byteLength) throw new Error(`${what} payload is truncated`);
     images.push({ width, height, rgba: new Uint8ClampedArray(buffer, offset, length) });
     offset += length;
   }
-  if (offset !== buffer.byteLength) throw new Error("samples payload has trailing bytes");
-  return { seq, images };
+  if (offset !== buffer.byteLength) throw new Error(`${what} payload has trailing bytes`);
+  return images;
 }
 
 /** Converts Wavescan OCR lines (pixel bounds) to scanner-core's `{ text, y0, y1 }` lines. */

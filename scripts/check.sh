@@ -14,6 +14,9 @@ npm run lint
 step "unit tests (vitest)"
 npm test
 
+step "fixture replay through Tesseract"
+npm run test:fixtures:tesseract
+
 step "frontend build"
 npx vite build
 

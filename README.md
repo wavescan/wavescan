@@ -89,7 +89,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 **What it does**
 
 - It takes pictures of **only the Wuthering Waves window**. Never your whole screen or other apps.
-- It reads text from those pictures **on your computer**, using the reader built into Windows or macOS.
+- It reads text from those pictures **on your computer**. On Windows it uses Tesseract, a free text reader that comes inside the app, because it reads echoes far more accurately than the one built into Windows. On macOS it uses the reader built into macOS. Nothing is downloaded or uploaded for this.
 - It works out each echo's set by comparing the small set icon with copies of the set icons that come with the app. Nothing is downloaded for this.
 - In auto mode only, it sends mouse clicks and wheel scrolls to the game window. While auto mode is on, it also listens for **F8** so you can stop it; F8 goes back to normal as soon as auto mode stops.
 

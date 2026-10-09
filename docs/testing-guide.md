@@ -81,7 +81,7 @@ Click **Copy report** and paste it in the Discord testing thread, along with the
 - your game resolution and display mode (fullscreen/windowed)
 - anything that looked wrong in the preview
 
-**What's in the report:** the app version, your window size and scale, whether Wavescan runs as administrator (Windows), capture speed, the text Wavescan read from the echo panel (echo name and stats) and what it made of it, and the click test result. **What's not in it:** pictures, your User ID, or the names of any other apps you have open.
+**What's in the report:** the app version, your window size and scale, whether Wavescan runs as administrator (Windows), capture speed, which text reader read the echo and how long it took, the text Wavescan read from the echo panel (echo name and stats) and what it made of it, and the click test result. **What's not in it:** pictures, your User ID, or the names of any other apps you have open.
 
 ## Removing Wavescan
 

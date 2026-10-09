@@ -12,11 +12,11 @@ import {
   getCaptureStatus,
   getWindowCandidates,
   ocrRegion,
-  readRegions,
   sampleRegions,
   startCapture,
   stopCapture,
 } from "@/ipc/commands";
+import { readEchoRegions, readEngineName } from "@/ocr/appReader";
 import type { AppInfo } from "@/ipc/types";
 import type { GameDataInfo } from "@/data/scannerData";
 import { drawOverlay, overlayBoxes } from "@/diagnostics/overlay";
@@ -153,7 +153,10 @@ async function run() {
         if (frame) {
           step.value = "Reading the selected echo like a scan…";
           input.echoRead = await attempt(() =>
-            readEchoForDiagnostics({ sampleRegions, readRegions }, frame),
+            readEchoForDiagnostics(
+              { sampleRegions, readRegions: readEchoRegions, engineName: readEngineName, now: () => performance.now() },
+              frame,
+            ),
           );
         }
       } else {

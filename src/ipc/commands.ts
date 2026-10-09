@@ -91,6 +91,15 @@ export function readRegions(seq: number, regions: RegionRead[]): Promise<RegionT
   return invoke<RegionText[]>("read_regions", { seq, regions });
 }
 
+/**
+ * Full-size RGBA crops of `regions` from the frame pinned by `sampleRegions` (`seq`), for the
+ * Tesseract reader on Windows (ADR 0027). Same User ID guard as `readRegions`. Decode with
+ * `decodeCrops`.
+ */
+export function cropRegions(seq: number, regions: FracRect[]): Promise<ArrayBuffer> {
+  return invoke<ArrayBuffer>("crop_regions", { seq, regions });
+}
+
 /** Turns whatever a failed command rejected with into a readable message. */
 export function errorMessage(error: unknown): string {
   if (isIpcError(error)) return error.message;

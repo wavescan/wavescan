@@ -25,7 +25,7 @@ fixtures/
 
    This is `src-tauri/examples/fixtures.rs`, which calls the app's own `safety::mask_user_id` ([ADR 0013](adr/0013-user-id-masking.md)). It needs Rust, so on a Mac without it run it in the Docker shell (`docker compose run --rm shell`). The output is an RGB PNG with no metadata. Xbox Game Bar screenshots carry `Microsoft.GameDVR.*` text (including an author field), and this drops it.
 3. Write `<name>.json` by reading the image (see [Goldens](#goldens)).
-4. Run `npm run test:fixtures` on Windows or macOS, or push and let CI run it.
+4. Run `npm run test:fixtures:tesseract` (any OS, or `npm run check`), or `npm run test:fixtures` on macOS for Vision too, or push and let CI run it.
 
 ## Goldens
 
@@ -51,11 +51,14 @@ One JSON per echo screenshot, using the scan file's keys ([`schema/scan.v1.json`
 
 ## Fixture replay (`npm run test:fixtures`)
 
-`tests/fixtureReplay.fixtures.ts` runs every screenshot that has a golden through the app's real pipeline:
+Every screenshot that has a golden goes through the app's real pipeline, once per engine that reads echoes:
 
-```
-echoReadRegions (TS) → regions::read + this OS's OCR (Rust tool) → extractEcho → toScanEcho → compare with golden
-```
+| Replay | Engine (where the app uses it) | Pipeline | Runs on |
+|---|---|---|---|
+| `tests/tesseractReplay.fixtures.ts` | Tesseract (Windows, [ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)) | `echoReadRegions` → full-size crops → `src/ocr/tesseract.ts` (the app's prep, settings and pool, with the bundled model) → `extractEcho` → `toScanEcho` → compare | Any OS, no Rust needed: `npm run test:fixtures:tesseract`. Part of `npm run check` |
+| `tests/fixtureReplay.fixtures.ts` | Vision (macOS) | `echoReadRegions` → `regions::read` + Vision (Rust tool) → `extractEcho` → `toScanEcho` → compare | macOS only |
+
+The set icon and main-stat label samples come from the Rust tool in the Vision replay, and from `tests/support/pngSample.ts` (the same crop-and-average) in the Tesseract one.
 
 Each field gets one outcome (`tests/support/fixtureCompare.ts`):
 
@@ -71,7 +74,9 @@ Substats are matched by type and value, not position, so one dropped row doesn't
 
 `tests/gridReplay.fixtures.ts` does the same for the grid (auto mode): it samples `GRID_STRIP` through the Rust tool and checks the fully visible rows and scroll shifts in `screens/echoes-grid/grid.json`. It needs no OCR, so it also runs in the Docker container (`npx vitest run --config vitest.fixtures.config.ts tests/gridReplay.fixtures.ts` in `docker compose run --rm shell`).
 
-The fixture replay runs on CI's Windows and macOS runners after `cargo nextest`, so every change is checked against both OCR engines. It isn't part of `npm test`, because Linux (the Docker check) has no OS OCR. The Rust tool refuses any screenshot whose User ID area isn't masked, so an unmasked capture fails CI.
+`npm run test:fixtures` runs every replay this OS supports. CI runs it on the Windows and macOS runners after `cargo nextest`, so every change is checked against both engines. It isn't part of `npm test` because it takes a minute or so. Both replays refuse a screenshot whose User ID area isn't masked, so an unmasked capture fails `npm run check` and CI.
+
+Change a Tesseract setting (`src/ocr/tesseract.ts`) only with a replay run before and after. Measured 2026-10-08: 100% of 272 fields on the 27 fixtures, about 150 ms per crop on an M-series Mac.
 
 ## Rules
 

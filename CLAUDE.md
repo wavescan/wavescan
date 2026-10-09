@@ -18,7 +18,8 @@ npm run check              # Docker: every CI check in a Linux container (docs/d
 npm ci                     # install JS deps
 npm run tauri dev          # run the app (Vite + Rust, hot reload)
 npm run test               # Vitest (TS: session, extractors, auto navigator)
-npm run test:fixtures      # replay fixtures/ through this OS's OCR (Windows/macOS only, docs/fixtures.md)
+npm run test:fixtures      # replay fixtures/ through Tesseract (any OS) and Vision (macOS), docs/fixtures.md
+npm run test:fixtures:tesseract   # just the Tesseract replay (no Rust needed; part of npm run check)
 npm run fixtures:mask -- <in.png> <out.png>   # mask the User ID before committing a capture
 npm run lint               # eslint + vue-tsc -b
 npm run tauri build        # release bundle for the current OS
@@ -49,6 +50,8 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src/data/` | Bundled `scanner-data.json` + loader/validator (ADR 0020). Refresh with `npm run data:update`; never hand-edit |
 | `src/diagnostics/` | Diagnostics checks + report builder (no images; ADR 0016) |
 | `src/ipc/` | Typed wrappers for every Rust command + mirrored types |
+| `src/ocr/` | Which engine reads echo text: Tesseract on Windows (`tesseract.ts` holds every setting, runs in `tesseract.worker.ts`), Vision on macOS ([ADR 0027](docs/adr/0027-tesseract-reads-echo-text-on-windows.md)) |
+| `public/tesseract/` | Bundled Tesseract model (hash checked in `tests/tesseract.spec.ts`); the worker script and core are served from node_modules by `vite.config.ts` |
 | `src/session/` | Watch-mode echo session: `echoRegions` (regions + `LEVEL_ROW`), `echoExtract` (scanner-core parsing), `echoSession` (stability loop, dedupe), `exportScan` (scan v1 JSON) |
 | `src/auto/` | Auto-mode navigator state machine, grid walking |
 | `src/views/` | Vue UI |

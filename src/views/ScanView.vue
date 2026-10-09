@@ -4,11 +4,11 @@ import { getScannerEcho } from "@wutheringtools/scanner-core";
 import {
   errorMessage,
   getCaptureStatus,
-  readRegions,
   sampleRegions,
   startCapture,
   stopCapture,
 } from "@/ipc/commands";
+import { readEchoRegions } from "@/ocr/appReader";
 import type { AppInfo } from "@/ipc/types";
 import type { ExtractedEcho } from "@/session/echoExtract";
 import { createEchoSession, type EchoCandidate, type EchoSession, type SessionStats } from "@/session/echoSession";
@@ -51,7 +51,7 @@ async function start() {
     if (frame.width === 0) throw new Error("No frames from the game yet. Is it minimised?");
     session.value = createEchoSession({
       sampleRegions,
-      readRegions,
+      readRegions: readEchoRegions,
       frameSize: () => frame,
       onCandidate: (c) => {
         scannedWith.value = "watch";

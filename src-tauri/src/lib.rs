@@ -61,6 +61,7 @@ pub fn run() -> Result<(), Error> {
             commands::auto_scroll,
             commands::sample_regions,
             commands::read_regions,
+            commands::crop_regions,
         ])
         .run(tauri::generate_context!())
         .map_err(|source| Error::Startup(source.to_string()))
