@@ -40,6 +40,23 @@ describe("navigator", () => {
     expect(result.unchanged).toBe(3); // the empty slots after the last echo
   });
 
+  // The game draws the selected card slightly larger, so a click can move its row's edge by
+  // a sample pixel. That mustn't count as a scroll, least of all with only a row or two to
+  // average over.
+  it("ends a short list normally when the selection nudges a row edge", async () => {
+    for (const selectedDrop of [1, -1, 2, -2]) {
+      const { result, ids } = await scan({ echoes: fakeEchoes(9, 0), selectedDrop });
+      expect(result.reason, `selectedDrop ${selectedDrop}`).toBe("end-of-list");
+      expect(ids).toEqual(range(9));
+    }
+  });
+
+  it("keeps track of a long list when the selection nudges a row edge", async () => {
+    const { result, ids } = await scan({ echoes: fakeEchoes(50), selectedDrop: 2 });
+    expect(result.reason).toBe("end-of-list");
+    expect(ids).toEqual(range(50));
+  });
+
   it("reads a short list that fits on screen without scrolling", async () => {
     const { result, ids } = await scan({ echoes: fakeEchoes(14) });
     expect(result.reason).toBe("end-of-list");
@@ -140,6 +157,8 @@ describe("navigator", () => {
   it("stops instead of guessing when one notch moves more than half a row", async () => {
     const { result, ids } = await scan({ echoes: fakeEchoes(60), notchRows: 0.6 });
     expect(result.reason).toBe("lost-track");
+    // The measured move goes in the message, for bug reports.
+    expect(result.detail).toMatch(/Measured -?\d\.\d{3} of a row from \d+ → \d+ row edges/);
     // Everything read before that is real and in order.
     expect(ids).toEqual(range(ids.length));
   });

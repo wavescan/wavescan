@@ -496,7 +496,13 @@ export function createNavigator<Echo extends { level: number | null }>(
             return { ...progress, reason: "end-of-list", detail: "Reached the end of the echo list." };
           }
           if (move < 0 || move > MAX_MEASURABLE_ROWS * layout.rowPitch) {
-            throw stopWith("lost-track", "The echo grid moved further than expected. Stopped to avoid skipping echoes.");
+            // The numbers are for bug reports: which way it seemed to move, and from how many row edges.
+            const rowsMoved = (move / layout.rowPitch).toFixed(3);
+            throw stopWith(
+              "lost-track",
+              "The echo grid moved further than expected. Stopped to avoid skipping echoes. " +
+                `(Measured ${rowsMoved} of a row from ${current.edges.length} → ${next.edges.length} row edges.)`,
+            );
           }
           stalls = 0;
           perTick = Math.max(perTick, move / ticks);
