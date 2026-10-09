@@ -1,6 +1,13 @@
 /// <reference lib="webworker" />
 import type { RegionText } from "@/ipc/types";
-import { createTesseractReader, startTesseractWorkers, type CropRead, type TesseractReader } from "./tesseract";
+import {
+  LANGUAGE,
+  createTesseractReader,
+  describeAssets,
+  startTesseractWorkers,
+  type CropRead,
+  type TesseractReader,
+} from "./tesseract";
 
 // A web worker that hosts the Tesseract reader (ADR 0027), so preparing crops (enlarging
 // them 3×) and talking to Tesseract never block the UI. tesseract.js starts its own
@@ -35,9 +42,16 @@ function getReader(): Promise<TesseractReader> {
     workerBlobURL: false,
   })
     .then((workers) => createTesseractReader(workers, { sparseRetryIds: ["name"] }))
-    .catch((error: unknown) => {
+    .catch(async (error: unknown) => {
       reader = null;
-      throw error;
+      // Say which bundled file this worker can (or can't) fetch, for the diagnostics report.
+      const message = error instanceof Error ? error.message : String(error);
+      const files = await describeAssets(
+        ["worker.min.js", "tesseract-core-simd-lstm.js", "tesseract-core-simd-lstm.wasm", `${LANGUAGE}.traineddata.gz`].map(
+          (name) => `${assets}/${name}`,
+        ),
+      );
+      throw new Error(`${message} (${files})`);
     });
   return reader;
 }

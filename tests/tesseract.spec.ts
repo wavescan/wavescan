@@ -9,7 +9,9 @@ import {
   PSM_SPARSE_TEXT,
   SCALE,
   createTesseractReader,
+  describeAssets,
   prepareCrop,
+  startFailure,
   type Crop,
   type TesseractWorker,
 } from "@/ocr/tesseract";
@@ -276,6 +278,26 @@ describe("bundled Tesseract model", () => {
     const model = gunzipSync(readFileSync("public/tesseract/eng.traineddata.gz"));
     expect(createHash("sha256").update(model).digest("hex")).toBe(
       "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+    );
+  });
+});
+
+describe("Tesseract start failures", () => {
+  it("names a worker script that couldn't load instead of saying undefined", () => {
+    // tesseract.js rejects with the error event's message, which a failed script load lacks.
+    expect(startFailure(undefined).message).toBe("a Tesseract worker couldn't load its script");
+    expect(startFailure("no model").message).toBe("no model");
+    const error = new Error("timeout");
+    expect(startFailure(error)).toBe(error);
+  });
+
+  it("describes what each bundled file fetch returned", async () => {
+    const fakeFetch = ((url: string) =>
+      url.endsWith(".js")
+        ? Promise.resolve(new Response("", { status: 200, headers: { "content-type": "text/html" } }))
+        : Promise.reject(new TypeError("Failed to fetch"))) as typeof fetch;
+    await expect(describeAssets(["http://tauri.localhost/tesseract/worker.min.js", "http://x/eng.traineddata.gz"], fakeFetch)).resolves.toBe(
+      "worker.min.js: 200 text/html; eng.traineddata.gz: Failed to fetch",
     );
   });
 });
