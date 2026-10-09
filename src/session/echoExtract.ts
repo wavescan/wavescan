@@ -82,8 +82,11 @@ export function substatRowTexts(
   });
 }
 
-/** The "Echo Skill" heading under the stats, also when the crop cuts it to "ho Skill". */
-const ECHO_SKILL_HEADING = /^\S{0,4}\s*skill$/i;
+/**
+ * The "Echo Skill" heading under the stats, also when the crop cuts it to "ho Skill" or
+ * OCR reads the rule line after it as punctuation ("ho Skill —").
+ */
+const ECHO_SKILL_HEADING = /^\W*\S{0,4}\s*skill[\W_]*$/i;
 
 /**
  * Which of the five substat row crops shows the "Echo Skill" heading, or null when none

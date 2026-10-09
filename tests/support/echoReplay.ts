@@ -69,7 +69,10 @@ export function checkEcho(fixture: EchoFixture, regions: RegionText[], samples: 
     echo.substats.length === fixture.golden.substats.length &&
     fields.filter((r) => r.field.startsWith("substats[")).every((r) => r.outcome === "correct");
   if (substatsRight) {
-    expect(echo.lowConfidence ?? [], "substats flagged although every substat is right").not.toContain("substats");
+    expect(
+      echo.lowConfidence ?? [],
+      `substats flagged although every substat is right. OCR text:\n${JSON.stringify(ocrText, null, 2)}`,
+    ).not.toContain("substats");
   }
 }
 

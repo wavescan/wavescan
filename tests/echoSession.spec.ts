@@ -157,6 +157,8 @@ describe("echoSkillRow", () => {
   it("finds the Echo Skill heading, also when the crop cuts it", () => {
     expect(echoSkillRow(rows(["ho Skill", "mmon a Spearback to perform 5", null, null, null]))).toBe(0);
     expect(echoSkillRow(rows(["Crit. Rate 6.3%", "noise\nEcho Skill", "", "", ""]))).toBe(1);
+    expect(echoSkillRow(rows(["ho Skill —", null, null, null, null]))).toBe(0);
+    expect(echoSkillRow(rows(["ho Skill_ -", null, null, null, null]))).toBe(0);
   });
 
   it("doesn't take a Skill stat for the heading", () => {
