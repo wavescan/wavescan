@@ -243,7 +243,7 @@ onBeforeUnmount(stop);
           </template>
           <template v-if="result.unchanged">
             · {{ result.unchanged }} {{ result.unchanged === 1 ? "click" : "clicks" }} didn't change the echo shown
-            (empty slots at the end of the list, or a click that didn't land)
+            (empty slots at the end of the list, an exact copy of the echo before it, or a click that didn't land)
           </template>
         </div>
       </div>

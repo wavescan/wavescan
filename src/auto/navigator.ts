@@ -2,6 +2,7 @@ import {
   PANEL_FINGERPRINT_GRID,
   STATS_FINGERPRINT_GRID,
   computeFingerprint,
+  countChangedCells,
   createStableFrameDetector,
   type FrameFingerprints,
   type FrameSize,
@@ -80,8 +81,15 @@ export interface NavigatorOptions {
   minLevel: number;
 }
 
+/** What the navigator needs to know about an echo it read. */
+export interface NavigatorEcho {
+  level: number | null;
+  /** Equal for two reads of the same echo (name, set, stats, level: `ExtractedEcho.signature`). */
+  signature: string;
+}
+
 /** What the navigator needs from the outside world (real IPC in the app, a fake game in tests). */
-export interface NavigatorDeps<Echo extends { level: number | null }> {
+export interface NavigatorDeps<Echo extends NavigatorEcho> {
   /** Size of the captured game frame. */
   frameSize(): FrameSize;
   sampleRegions(regions: FracRect[], maxWidth: number): Promise<ArrayBuffer>;
@@ -152,9 +160,32 @@ export const MAX_READS_IN_FLIGHT = 2;
 /** Fingerprint sample width (STATS_FINGERPRINT_GRID is 64 cells wide), as in watch mode. */
 const PANEL_SAMPLE_WIDTH = 128;
 
+/**
+ * Grid for a fingerprint of the set icon sample (`setIconSearchRegion`). Two +0 echoes with
+ * the same name and stats in different sets differ only by that small icon (and "Owned"),
+ * too little for the panel fingerprints. On fixtures/raw/skipping-echoes-auto.mp4
+ * (1920×1080), cells changed by more than SET_ICON_CELL_THRESHOLD: 0 between frames of the
+ * same echo, 11-35 when the echo changed with its set, 29-31 on the three that were skipped.
+ * Big 3D models (Dreamless, Hecate) reach behind the icon and animate, so a changed icon
+ * only means "maybe another echo": the read decides (`startRead`'s `maybeRepeat`).
+ */
+const SET_ICON_GRID = { width: 16, height: 12 };
+const SET_ICON_CELL_THRESHOLD = 0.05;
+const SET_ICON_CHANGED_CELLS = 4;
+
 function asImageData(sample: Sample): ImageData {
   // computeFingerprint only reads data/width/height.
   return { data: sample.rgba, width: sample.width, height: sample.height, colorSpace: "srgb" } as ImageData;
+}
+
+/** Fingerprint of a set icon sample, or null when there isn't one. */
+function setIconFingerprint(sample: Sample | undefined): Float32Array | null {
+  return sample ? computeFingerprint(asImageData(sample), SET_ICON_GRID) : null;
+}
+
+/** Whether two set icon fingerprints show a different icon. False when either is missing. */
+function setIconChanged(a: Float32Array | null, b: Float32Array | null): boolean {
+  return a !== null && b !== null && countChangedCells(a, b, SET_ICON_CELL_THRESHOLD) >= SET_ICON_CHANGED_CELLS;
 }
 
 /** `x` wrapped into (-pitch/2, pitch/2]. */
@@ -202,7 +233,7 @@ function sameEdges(a: readonly number[], b: readonly number[]): boolean {
  * `stop()` from the UI to end it after the current action. Everything read before a stop is
  * kept: it's already been passed to `onEcho`.
  */
-export function createNavigator<Echo extends { level: number | null }>(
+export function createNavigator<Echo extends NavigatorEcho>(
   deps: NavigatorDeps<Echo>,
   options: NavigatorOptions,
 ) {
@@ -270,7 +301,7 @@ export function createNavigator<Echo extends { level: number | null }>(
       panel: computeFingerprint(asImageData(panel), PANEL_FINGERPRINT_GRID),
       stats: computeFingerprint(asImageData(stats), STATS_FINGERPRINT_GRID),
     };
-    return { seq: samples.seq, fingerprints, extras };
+    return { seq: samples.seq, fingerprints, setIcon: setIconFingerprint(extras.setIcon), extras };
   }
 
   /**
@@ -282,6 +313,18 @@ export function createNavigator<Echo extends { level: number | null }>(
    * user can go back to an echo already read.
    */
   const detector = createStableFrameDetector({ historySize: 0 });
+  /**
+   * The set icon of the echo last read (or primed). The detector only sees the panel and
+   * stats fingerprints, so a panel that settles on a "repeat" with a different set icon may
+   * be a different echo: the same one and stats in another set.
+   */
+  let readSetIcon: Float32Array | null = null;
+
+  /** Marks a settled panel as read, for the detector and the set icon check. */
+  function commitPanel(panel: { fingerprints: FrameFingerprints; setIcon: Float32Array | null }) {
+    detector.commitScan(panel.fingerprints);
+    readSetIcon = panel.setIcon;
+  }
   /**
    * True until the first click is done. The echo selected before the run starts is marked as
    * seen (`primePanel`), so a stale panel can't be read for the first card. If the first click
@@ -297,7 +340,7 @@ export function createNavigator<Echo extends { level: number | null }>(
     while (deps.now() - started <= PANEL_TIMEOUT_MS) {
       const panel = await samplePanel(frame);
       if (panel && detector.observe(panel.fingerprints) === "stable-novel") {
-        detector.commitScan(panel.fingerprints);
+        commitPanel(panel);
         return;
       }
       await deps.sleep(POLL_MS);
@@ -306,28 +349,34 @@ export function createNavigator<Echo extends { level: number | null }>(
 
   /**
    * Clicks one card and waits for the panel to settle on an echo it hasn't shown yet.
-   * Returns the frame to read, "unchanged" if the panel kept showing an echo already read
-   * (an empty slot, or the click didn't land), or "unsettled".
+   * Returns the frame to read (with `maybeRepeat` when only the set icon changed), "unchanged"
+   * if the panel kept showing an echo already read (an empty slot, the click didn't land, or
+   * an exact copy of the echo before it), or "unsettled".
    */
   async function clickAndWait(frame: FrameSize, target: FracPoint) {
     await act(() => deps.click(target));
     const first = firstClick;
     firstClick = false;
     const started = deps.now();
+    /** The set icon in the previous sample, so a changed icon is only trusted once it holds still. */
+    let lastSetIcon: Float32Array | null = null;
     for (;;) {
       checkStop();
       const panel = await samplePanel(frame);
       if (panel) {
         const event = detector.observe(panel.fingerprints);
-        if (event === "stable-novel") {
+        const setIconSettled = lastSetIcon !== null && !setIconChanged(panel.setIcon, lastSetIcon);
+        lastSetIcon = panel.setIcon;
+        const otherSet = event === "stable-repeat" && setIconSettled && setIconChanged(panel.setIcon, readSetIcon);
+        if (event === "stable-novel" || otherSet) {
           // After the first click, forget the primed echo: it's somewhere further down the
           // list, and has to look new when the scan gets there.
           if (first) detector.reset();
-          detector.commitScan(panel.fingerprints);
-          return panel;
+          commitPanel(panel);
+          return { ...panel, maybeRepeat: event !== "stable-novel" };
         }
         if (event === "stable-repeat" && deps.now() - started > UNCHANGED_AFTER_MS) {
-          return first ? panel : ("unchanged" as const);
+          return first ? { ...panel, maybeRepeat: false } : ("unchanged" as const);
         }
       }
       if (deps.now() - started > PANEL_TIMEOUT_MS) return "unsettled" as const;
@@ -341,13 +390,16 @@ export function createNavigator<Echo extends { level: number | null }>(
   const inFlight: Promise<void>[] = [];
   /** The last read's report, so results are reported in list order. */
   let reported: Promise<void> = Promise.resolve();
+  /** Signature of the last echo reported (the one shown before the panel being reported). */
+  let lastSignature: string | null = null;
 
   /**
    * Starts reading the echo in frame `seq` without waiting for it. Results are reported in
    * the order the reads started. Once one is below the minimum level, it and every later one
-   * are dropped and the run ends at the next check.
+   * are dropped and the run ends at the next check. A `maybeRepeat` read (only the set icon
+   * changed) that turns out to be the echo reported just before it counts as unchanged.
    */
-  function startRead(seq: number, extras: PanelSamples, position: GridPosition) {
+  function startRead(seq: number, extras: PanelSamples, position: GridPosition, maybeRepeat: boolean) {
     // Called now, so Rust takes the frame while it's still pinned.
     const read = deps.readEcho(seq, extras).then(
       (echo) => ({ echo }),
@@ -358,6 +410,8 @@ export function createNavigator<Echo extends { level: number | null }>(
       if (belowMin) return;
       if (!echo) {
         progress.errors += 1;
+      } else if (maybeRepeat && echo.signature === lastSignature) {
+        progress.unchanged += 1;
       } else if (echo.level !== null && echo.level < options.minLevel) {
         belowMin = stopWith(
           "below-min-level",
@@ -366,6 +420,7 @@ export function createNavigator<Echo extends { level: number | null }>(
         return;
       } else {
         progress.echoes += 1;
+        lastSignature = echo.signature;
         deps.onEcho(echo, position);
       }
       publish();
@@ -390,12 +445,11 @@ export function createNavigator<Echo extends { level: number | null }>(
   }
 
   /**
-   * Clicks one row's cards, left to right, starting a read for each new panel. Returns how
-   * many clicks showed a new echo. Throws the below-minimum stop as soon as a read finds one.
+   * Clicks one row's cards, left to right, starting a read for each new panel. Throws the
+   * below-minimum stop as soon as a read finds one.
    */
-  async function readRow(frame: FrameSize, row: GridRow, rowNumber: number): Promise<number> {
+  async function readRow(frame: FrameSize, row: GridRow, rowNumber: number) {
     progress.row = rowNumber;
-    let shown = 0;
     for (const { column, point } of row.targets) {
       checkBelowMin();
       await makeRoomForRead();
@@ -406,12 +460,10 @@ export function createNavigator<Echo extends { level: number | null }>(
       } else if (panel === "unsettled") {
         progress.errors += 1;
       } else {
-        shown += 1;
-        startRead(panel.seq, panel.extras, { row: rowNumber, column });
+        startRead(panel.seq, panel.extras, { row: rowNumber, column }, panel.maybeRepeat);
       }
       publish();
     }
-    return shown;
   }
 
   /** Thumbnails of every visible row, to tell two reads with the same row edges apart. */
@@ -470,9 +522,14 @@ export function createNavigator<Echo extends { level: number | null }>(
         for (const row of rows) {
           const number = rowNumber(row.barTop);
           if (number <= done) continue;
-          const shown = await readRow(frame, row, number);
+          await readRow(frame, row, number);
           done = number;
-          if (number === 0 && shown < 2 && row.targets.length > 1 && progress.unchanged > 0) {
+          if (number === 0) {
+            // Whether a read was a repeat is only known once it's reported.
+            await finishReads();
+            checkBelowMin();
+          }
+          if (number === 0 && progress.echoes + progress.errors < 2 && row.targets.length > 1 && progress.unchanged > 0) {
             throw stopWith(
               "clicks-not-landing",
               "Clicking the first row didn't change the echo details. On Windows, run Wavescan as administrator. " +
