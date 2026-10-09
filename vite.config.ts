@@ -64,8 +64,6 @@ export default defineConfig({
     watch: { ignored: ["**/src-tauri/**"] },
   },
   envPrefix: ["VITE_", "TAURI_ENV_*"],
-  // The Tesseract reader runs in a module worker (src/ocr/tesseract.worker.ts).
-  worker: { format: "es" },
   build: {
     // WebView2 (Windows) is evergreen Chromium; WKWebView on macOS 13+ is Safari 16+.
     target: process.env.TAURI_ENV_PLATFORM === "windows" ? "chrome120" : "safari16",

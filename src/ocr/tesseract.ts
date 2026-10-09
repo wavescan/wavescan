@@ -222,9 +222,99 @@ export async function startTesseractWorkers(
   const failure = started.find((r) => r.status === "rejected");
   if (failure) {
     await Promise.all(workers.map((worker) => worker.terminate()));
-    throw failure.reason instanceof Error ? failure.reason : new Error(String(failure.reason));
+    throw startFailure(failure.reason);
   }
   return workers;
+}
+
+/**
+ * The error for a worker that didn't start. When tesseract.js's own worker script can't
+ * load at all, the browser's error event has no message and tesseract.js rejects with
+ * `undefined`; say what that means instead of "undefined".
+ */
+export function startFailure(reason: unknown): Error {
+  if (reason instanceof Error) return reason;
+  if (reason === undefined || reason === null || reason === "") {
+    return new Error("a Tesseract worker couldn't load its script");
+  }
+  return new Error(String(reason));
+}
+
+/**
+ * Fetches each URL and describes what came back, e.g. "worker.min.js: 200 text/javascript".
+ * Used only after the reader failed to start, so the diagnostics report says which bundled
+ * file was missing or served wrongly (a missing file comes back as the app's index.html).
+ */
+export async function describeAssets(urls: readonly string[], fetchUrl: typeof fetch = fetch): Promise<string> {
+  const results = await Promise.all(
+    urls.map(async (url) => {
+      const name = url.slice(url.lastIndexOf("/") + 1);
+      try {
+        const response = await fetchUrl(url);
+        return `${name}: ${response.status} ${response.headers.get("content-type") ?? "no type"}`;
+      } catch (error) {
+        return `${name}: ${error instanceof Error ? error.message : String(error)}`;
+      }
+    }),
+  );
+  return results.join("; ");
+}
+
+/** The bundled files the reader loads from `assets` (the app's `/tesseract` folder). */
+export const ASSET_FILES = [
+  "worker.min.js",
+  "tesseract-core-simd-lstm.js",
+  "tesseract-core-simd-lstm.wasm",
+  `${LANGUAGE}.traineddata.gz`,
+] as const;
+
+/**
+ * The app's reader: a pool of tesseract.js workers loaded from the app's own `assets` URL,
+ * started on the first read. A failed start is retried on the next read, and its error says
+ * what each bundled file fetch returned (for the diagnostics report). Every error starts
+ * with "Tesseract couldn't read the echo".
+ *
+ * The page starts the pool itself. tesseract.js's workers used to be started from inside
+ * another web worker, and on Windows (WebView2) that nested worker never loaded its script
+ * even though the same script fetched fine. The page already starts web workers fine.
+ */
+export function createBundledTesseract(
+  assets: string,
+  start: (paths: TesseractPaths) => Promise<TesseractWorker[]> = startTesseractWorkers,
+  fetchUrl: typeof fetch = (...args) => fetch(...args),
+) {
+  let reader: Promise<TesseractReader> | null = null;
+
+  function getReader(): Promise<TesseractReader> {
+    reader ??= start({
+      workerPath: `${assets}/worker.min.js`,
+      corePath: `${assets}/tesseract-core-simd-lstm.js`,
+      langPath: assets,
+      // Load the worker script directly; a blob: URL would need a looser CSP.
+      workerBlobURL: false,
+    })
+      .then((workers) => createTesseractReader(workers, { sparseRetryIds: ["name"] }))
+      .catch(async (error: unknown) => {
+        reader = null;
+        const files = await describeAssets(
+          ASSET_FILES.map((name) => `${assets}/${name}`),
+          fetchUrl,
+        );
+        throw new Error(`${error instanceof Error ? error.message : String(error)} (${files})`);
+      });
+    return reader;
+  }
+
+  return {
+    /** Reads every crop with the pool, starting it first if needed. */
+    read: (crops: CropRead[]): Promise<RegionText[]> =>
+      getReader()
+        .then((r) => r.read(crops))
+        .catch((error: unknown) => {
+          const message = error instanceof Error ? error.message : String(error);
+          throw new Error(`Tesseract couldn't read the echo: ${message}`);
+        }),
+  };
 }
 
 /** `promise`, or a rejection once `ms` have passed without it settling. */

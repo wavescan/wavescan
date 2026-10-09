@@ -8,13 +8,14 @@ import {
   PSM_SINGLE_BLOCK,
   PSM_SPARSE_TEXT,
   SCALE,
+  createBundledTesseract,
   createTesseractReader,
+  describeAssets,
   prepareCrop,
+  startFailure,
   type Crop,
   type TesseractWorker,
 } from "@/ocr/tesseract";
-import { createTesseractClient, type WorkerLike } from "@/ocr/tesseractClient";
-import type { ReadRequest, ReadResponse } from "@/ocr/tesseract.worker";
 
 function solid(width: number, height: number, [r, g, b]: [number, number, number]): Crop {
   const rgba = new Uint8Array(width * height * 4);
@@ -157,69 +158,57 @@ describe("createTesseractReader", () => {
   });
 });
 
-/** A fake `Worker` that answers each request with `respond`, or crashes when told to. */
-function fakeWebWorker(respond: (request: ReadRequest) => ReadResponse) {
-  const listeners: { message: ((e: MessageEvent<ReadResponse>) => void)[]; error: ((e: ErrorEvent) => void)[] } = {
-    message: [],
-    error: [],
-  };
-  const sent: { request: ReadRequest; transfer: Transferable[] }[] = [];
-  let terminated = false;
-  const worker: WorkerLike = {
-    postMessage(request, transfer) {
-      sent.push({ request, transfer });
-      setTimeout(() => listeners.message.forEach((l) => l({ data: respond(request) } as MessageEvent<ReadResponse>)));
-    },
-    addEventListener(type: "message" | "error", listener: never) {
-      (listeners[type] as unknown[]).push(listener);
-    },
-    terminate() {
-      terminated = true;
-    },
-  };
-  const crash = (message: string) => listeners.error.forEach((l) => l({ message } as ErrorEvent));
-  return { worker, sent, crash, terminated: () => terminated };
-}
-
 const region = (id: string): RegionText => ({ id, lines: [], width: 1, height: 1, elapsed_ms: 1 });
 
-describe("createTesseractClient", () => {
-  it("starts the worker on the first read and transfers each pixel buffer once", async () => {
-    let spawned = 0;
-    const fake = fakeWebWorker((r) => ({ id: r.id, regions: r.crops.map((c) => region(c.id)) }));
-    const client = createTesseractClient(() => (spawned++, fake.worker));
-    expect(spawned).toBe(0);
+describe("createBundledTesseract", () => {
+  const answers = (text: string) => fakeWorker(() => [text]);
+  const crop = { id: "name", crop: solid(1, 1, [0, 0, 0]) };
+  const javascript = ((url: string) =>
+    Promise.resolve(new Response(url, { status: 200, headers: { "content-type": "text/javascript" } }))) as typeof fetch;
 
-    const shared = new Uint8ClampedArray(8);
-    const crops = [
-      { id: "name", crop: { width: 1, height: 1, rgba: shared.subarray(0, 4) } },
-      { id: "level", crop: { width: 1, height: 1, rgba: shared.subarray(4, 8) } },
-    ];
-    const [a, b] = await Promise.all([client.read(crops), client.read(crops.slice(0, 1))]);
-    expect(a!.map((r) => r.id)).toEqual(["name", "level"]);
-    expect(b!.map((r) => r.id)).toEqual(["name"]);
-    expect(spawned).toBe(1);
-    expect(fake.sent[0]!.transfer).toEqual([shared.buffer]);
+  it("starts the pool from the bundled files on the first read, once", async () => {
+    const started: unknown[] = [];
+    const tesseract = createBundledTesseract("http://tauri.localhost/tesseract", async (paths) => {
+      started.push(paths);
+      return [answers("ok")];
+    });
+    expect(started).toEqual([]);
+    const [a, b] = await Promise.all([tesseract.read([crop]), tesseract.read([crop])]);
+    expect([a![0]!.lines[0]!.text, b![0]!.lines[0]!.text]).toEqual(["ok", "ok"]);
+    expect(started).toEqual([
+      {
+        workerPath: "http://tauri.localhost/tesseract/worker.min.js",
+        corePath: "http://tauri.localhost/tesseract/tesseract-core-simd-lstm.js",
+        langPath: "http://tauri.localhost/tesseract",
+        workerBlobURL: false,
+      },
+    ]);
   });
 
-  it("rejects with the worker's error message", async () => {
-    const fake = fakeWebWorker((r) => ({ id: r.id, error: "no model" }));
-    const client = createTesseractClient(() => fake.worker);
-    await expect(client.read([])).rejects.toThrow("Tesseract couldn't read the echo: no model");
+  it("names what each bundled file fetch returned when the pool can't start, and retries next read", async () => {
+    let attempts = 0;
+    const start = async () => {
+      attempts++;
+      if (attempts === 1) throw startFailure(undefined);
+      return [answers("ok")];
+    };
+    const tesseract = createBundledTesseract("http://x/tesseract", start, javascript);
+
+    await expect(tesseract.read([crop])).rejects.toThrow(
+      "Tesseract couldn't read the echo: a Tesseract worker couldn't load its script (worker.min.js: 200 text/javascript; " +
+        "tesseract-core-simd-lstm.js: 200 text/javascript; tesseract-core-simd-lstm.wasm: 200 text/javascript; " +
+        "eng.traineddata.gz: 200 text/javascript)",
+    );
+    expect((await tesseract.read([crop]))[0]!.lines[0]!.text).toBe("ok");
+    expect(attempts).toBe(2);
   });
 
-  it("fails pending reads when the worker crashes, and starts a new one next time", async () => {
-    const workers = [fakeWebWorker(() => ({ id: -1, regions: [] })), fakeWebWorker((r) => ({ id: r.id, regions: [region("name")] }))];
-    let spawned = 0;
-    const client = createTesseractClient(() => workers[spawned++]!.worker);
-
-    const pending = client.read([]);
-    workers[0]!.crash("out of memory");
-    await expect(pending).rejects.toThrow("The Tesseract reader stopped: out of memory");
-    expect(workers[0]!.terminated()).toBe(true);
-
-    expect((await client.read([]))[0]!.id).toBe("name");
-    expect(spawned).toBe(2);
+  it("says a failed read came from Tesseract", async () => {
+    const broken = fakeWorker(() => {
+      throw new Error("no model");
+    });
+    const tesseract = createBundledTesseract("http://x/tesseract", async () => [broken], javascript);
+    await expect(tesseract.read([crop])).rejects.toThrow("Tesseract couldn't read the echo: no model");
   });
 });
 
@@ -276,6 +265,26 @@ describe("bundled Tesseract model", () => {
     const model = gunzipSync(readFileSync("public/tesseract/eng.traineddata.gz"));
     expect(createHash("sha256").update(model).digest("hex")).toBe(
       "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+    );
+  });
+});
+
+describe("Tesseract start failures", () => {
+  it("names a worker script that couldn't load instead of saying undefined", () => {
+    // tesseract.js rejects with the error event's message, which a failed script load lacks.
+    expect(startFailure(undefined).message).toBe("a Tesseract worker couldn't load its script");
+    expect(startFailure("no model").message).toBe("no model");
+    const error = new Error("timeout");
+    expect(startFailure(error)).toBe(error);
+  });
+
+  it("describes what each bundled file fetch returned", async () => {
+    const fakeFetch = ((url: string) =>
+      url.endsWith(".js")
+        ? Promise.resolve(new Response("", { status: 200, headers: { "content-type": "text/html" } }))
+        : Promise.reject(new TypeError("Failed to fetch"))) as typeof fetch;
+    await expect(describeAssets(["http://tauri.localhost/tesseract/worker.min.js", "http://x/eng.traineddata.gz"], fakeFetch)).resolves.toBe(
+      "worker.min.js: 200 text/html; eng.traineddata.gz: Failed to fetch",
     );
   });
 });
