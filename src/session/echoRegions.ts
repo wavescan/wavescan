@@ -6,6 +6,7 @@ import {
   STATS_BLOCK,
   SUBSTAT_BLOCK,
   SUBSTAT_LABEL_COLUMN,
+  SUBSTAT_ROWS,
   SUBSTAT_VALUE_COLUMN,
   regionForFrame,
   type FrameSize,
@@ -35,6 +36,9 @@ export function padStatRow(row: RegionFrac): RegionFrac {
   return { ...row, y: row.y - STAT_ROW_PAD_Y, height: row.height + 2 * STAT_ROW_PAD_Y };
 }
 
+/** Ids of the five per-row substat crops, top to bottom. */
+export const SUBSTAT_ROW_IDS = ["substatRow1", "substatRow2", "substatRow3", "substatRow4", "substatRow5"] as const;
+
 /** Region ids used by the echo extractor. */
 export type EchoRegionId =
   | "name"
@@ -43,8 +47,16 @@ export type EchoRegionId =
   | "secondaryStat"
   | "substatLabels"
   | "substatValues"
-  | "substatBlock";
+  | "substatBlock"
+  | (typeof SUBSTAT_ROW_IDS)[number];
 
+/**
+ * Substats are read the way Wuthering Tools reads them: the label and value columns first,
+ * and when those come up short, scanner-core picks whichever of the five per-row crops or
+ * the whole block recovers the most rows. Wuthering Tools only OCRs the fallbacks when the
+ * columns come up short; here every crop is read at once from one pinned frame, because
+ * the OCR runs in parallel and a second request could find the frame already released.
+ */
 const READ_REGIONS: Record<EchoRegionId, RegionFrac> = {
   name: NAME_BLOCK,
   level: LEVEL_ROW,
@@ -53,6 +65,10 @@ const READ_REGIONS: Record<EchoRegionId, RegionFrac> = {
   substatLabels: SUBSTAT_LABEL_COLUMN,
   substatValues: SUBSTAT_VALUE_COLUMN,
   substatBlock: SUBSTAT_BLOCK,
+  ...(Object.fromEntries(SUBSTAT_ROW_IDS.map((id, i) => [id, SUBSTAT_ROWS[i]!])) as Record<
+    (typeof SUBSTAT_ROW_IDS)[number],
+    RegionFrac
+  >),
 };
 
 /** Every region to OCR for one echo, adjusted for this frame's aspect ratio. */

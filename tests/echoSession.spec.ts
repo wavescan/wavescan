@@ -3,7 +3,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { readFileSync } from "node:fs";
 import { loadBundledScannerData } from "@/data/scannerData";
-import { extractEcho, parseLevel } from "@/session/echoExtract";
+import { extractEcho, parseLevel, substatRowTexts } from "@/session/echoExtract";
 import { createEchoSession, type EchoCandidate } from "@/session/echoSession";
 import { buildScan, expectedSubstatCount } from "@/session/exportScan";
 import type { OcrLine, RegionText } from "@/ipc/types";
@@ -72,12 +72,82 @@ describe("extractEcho", () => {
     expect(echo.confidence.substats[0]).toBe("low");
   });
 
+  // Sigillum +25 from the 2026-10-08 report (fixtures/raw/2026-10-08_4pm_test/5.png):
+  // Windows OCR dropped the lone "HP" label of the last row from the label column.
+  function sigillumPanel(rows: string[]): RegionText[] {
+    const ids = ["substatRow1", "substatRow2", "substatRow3", "substatRow4", "substatRow5"];
+    return [
+      region("name", [line("Sigillum", 0)]),
+      region("level", [line("+25", 0)]),
+      region("mainStat", [line("Crit. DMG 44.0%", 0)]),
+      region("secondaryStat", [line("ATK 150", 0)]),
+      region("substatLabels", [
+        line("Crit. DMG", 0),
+        line("Crit. Rate", 34),
+        line("Resonance Liberation", 68),
+        line("DMG Bonus", 90),
+        line("Heavy Attack DMG Bonus", 124),
+      ]),
+      region("substatValues", [line("17.4%", 0), line("6.9%", 34), line("9.4%", 68), line("8.6%", 124), line("10.1%", 158)]),
+      region("substatBlock", []),
+      ...rows.map((text, i) => region(ids[i]!, text ? text.split("\n").map((t, j) => line(t, j * 22)) : [])),
+    ];
+  }
+
+  it("recovers a substat the columns missed from the per-row crops, like Wuthering Tools", () => {
+    const echo = extractEcho(
+      sigillumPanel([
+        "Crit. DMG 17.4%",
+        "Crit. Rate 6.9%",
+        "Resonance Liberation 9.4%\nDMG Bonus",
+        "Heavy Attack DMG Bonus 8.6%",
+        "HP 10.1%",
+      ]),
+    );
+    expect(echo.slot.substats.map((s) => [s.subStat, s.subStatValue])).toEqual([
+      ["Crit. DMG", "17.4%"],
+      ["Crit. Rate", "6.9%"],
+      ["Resonance Liberation DMG Bonus", "9.4%"],
+      ["Heavy Attack DMG Bonus", "8.6%"],
+      ["HP", "10.1%"],
+    ]);
+  });
+
+  it("keeps the column result when the per-row crops don't recover more", () => {
+    const echo = extractEcho(sigillumPanel(["Crit. DMG 17.4%", "", "", "", ""]));
+    expect(echo.slot.substats.filter((s) => s.subStat)).toHaveLength(4);
+  });
+
+  it("works without per-row crops", () => {
+    expect(extractEcho(sigillumPanel([])).slot.substats.filter((s) => s.subStat)).toHaveLength(4);
+  });
+
   it("parses levels strictly", () => {
     expect(parseLevel("+25")).toBe(25);
     expect(parseLevel("+ 5")).toBe(5);
     expect(parseLevel("+0")).toBe(0);
     expect(parseLevel("+26")).toBeNull();
     expect(parseLevel("COST 4")).toBeNull();
+  });
+});
+
+describe("substatRowTexts", () => {
+  const rows = (texts: (string | null)[]) => (id: string) => texts[Number(id.slice(-1)) - 1] ?? null;
+
+  it("is undefined when the per-row crops weren't read", () => {
+    expect(substatRowTexts(rows([null, null, null, null, null]), 25)).toBeUndefined();
+  });
+
+  it("drops description text, which scanner-core would otherwise take as a row", () => {
+    // Stonewall Bracer +0 (2026-10-08 report): the Echo Skill text sits where substats go.
+    const description = ["ho Skill", "charge forward, dealing 80.96%", "deal 121.44% Physical DMG, and gain a", "", ""];
+    expect(substatRowTexts(rows(description), null)).toEqual(["", "", "", "", ""]);
+  });
+
+  it("drops rows past what the level unlocks", () => {
+    const texts = ["Crit. Rate 6.3%", "ATK 40", "HP 8.6%", "DEF 50", "Energy Regen 9.2%"];
+    expect(substatRowTexts(rows(texts), 10)).toEqual(["Crit. Rate 6.3%", "ATK 40", "", "", ""]);
+    expect(substatRowTexts(rows(texts), 25)).toEqual(texts);
   });
 });
 
