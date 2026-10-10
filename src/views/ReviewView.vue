@@ -10,6 +10,7 @@ import { EMPTY_FILTER, filterCandidates, reviewQueue, summarize, type ReviewFilt
 import { useScanStore } from "@/review/scanStore";
 import { goReport, goScan } from "@/ui/navigation";
 import AppIcon from "@/components/AppIcon.vue";
+import EchoAvatar from "@/components/EchoAvatar.vue";
 import EchoCard from "@/components/EchoCard.vue";
 import FieldFixer from "@/components/FieldFixer.vue";
 
@@ -350,7 +351,14 @@ const queuePosition = computed(() => {
                 {{ c.index }}
               </td>
               <td class="font-medium">
-                {{ displayName(c) }}
+                <span class="flex items-center gap-2">
+                  <EchoAvatar
+                    :echo="c.slot.echo"
+                    :name="displayName(c)"
+                    size-class="size-7"
+                  />
+                  {{ displayName(c) }}
+                </span>
               </td>
               <td class="font-mono">
                 +{{ c.level ?? "?" }}

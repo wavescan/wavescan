@@ -19,7 +19,7 @@
     "test:fixtures:tesseract": "vitest run --config vitest.fixtures.config.ts tests/tesseractReplay.fixtures.ts",
     "lint": "eslint . && vue-tsc -b",
     "check": "docker compose run --rm check",
-    "data:update": "node scripts/update-scanner-data.mjs && node scripts/update-set-icons.mjs",
+    "data:update": "node scripts/update-scanner-data.mjs && node scripts/update-set-icons.mjs && node scripts/update-echo-icons.mjs",
     "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask",
     "data:set-icons": "node scripts/update-set-icons.mjs"
   },

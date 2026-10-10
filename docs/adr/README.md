@@ -60,3 +60,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0026](./0026-crop-windows-captures-to-the-client-area.md) | Crop Windows captures to the game area ourselves | accepted | | capture, windows, accuracy |
 | [0027](./0027-tesseract-reads-echo-text-on-windows.md) | Tesseract (tesseract.js) reads echo text on Windows | accepted | | ocr, accuracy, windows, security, dependencies |
 | [0028](./0028-browser-links-mini-window-and-saved-scan.md) | Open GitHub pages in the browser, a mini window, and a saved copy of the scan | accepted | | ui, security, dependencies, privacy |
+| [0029](./0029-bundled-echo-pictures.md) | Bundled echo pictures on the Review and Scan screens | accepted | | data, ui |

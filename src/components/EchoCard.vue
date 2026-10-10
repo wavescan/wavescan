@@ -15,8 +15,9 @@ import {
 } from "@/review/fields";
 import { setIconUrl } from "@/ui/setIconUrl";
 import AppIcon from "@/components/AppIcon.vue";
+import EchoAvatar from "@/components/EchoAvatar.vue";
 
-// One echo, laid out like the in-game details panel: name and level, cost/rarity/set,
+// One echo, laid out like the in-game details panel: picture, name and level, cost/rarity/set,
 // main stat, then substats with a roll meter. A field Wavescan wasn't sure about is
 // highlighted with a "check" label and is a button that opens the fixer.
 
@@ -80,23 +81,17 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
     :aria-label="`${displayName(candidate)}, scan number ${candidate.index}`"
   >
     <header class="flex items-center gap-3">
-      <div
-        class="flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-neutral"
-        :class="large ? 'size-14' : 'size-10'"
-      >
-        <img
-          v-if="iconUrl"
-          :src="iconUrl"
-          alt=""
-          class="size-full object-cover"
-        >
-      </div>
+      <EchoAvatar
+        :echo="candidate.slot.echo"
+        :name="displayName(candidate)"
+        :size-class="large ? 'size-14' : 'size-12'"
+      />
       <div class="min-w-0 flex-1">
         <div class="flex items-baseline justify-between gap-2">
           <component
             :is="readonly || !isFlagged('name') ? 'span' : 'button'"
             type="button"
-            class="truncate text-left font-bold"
+            class="min-w-0 text-left leading-tight font-bold"
             :class="[large ? 'text-xl' : 'text-base', isFlagged('name') ? flagClass + ' px-1' : '', active === 'name' ? activeClass : '']"
             @click="!readonly && isFlagged('name') && emit('fix', 'name')"
           >
@@ -144,10 +139,16 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
       <component
         :is="readonly || !isFlagged('set') ? 'span' : 'button'"
         type="button"
-        class="rounded-md bg-base-200 px-2 py-0.5"
+        class="inline-flex items-center gap-1 rounded-md bg-base-200 px-2 py-0.5"
         :class="[isFlagged('set') ? flagClass : '', active === 'set' ? activeClass : '']"
         @click="!readonly && isFlagged('set') && emit('fix', 'set')"
       >
+        <img
+          v-if="iconUrl"
+          :src="iconUrl"
+          alt=""
+          class="size-3.5 rounded-full"
+        >
         {{ candidate.slot.set ? setName(candidate.slot.set) : "set ?" }}<span v-if="isFlagged('set')"> · check</span>
         <span
           v-if="isChecked('set')"

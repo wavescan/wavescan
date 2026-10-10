@@ -20,6 +20,7 @@ import { summarize } from "@/review/list";
 import { go, goReport, navigation } from "@/ui/navigation";
 import AppIcon from "@/components/AppIcon.vue";
 import AutoModePanel from "@/views/AutoModePanel.vue";
+import EchoAvatar from "@/components/EchoAvatar.vue";
 import EchoCard from "@/components/EchoCard.vue";
 import ProblemCard from "@/components/ProblemCard.vue";
 
@@ -418,6 +419,11 @@ onBeforeUnmount(() => void stop());
               :class="flaggedFields(c).length ? 'border-warning/60 bg-warning/10' : 'border-base-300 bg-base-100'"
             >
               <span class="w-8 font-mono opacity-60">{{ c.index }}</span>
+              <EchoAvatar
+                :echo="c.slot.echo"
+                :name="displayName(c)"
+                size-class="size-7"
+              />
               <span class="flex-1 truncate">
                 {{ displayName(c) }}
                 <span class="opacity-70">· {{ c.slot.mainStatLabel || "?" }}</span>

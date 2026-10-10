@@ -61,7 +61,7 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
    - *Mac only, first time:* macOS asks for **Screen Recording** permission. Allow it, then reopen the scanner.
 3. Click through your echoes in the game at your own pace. Each time the echo details on the right change, the scanner reads them. You'll see the echo it just read, a counter, and how many need a look.
    - Playing on one screen? Press **Mini window** for a small counter that stays on top of the game.
-4. When you're done, press **Stop and review**. Anything the scanner wasn't sure about is marked **check**. Press **Check them now** to go through them one by one. For a stat, the scanner only offers values the game can actually roll.
+4. When you're done, press **Stop and review**. Each echo shows its picture from the game, so you can spot it quickly. Anything the scanner wasn't sure about is marked **check**. Press **Check them now** to go through them one by one. For a stat, the scanner only offers values the game can actually roll.
 5. Press **Copy scan for Wuthering Tools**. (**Open in Wuthering Tools** and **Save file** are coming.)
 
 If you close the scanner before exporting, it offers to carry on with that scan next time.
