@@ -236,6 +236,23 @@ describe("echo session (watch mode)", () => {
   });
 });
 
+describe("echo session errors", () => {
+  it("reports a Rust error's message, not [object Object]", async () => {
+    const errors: string[] = [];
+    let seq = 0;
+    const session = createEchoSession({
+      sampleRegions: async () => samples(++seq, 10),
+      readRegions: async () => Promise.reject({ kind: "FrameNotPinned", message: "That frame is no longer available" }),
+      frameSize: () => ({ width: 2880, height: 1800 }),
+      onCandidate: () => {},
+      onError: (m) => errors.push(m),
+    });
+    for (let i = 0; i < 6; i++) await session.tick();
+    expect(errors).toEqual(["That frame is no longer available"]);
+    expect(session.stats().errors).toBe(1);
+  });
+});
+
 describe("buildScan", () => {
   const schema = JSON.parse(readFileSync("schema/scan.v1.json", "utf8"));
   const ajv = new Ajv2020({ allErrors: true, strict: true });
