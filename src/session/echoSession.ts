@@ -6,7 +6,7 @@ import {
   createStableFrameDetector,
   type FrameSize,
 } from "@wutheringtools/scanner-core";
-import { errorMessage } from "@/ipc/commands";
+import { errorKind, errorMessage } from "@/ipc/commands";
 import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
 import { echoReadRegions } from "./echoRegions";
 import { extractEcho, type ExtractedEcho } from "./echoExtract";
@@ -18,6 +18,12 @@ export interface EchoCandidate extends ExtractedEcho {
   id: string;
   /** Order in which it was captured (1, 2, 3, …). */
   index: number;
+  /**
+   * Fields the user checked against the game in the review screen (`src/review/fields.ts`).
+   * A fix also raises that field's confidence; this list covers what confidence can't, such
+   * as "the substat count is right even though it looks short for the level".
+   */
+  checked?: string[];
 }
 
 export interface SessionStats {
@@ -37,7 +43,8 @@ export interface EchoSessionDeps {
   frameSize(): FrameSize;
   onCandidate(candidate: EchoCandidate): void;
   onStats?(stats: SessionStats): void;
-  onError?(message: string): void;
+  /** A read failed. `kind` is the Rust error kind (src-tauri/src/error.rs), or null. */
+  onError?(message: string, kind: string | null): void;
 }
 
 /** Sample width for fingerprints: STATS_FINGERPRINT_GRID is 64 cells wide. */
@@ -93,7 +100,7 @@ export function createEchoSession(deps: EchoSessionDeps) {
       }
     } catch (error) {
       stats.errors += 1;
-      deps.onError?.(errorMessage(error)); // Rust rejects with { kind, message }, not an Error
+      deps.onError?.(errorMessage(error), errorKind(error)); // Rust rejects with { kind, message }, not an Error
     } finally {
       reading = false;
       publish();

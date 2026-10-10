@@ -1,4 +1,85 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark;
+  themes: false;
+}
+
+/*
+ * Wavescan's two themes: dark follows the system's dark mode, light is the default.
+ * Amber means "please check", violet means "checked by you", cyan is the main action.
+ * Colours that must be told apart also differ in lightness, and every status also has a
+ * text label, so nothing relies on colour alone.
+ */
+@plugin "daisyui/theme" {
+  name: "wavescan-light";
+  default: true;
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #f1f4f7;
+  --color-base-300: #d9e0e7;
+  --color-base-content: #141a21;
+  --color-primary: #0f7482;
+  --color-primary-content: #ffffff;
+  --color-secondary: #5b4bc4;
+  --color-secondary-content: #ffffff;
+  --color-accent: #0f7482;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1f2933;
+  --color-neutral-content: #e6ebf0;
+  --color-info: #1d6fa8;
+  --color-info-content: #ffffff;
+  --color-success: #17784a;
+  --color-success-content: #ffffff;
+  --color-warning: #9a6200;
+  --color-warning-content: #ffffff;
+  --color-error: #b3261e;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.625rem;
+  --radius-box: 0.875rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "wavescan-dark";
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #161c24;
+  --color-base-200: #0e1217;
+  --color-base-300: #26303b;
+  --color-base-content: #e6ebf0;
+  --color-primary: #5cc8d6;
+  --color-primary-content: #0b1418;
+  --color-secondary: #b9aef7;
+  --color-secondary-content: #16122b;
+  --color-accent: #5cc8d6;
+  --color-accent-content: #0b1418;
+  --color-neutral: #1f2933;
+  --color-neutral-content: #e6ebf0;
+  --color-info: #7fd6e2;
+  --color-info-content: #0b1418;
+  --color-success: #5fd39a;
+  --color-success-content: #0b1a12;
+  --color-warning: #f2b544;
+  --color-warning-content: #1c1508;
+  --color-error: #f07a6a;
+  --color-error-content: #1f0d0a;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.625rem;
+  --radius-box: 0.875rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme {
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --font-mono: "Cascadia Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* Numbers line up in columns everywhere (stat values, counters). */
+.font-mono,
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }

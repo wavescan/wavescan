@@ -74,9 +74,23 @@ export function validateScannerData(value: unknown): ScannerDataFile {
   return value as unknown as ScannerDataFile;
 }
 
+/** Sonata set key → display name ("MoltenRift" → "Molten Rift"), from the loaded data. */
+let setNames: Record<string, string> = {};
+
+/** A set's display name, or the key itself if the data doesn't know it. */
+export function setName(key: string): string {
+  return setNames[key] ?? key;
+}
+
+/** Every sonata set key in the loaded data, sorted by display name. */
+export function allSetKeys(): string[] {
+  return Object.keys(setNames).sort((a, b) => setName(a).localeCompare(setName(b)));
+}
+
 /** Hands a validated data file to scanner-core and returns its summary. */
 export function useScannerData(file: ScannerDataFile): GameDataInfo {
   setScannerGameData(file.data);
+  setNames = Object.fromEntries(Object.entries(file.data.echoSets).map(([key, set]) => [key, set.name]));
   return {
     hash: file.hash,
     version: file.version,

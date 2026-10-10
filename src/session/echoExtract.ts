@@ -48,7 +48,7 @@ export interface ExtractedEcho {
 }
 
 /** The panel's wording for a stat key ("HP" → "HP", "Electro" → "Electro DMG Bonus"). */
-function labelForStatKey(key: string): string {
+export function labelForStatKey(key: string): string {
   const entry = Object.entries(scannerGameData().verboseStatLabelMap).find(([, k]) => k === key);
   return entry?.[0] ?? key;
 }

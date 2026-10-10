@@ -57,11 +57,14 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
 ### Watch mode: you click, the scanner reads
 
 1. Open Wuthering Waves and go to **Bag → Echoes**.
-2. Open the scanner and press **Start watching**.
+2. Open the scanner. The **Game setup** list on the home screen shows whether it can see the game. Press **Start watching**.
    - *Mac only, first time:* macOS asks for **Screen Recording** permission. Allow it, then reopen the scanner.
-3. Click through your echoes in the game at your own pace. Each time the echo details on the right change, the scanner reads them. You'll see a counter go up and a ✓ for each one.
-4. When you're done, press **Stop** and review the list. Anything the scanner wasn't sure about is highlighted for you to check.
-5. Press **Open in Wuthering Tools** (or **Save file**).
+3. Click through your echoes in the game at your own pace. Each time the echo details on the right change, the scanner reads them. You'll see the echo it just read, a counter, and how many need a look.
+   - Playing on one screen? Press **Mini window** for a small counter that stays on top of the game.
+4. When you're done, press **Stop and review**. Anything the scanner wasn't sure about is marked **check**. Press **Check them now** to go through them one by one. For a stat, the scanner only offers values the game can actually roll.
+5. Press **Copy scan for Wuthering Tools**. (**Open in Wuthering Tools** and **Save file** are coming.)
+
+If you close the scanner before exporting, it offers to carry on with that scan next time.
 
 ### Auto mode: the scanner clicks for you (optional)
 
@@ -71,11 +74,11 @@ Auto mode clicks through your whole echo list for you. A full 3,000-echo bag tak
 
 To use it:
 
-1. In the scanner, open **Scan echoes → Auto mode**, read the warning and type `I understand`. You type it again for every auto scan.
+1. In the scanner, open **Scan → Auto mode**. It walks you through four steps: the warning above, permissions, getting the game ready, then typing `I understand`. You type it again for every auto scan.
    - *Windows:* auto mode needs the scanner to run as administrator, because Windows blocks clicks from normal apps into the game. Close the scanner, right-click it and choose **Run as administrator**. Watch mode never needs this.
    - *Mac:* macOS asks for **Accessibility** permission (needed to click). Watch mode never asks for this.
 2. Go to **Bag → Echoes** in the game, sorted by **Level** (highest first). Choose which echoes to read: all of them, or only from a level up (for example **+25 only**). The scan stops at the first echo below that level.
-3. Press **Start auto scan** and **don't touch the mouse or keyboard**. The scanner scrolls back to the top of the list first, then reads every echo and scrolls down by itself.
+3. Press **Start auto scan** and **don't touch the mouse or keyboard**. The scanner scrolls back to the top of the list first, then reads every echo and scrolls down by itself. A big "Hands off the mouse" banner shows how far it's got.
 4. To stop at any time, **move the mouse** or press **F8**. The scanner stops immediately and keeps everything it read so far.
 
 At the end of the list the scanner clicks the empty spaces in the last row and tries to scroll once more. That's how it makes sure it really is the end.
@@ -91,6 +94,8 @@ We built the scanner so you don't have to trust us. You can check everything you
 - It takes pictures of **only the Wuthering Waves window**. Never your whole screen or other apps.
 - It reads text from those pictures **on your computer**. On Windows it uses Tesseract, a free text reader that comes inside the app, because it reads echoes far more accurately than the one built into Windows. On macOS it uses the reader built into macOS. Nothing is downloaded or uploaded for this.
 - It works out each echo's set by comparing the small set icon with copies of the set icons that come with the app. Nothing is downloaded for this.
+- It opens a web page only when you click a link in **Help & feedback**, **Report a problem** or the auto mode warning, and only pages on this GitHub repository or Kuro's Fair Play Policy. Your browser opens them; the scanner itself doesn't connect to anything.
+- It keeps a copy of your current scan on your computer (echo stats only, no pictures) so you don't lose it if you close the app. **Clear this scan** on the Review screen deletes it.
 - In auto mode only, it sends mouse clicks and wheel scrolls to the game window. While auto mode is on, it also listens for **F8** so you can stop it; F8 goes back to normal as soon as auto mode stops.
 
 **What it never does**
@@ -109,7 +114,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 | `github.com` (Releases) | Checks for a new version of the scanner | Nothing about you, just a request for the latest version number |
 | `www.wutheringtools.com` | Downloads the newest list of echoes/characters so new releases are recognised without updating the app *(coming later; scans always work offline with the list built into the app)* | Nothing about you |
 
-You can confirm this with a firewall app like Little Snitch (Mac) or Windows Defender Firewall.
+You can confirm this with a firewall app like Little Snitch (Mac) or Windows Defender Firewall. **Help & feedback → What Wavescan did this session** also lists what it captured, how many clicks it sent and which pages it opened.
 
 **Open source.** All the code is public in this repository under the GPL-3.0 license.
 
@@ -160,11 +165,11 @@ Another app is probably using F8 already (the auto mode screen says so). Move th
 Auto mode needs the scanner to run as administrator. Without it, Windows blocks the scanner's clicks, sometimes without any error. Close the scanner, right-click it, choose **Run as administrator** and try again.
 
 **Some values are wrong**
-Fix them in the review screen before exporting, and please [report it](#reporting-a-bug) so we can improve the reader. Uncertain fields are shown in yellow with a grey "Read as: …" line underneath. Copying that line into your report helps a lot.
+Fix them on the Review screen before exporting. Values the scanner wasn't sure about have an amber **check** label: click one, then pick what the game shows (only values the game can roll are offered) or press **Looks right**. Then press **Report this misread**, so we can improve the reader. The report already includes what the scanner read.
 
 ## Check your setup (Diagnostics)
 
-On the home screen, press **Run diagnostics**. With the game open on **Bag → Echoes** and an echo selected, Wavescan checks that it can:
+The home screen's **Game setup** list checks the basics (game running, not minimised, screen shape, administrator for auto mode) every few seconds. For the full check, open **Diagnostics** in the sidebar. With the game open on **Bag → Echoes** and an echo selected, Wavescan checks that it can:
 
 - find the game window
 - capture it smoothly
@@ -180,7 +185,11 @@ There's also an optional **click test** for auto mode. After the same Fair Play 
 
 ## Reporting a bug
 
-Open an issue on this repository. If the scanner misread something, use **Help → Export bug report**. It saves the pictures it used, **with your User ID blacked out**, and nothing else. Have a look at them before attaching them.
+In the scanner, open **Help & feedback → Report a problem**, or press **Report** on an echo. Choose what went wrong and add a note. The scanner writes the report for you (version, build, screen size and what it read) and shows you every word. **Open on GitHub** opens a new issue in your browser with it filled in. Nothing is posted until you press **Submit** on GitHub. No GitHub account? Press **Copy text** and share it with the testers on Discord.
+
+The report never includes pictures or your User ID. To add a picture, use **Copy picture** on the Diagnostics screen (User ID blacked out) and paste it into the issue yourself. (**Export bug report**, which saves the pictures a scan used with your User ID blacked out, is coming.)
+
+**Help & feedback** also has a troubleshooting guide that works offline, and **Read the source** opens the exact code your copy was built from.
 
 Found a security problem? Please follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
 

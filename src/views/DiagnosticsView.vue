@@ -33,7 +33,6 @@ import {
 } from "@/diagnostics/report";
 
 const props = defineProps<{ info: AppInfo | null; gameData: GameDataInfo | null }>();
-defineEmits<{ back: [] }>();
 
 const running = ref(false);
 const step = ref("");
@@ -225,20 +224,11 @@ const badge: Record<Check["status"], string> = {
 </script>
 
 <template>
-  <div class="card bg-base-100 shadow-md w-full max-w-3xl">
+  <div class="card mx-auto w-full max-w-3xl border border-base-300 bg-base-100">
     <div class="card-body gap-4">
-      <div class="flex items-center justify-between">
-        <h1 class="card-title text-2xl">
-          Diagnostics
-        </h1>
-        <button
-          class="btn btn-ghost btn-sm"
-          :disabled="running"
-          @click="$emit('back')"
-        >
-          Back
-        </button>
-      </div>
+      <h1 class="card-title text-2xl">
+        Diagnostics
+      </h1>
 
       <ol class="list-decimal list-inside text-sm opacity-80 space-y-1">
         <li>Open Wuthering Waves and go to <strong>Bag → Echoes</strong>.</li>
