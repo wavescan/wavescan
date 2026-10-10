@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef } from "vue";
-import { getScannerEcho } from "@wutheringtools/scanner-core";
 import {
+  errorKind,
   errorMessage,
   getCaptureStatus,
   sampleRegions,
+  setMiniWindow,
   startCapture,
   stopCapture,
 } from "@/ipc/commands";
@@ -12,300 +13,436 @@ import { readEchoRegions } from "@/ocr/appReader";
 import type { AppInfo } from "@/ipc/types";
 import type { ExtractedEcho } from "@/session/echoExtract";
 import { createEchoSession, type EchoCandidate, type EchoSession, type SessionStats } from "@/session/echoSession";
-import { buildScan } from "@/session/exportScan";
+import { problemForError, type Problem } from "@/feedback/problems";
+import { displayName, flaggedFields } from "@/review/fields";
+import { useScanStore } from "@/review/scanStore";
+import { summarize } from "@/review/list";
+import { go, goReport, navigation } from "@/ui/navigation";
+import AppIcon from "@/components/AppIcon.vue";
 import AutoModePanel from "@/views/AutoModePanel.vue";
+import EchoAvatar from "@/components/EchoAvatar.vue";
+import EchoCard from "@/components/EchoCard.vue";
+import ProblemCard from "@/components/ProblemCard.vue";
+
+// Scan echoes: watch mode (the user clicks, Wavescan reads) and the auto mode tab. Both add
+// to the shared scan store. The mini window shrinks the app to a small always-on-top
+// counter for people playing on one screen.
 
 const props = defineProps<{ info: AppInfo | null }>();
-defineEmits<{ back: [] }>();
+const emit = defineEmits<{ mini: [mini: boolean] }>();
 
-const candidates = ref<EchoCandidate[]>([]);
+const store = useScanStore();
 const stats = ref<SessionStats>({ scanned: 0, duplicates: 0, errors: 0 });
 const watching = ref(false);
-const message = ref<string | null>(null);
-const copied = ref(false);
+const paused = ref(false);
+const problem = ref<{ problem: Problem; details: string } | null>(null);
 const session = shallowRef<EchoSession | null>(null);
-/** Which tab is shown, and which mode the list's echoes came from last (for the export). */
-const mode = ref<"watch" | "auto">("watch");
-const scannedWith = ref<"watch" | "auto">("watch");
 const autoRunning = ref(false);
-const busy = computed(() => watching.value || autoRunning.value);
+const mini = ref(false);
+/** Echo ids read since Start, newest first, and when each arrived (for the pace). */
+const recent = ref<string[]>([]);
+const arrivals: number[] = [];
 let frame = { width: 0, height: 0 };
 let sizeTimer: ReturnType<typeof setInterval> | null = null;
 
 /** Capture rate while watching; the session samples at ~8/s. */
 const WATCH_FPS = 15;
 
+const busy = computed(() => watching.value || autoRunning.value);
+const recentCandidates = computed(() =>
+  recent.value.map((id) => store.get(id)).filter((c): c is EchoCandidate => c !== undefined),
+);
+const justRead = computed(() => recentCandidates.value[0] ?? null);
+const toCheck = computed(() => recentCandidates.value.filter((c) => flaggedFields(c).length > 0).length);
+const total = computed(() => summarize(store.state.candidates).total);
+const pace = computed(() => {
+  void recent.value.length; // recompute when an echo arrives
+  const last = arrivals.slice(-11);
+  if (last.length < 2) return null;
+  return ((last.at(-1) ?? 0) - (last[0] ?? 0)) / (last.length - 1) / 1000;
+});
+
+function setBusy(value: boolean) {
+  navigation.busy = value;
+}
+
 async function refreshFrameSize() {
   const status = await getCaptureStatus();
-  if (status.frame) frame = { width: status.frame.width, height: status.frame.height };
+  if (status.frame) {
+    frame = { width: status.frame.width, height: status.frame.height };
+    store.setResolution(frame);
+  }
+}
+
+function showError(error: unknown) {
+  const message = errorMessage(error);
+  problem.value = { problem: problemForError(errorKind(error), message, props.info?.platform ?? null), details: message };
 }
 
 async function start() {
-  message.value = null;
+  problem.value = null;
+  recent.value = [];
+  arrivals.length = 0;
   try {
     await startCapture(WATCH_FPS);
     for (let i = 0; i < 20 && frame.width === 0; i++) {
       await refreshFrameSize();
       if (frame.width === 0) await new Promise((r) => setTimeout(r, 100));
     }
-    if (frame.width === 0) throw new Error("No frames from the game yet. Is it minimised?");
+    if (frame.width === 0) throw new Error("No pictures from the game yet. Is it minimised?");
     session.value = createEchoSession({
       sampleRegions,
       readRegions: readEchoRegions,
       frameSize: () => frame,
       onCandidate: (c) => {
-        scannedWith.value = "watch";
-        candidates.value.unshift(c);
+        const added = store.add(c, "watch");
+        arrivals.push(performance.now());
+        recent.value = [added.id, ...recent.value];
+        problem.value = null;
       },
       onStats: (s) => (stats.value = s),
-      onError: (m) => (message.value = m),
+      onError: (message, kind) => {
+        problem.value = { problem: problemForError(kind, message, props.info?.platform ?? null), details: message };
+      },
     });
     session.value.start();
     sizeTimer = setInterval(() => void refreshFrameSize().catch(() => undefined), 2000);
     watching.value = true;
+    paused.value = false;
+    setBusy(true);
   } catch (error) {
-    message.value = errorMessage(error);
+    showError(error);
     await stopCapture().catch(() => undefined);
   }
 }
 
+function togglePause() {
+  if (!session.value) return;
+  if (paused.value) session.value.start();
+  else session.value.stop();
+  paused.value = !paused.value;
+}
+
 async function stop() {
   session.value?.stop();
+  session.value = null;
   if (sizeTimer) clearInterval(sizeTimer);
   sizeTimer = null;
   watching.value = false;
+  paused.value = false;
+  setBusy(autoRunning.value);
   await stopCapture().catch(() => undefined);
+  if (mini.value) await toggleMini();
 }
 
-/** Auto mode reports the size of the frames it read, for the export's `resolution`. */
-function setFrame(size: { width: number; height: number }) {
-  frame = size;
+async function stopAndReview() {
+  await stop();
+  go("review");
 }
 
-/** An echo read by auto mode: numbered after everything already in the list. */
-function addAutoEcho(echo: ExtractedEcho) {
-  scannedWith.value = "auto";
-  const index = (candidates.value[0]?.index ?? 0) + 1;
-  candidates.value.unshift({ ...echo, id: `auto-${index}`, index });
-}
-
-function remove(id: string) {
-  candidates.value = candidates.value.filter((c) => c.id !== id);
-}
-
-const built = computed(() =>
-  buildScan([...candidates.value].reverse(), {
-    scannerVersion: props.info?.version ?? "0.0.0",
-    platform: props.info?.platform === "macos" ? "macos" : "windows",
-    resolution: frame,
-    mode: scannedWith.value,
-  }),
-);
-
-async function copyScan() {
+async function toggleMini() {
   try {
-    await navigator.clipboard.writeText(JSON.stringify(built.value.scan, null, 2));
-    copied.value = true;
-    setTimeout(() => (copied.value = false), 2000);
+    await setMiniWindow(!mini.value);
+    mini.value = !mini.value;
+    emit("mini", mini.value);
   } catch (error) {
-    message.value = errorMessage(error);
+    showError(error);
   }
 }
 
-const displayName = (c: EchoCandidate) =>
-  c.slot.echo ? (getScannerEcho(c.slot.echo)?.name ?? c.slot.echo) : `Unknown ("${c.raw.name}")`;
-const isLow = (c: EchoCandidate, field: "name" | "set" | "mainStat" | "level" | "rank") =>
-  c.confidence[field] === "low";
-/** Raw OCR text behind uncertain fields, so a wrong read can be reported and fixed. */
-const rawHint = (c: EchoCandidate) => {
-  const parts: string[] = [];
-  if (isLow(c, "level")) parts.push(`level "${c.raw.level}"`);
-  if (isLow(c, "mainStat") || isLow(c, "rank")) parts.push(`main stat "${c.raw.mainStat}"`);
-  if (isLow(c, "rank")) parts.push(`second stat "${c.raw.secondaryStat}"`);
-  return parts.length ? `Read as: ${parts.join(" · ")}` : null;
-};
+function addAutoEcho(echo: ExtractedEcho) {
+  const added = store.add(echo, "auto");
+  recent.value = [added.id, ...recent.value].slice(0, 50);
+}
+
+function autoRunningChanged(running: boolean) {
+  autoRunning.value = running;
+  setBusy(running || watching.value);
+}
+
+function setMode(mode: "watch" | "auto") {
+  if (!busy.value) navigation.scanMode = mode;
+}
 
 onBeforeUnmount(() => void stop());
 </script>
 
 <template>
-  <div class="card bg-base-100 shadow-md w-full max-w-4xl">
-    <div class="card-body gap-4">
-      <div class="flex items-center justify-between">
-        <h1 class="card-title text-2xl">
-          Scan echoes
-        </h1>
-        <button
-          class="btn btn-ghost btn-sm"
-          :disabled="busy"
-          @click="$emit('back')"
-        >
-          Back
-        </button>
-      </div>
+  <!-- Mini window: just the counter and Stop. -->
+  <div
+    v-if="mini"
+    class="flex h-full flex-col gap-2"
+  >
+    <div class="flex items-center gap-2 text-sm font-semibold">
+      <span
+        class="status status-primary"
+        :class="paused ? '' : 'animate-pulse'"
+      />
+      {{ paused ? "Paused" : "Watching" }}
+    </div>
+    <div class="flex items-baseline gap-4">
+      <span><span class="font-mono text-3xl font-bold">{{ stats.scanned }}</span> read</span>
+      <span
+        v-if="toCheck"
+        class="text-warning"
+      ><span class="font-mono text-xl font-bold">{{ toCheck }}</span> to check</span>
+    </div>
+    <div class="truncate text-sm opacity-80">
+      {{ justRead ? `Last: ${displayName(justRead)} +${justRead.level ?? "?"}` : "Click an echo in the game" }}
+    </div>
+    <div class="mt-auto flex gap-2">
+      <button
+        type="button"
+        class="btn btn-sm"
+        @click="toggleMini"
+      >
+        Full window
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-neutral"
+        @click="stop"
+      >
+        Stop
+      </button>
+    </div>
+  </div>
 
+  <div
+    v-else
+    class="mx-auto flex max-w-6xl flex-col gap-5"
+  >
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-2xl font-bold">
+        Scan echoes
+      </h1>
       <div
         role="tablist"
-        class="tabs tabs-boxed w-fit"
+        aria-label="Scan mode"
+        class="tabs tabs-box"
       >
         <button
           role="tab"
+          type="button"
           class="tab"
-          :class="{ 'tab-active': mode === 'watch' }"
+          :class="{ 'tab-active': navigation.scanMode === 'watch' }"
+          :aria-selected="navigation.scanMode === 'watch'"
           :disabled="busy"
-          @click="mode = 'watch'"
+          @click="setMode('watch')"
         >
           Watch mode
         </button>
         <button
           role="tab"
+          type="button"
           class="tab"
-          :class="{ 'tab-active': mode === 'auto' }"
+          :class="{ 'tab-active': navigation.scanMode === 'auto' }"
+          :aria-selected="navigation.scanMode === 'auto'"
           :disabled="busy"
-          @click="mode = 'auto'"
+          @click="setMode('auto')"
         >
           Auto mode
         </button>
       </div>
+    </div>
 
-      <AutoModePanel
-        v-if="mode === 'auto'"
-        :info="info"
-        :disabled="watching"
-        @echo="addAutoEcho"
-        @running="autoRunning = $event"
-        @frame="setFrame"
+    <AutoModePanel
+      v-if="navigation.scanMode === 'auto'"
+      :info="info"
+      :disabled="watching"
+      @echo="addAutoEcho"
+      @running="autoRunningChanged"
+      @frame="store.setResolution($event)"
+    />
+
+    <template v-else>
+      <header class="flex flex-wrap items-center justify-between gap-4 rounded-box border border-base-300 bg-base-100 p-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex items-center gap-2">
+            <span
+              v-if="watching"
+              class="status status-primary"
+              :class="paused ? '' : 'animate-pulse'"
+            />
+            <h2 class="text-lg font-semibold">
+              <template v-if="!watching">
+                Open Bag → Echoes in the game, then press Start
+              </template>
+              <template v-else-if="paused">
+                Paused
+              </template>
+              <template v-else>
+                Watching · click the next echo in the game
+              </template>
+            </h2>
+          </div>
+          <p class="text-sm opacity-75">
+            Wavescan reads each echo once the details panel stops changing. It never clicks anything in watch mode.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <template v-if="!watching">
+            <button
+              type="button"
+              class="btn btn-primary"
+              :disabled="autoRunning"
+              @click="start"
+            >
+              Start watching
+            </button>
+          </template>
+          <template v-else>
+            <button
+              type="button"
+              class="btn"
+              @click="togglePause"
+            >
+              {{ paused ? "Resume" : "Pause" }}
+            </button>
+            <button
+              type="button"
+              class="btn"
+              :aria-label="'Switch to the mini window'"
+              @click="toggleMini"
+            >
+              <AppIcon name="mini" /> Mini window
+            </button>
+            <button
+              type="button"
+              class="btn btn-neutral"
+              @click="stopAndReview"
+            >
+              Stop and review
+            </button>
+          </template>
+        </div>
+      </header>
+
+      <ProblemCard
+        v-if="problem"
+        :problem="problem.problem"
+        :details="problem.details"
+        @report="goReport({ kind: 'game' })"
       />
 
-      <ol
-        v-if="mode === 'watch'"
-        class="list-decimal list-inside text-sm opacity-80 space-y-1"
-      >
-        <li>In Wuthering Waves, open <strong>Bag → Echoes</strong> (sorted by Level works best).</li>
-        <li>Press <strong>Start watching</strong>, then click through your echoes in the game at any pace.</li>
-        <li>Each new echo appears below. Wavescan never clicks anything in watch mode.</li>
-      </ol>
-
-      <div
-        v-if="mode === 'watch'"
-        class="flex flex-wrap items-center gap-3"
-      >
-        <button
-          v-if="!watching"
-          class="btn btn-primary"
-          @click="start"
-        >
-          Start watching
-        </button>
-        <button
-          v-else
-          class="btn"
-          @click="stop"
-        >
-          Stop
-        </button>
-        <div class="stats stats-horizontal shadow-sm text-sm">
-          <div class="stat py-2 px-4">
-            <div class="stat-title">
-              Scanned
-            </div>
-            <div class="stat-value text-lg">
-              {{ candidates.length }}
-            </div>
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3">
+        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+          <div class="text-xs opacity-70">
+            Read this time
           </div>
-          <div class="stat py-2 px-4">
-            <div class="stat-title">
-              Duplicates skipped
-            </div>
-            <div class="stat-value text-lg">
-              {{ stats.duplicates }}
-            </div>
+          <div class="font-mono text-2xl font-bold">
+            {{ stats.scanned }}
           </div>
         </div>
-        <span
-          v-if="watching"
-          class="loading loading-ring loading-sm"
-          aria-label="watching"
-        />
-      </div>
-
-      <div
-        v-if="message"
-        role="alert"
-        class="alert alert-warning text-sm"
-      >
-        {{ message }}
-      </div>
-
-      <div
-        v-if="candidates.length"
-        class="flex items-center gap-3"
-      >
-        <button
-          class="btn btn-sm btn-secondary"
-          @click="copyScan"
-        >
-          {{ copied ? "Copied ✓" : "Copy scan for Wuthering Tools" }}
-        </button>
-        <span class="text-xs opacity-70">
-          {{ built.scan.echoes.length }} echoes ready
-          <template v-if="built.skippedUnknown">· {{ built.skippedUnknown }} unknown (not included)</template>
-          · yellow = please check
-        </span>
-      </div>
-
-      <ul class="divide-y divide-base-200">
-        <li
-          v-for="c in candidates"
-          :key="c.id"
-          class="py-2 flex items-start gap-3 text-sm"
-        >
-          <span class="opacity-50 w-8 shrink-0">#{{ c.index }}</span>
-          <div class="flex-1 space-y-1">
-            <div class="font-medium">
-              <span :class="{ 'text-warning': isLow(c, 'name') }">{{ displayName(c) }}</span>
-              <span
-                class="ml-2 badge badge-sm"
-                :class="isLow(c, 'level') ? 'badge-warning' : 'badge-ghost'"
-              >+{{ c.level ?? "?" }}</span>
-              <span
-                class="ml-1 badge badge-sm"
-                :class="isLow(c, 'set') ? 'badge-warning' : 'badge-ghost'"
-              >{{ c.slot.set ?? "set ?" }}</span>
-              <span
-                class="ml-1 badge badge-sm"
-                :class="isLow(c, 'rank') ? 'badge-warning' : 'badge-ghost'"
-              >{{ c.rank ? `${c.rank}★` : "rarity ?" }}</span>
-            </div>
-            <div class="opacity-80">
-              <span :class="{ 'text-warning': isLow(c, 'mainStat') }">{{ c.slot.mainStatLabel || "main stat ?" }}</span>
-              <template
-                v-for="(s, i) in c.slot.substats"
-                :key="i"
-              >
-                <span
-                  v-if="s.subStat"
-                  class="ml-3"
-                  :class="{ 'text-warning': c.confidence.substats[i] === 'low' }"
-                >{{ s.subStat }} {{ s.subStatValue }}</span>
-              </template>
-            </div>
-            <div
-              v-if="rawHint(c)"
-              class="text-xs opacity-60 font-mono"
-            >
-              {{ rawHint(c) }}
-            </div>
+        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+          <div class="text-xs opacity-70">
+            Need a look
           </div>
-          <button
-            class="btn btn-ghost btn-xs"
-            aria-label="Remove"
-            @click="remove(c.id)"
+          <div
+            class="font-mono text-2xl font-bold"
+            :class="toCheck ? 'text-warning' : ''"
           >
-            ✕
-          </button>
-        </li>
-      </ul>
-    </div>
+            {{ toCheck }}
+          </div>
+        </div>
+        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+          <div class="text-xs opacity-70">
+            Already read (skipped)
+          </div>
+          <div class="font-mono text-2xl font-bold">
+            {{ stats.duplicates }}
+          </div>
+        </div>
+        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+          <div class="text-xs opacity-70">
+            Pace
+          </div>
+          <div class="font-mono text-2xl font-bold">
+            {{ pace === null ? "–" : pace.toFixed(1) }}<span class="text-sm font-normal opacity-70"> s / echo</span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        v-if="justRead"
+        class="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+      >
+        <section
+          aria-labelledby="just-h"
+          class="flex flex-col gap-2"
+        >
+          <h2
+            id="just-h"
+            class="text-xs font-semibold tracking-widest uppercase opacity-70"
+          >
+            Just read · #{{ justRead.index }}
+          </h2>
+          <EchoCard
+            :candidate="justRead"
+            size="large"
+            readonly
+          />
+          <p
+            v-if="flaggedFields(justRead).length === 0"
+            class="flex items-center gap-1 text-sm text-success"
+          >
+            <AppIcon
+              name="check"
+              :size="14"
+            /> Every field read clearly
+          </p>
+          <p
+            v-else
+            class="text-sm text-warning"
+          >
+            {{ flaggedFields(justRead).length }} to check on the Review screen
+          </p>
+        </section>
+        <section
+          aria-labelledby="session-h"
+          class="flex flex-col gap-2"
+        >
+          <div class="flex items-center justify-between">
+            <h2
+              id="session-h"
+              class="text-xs font-semibold tracking-widest uppercase opacity-70"
+            >
+              This session
+            </h2>
+            <span class="text-xs opacity-70">{{ total }} in the scan</span>
+          </div>
+          <ol class="flex flex-col gap-1.5">
+            <li
+              v-for="c in recentCandidates.slice(1, 9)"
+              :key="c.id"
+              class="flex items-center gap-3 rounded-lg border px-3 py-2 text-sm"
+              :class="flaggedFields(c).length ? 'border-warning/60 bg-warning/10' : 'border-base-300 bg-base-100'"
+            >
+              <span class="w-8 font-mono opacity-60">{{ c.index }}</span>
+              <EchoAvatar
+                :echo="c.slot.echo"
+                :name="displayName(c)"
+                size-class="size-7"
+              />
+              <span class="flex-1 truncate">
+                {{ displayName(c) }}
+                <span class="opacity-70">· {{ c.slot.mainStatLabel || "?" }}</span>
+                <span
+                  v-if="flaggedFields(c).length"
+                  class="text-warning"
+                > · {{ flaggedFields(c).length }} to check</span>
+              </span>
+              <span class="font-mono text-primary">+{{ c.level ?? "?" }}</span>
+            </li>
+          </ol>
+        </section>
+      </div>
+      <p
+        v-else-if="watching"
+        class="rounded-box border border-dashed border-base-300 p-8 text-center opacity-70"
+      >
+        Waiting for the first echo. Click one in the game.
+      </p>
+    </template>
   </div>
 </template>

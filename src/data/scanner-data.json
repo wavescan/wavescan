@@ -1,7 +1,7 @@
 {
  "format": "WutheringToolsScannerData",
  "version": 1,
- "hash": "21f335e9181373c558f0e136325ec7351baebe7eb8dda6c5b3c2bdfd047ce91e",
+ "hash": "768b9a508e1b436f09f069bc9557b8f56da15ccc2f3f39e571bfb0b3834eca43",
  "data": {
   "echoes": {
    "AbyssalGladius": {
@@ -12,7 +12,8 @@
      "TidebreakingCourage",
      "MidnightVeil",
      "ThreadofSeveredFate"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AbyssalGladius.webp"
    },
    "AbyssalMercator": {
     "key": "AbyssalMercator",
@@ -21,7 +22,8 @@
     "sets": [
      "FrostyResolve",
      "EternalRadiance"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AbyssalMercator.webp"
    },
    "AbyssalPatricius": {
     "key": "AbyssalPatricius",
@@ -30,7 +32,8 @@
     "sets": [
      "EmpyreanAnthem",
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AbyssalPatricius.webp"
    },
    "AeroDrake": {
     "key": "AeroDrake",
@@ -40,7 +43,8 @@
      "GustsofWelkin",
      "TidebreakingCourage",
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AeroDrake.webp"
    },
    "AeroPredator": {
     "key": "AeroPredator",
@@ -49,7 +53,8 @@
     "sets": [
      "VoidThunder",
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AeroPredator.webp"
    },
    "AeroPrism": {
     "key": "AeroPrism",
@@ -58,7 +63,8 @@
     "sets": [
      "EternalRadiance",
      "TidebreakingCourage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AeroPrism.webp"
    },
    "AureatePicket": {
     "key": "AureatePicket",
@@ -67,7 +73,8 @@
     "sets": [
      "HeartofEvilsPurge",
      "FlashofElectricReflection"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AureatePicket.webp"
    },
    "AutopuppetScout": {
     "key": "AutopuppetScout",
@@ -76,7 +83,8 @@
     "sets": [
      "CelestialLight",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/AutopuppetScout.webp"
    },
    "BabyViridblazeSaurian": {
     "key": "BabyViridblazeSaurian",
@@ -86,7 +94,8 @@
      "LingeringTunes",
      "VoidThunder",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/BabyViridblazeSaurian.webp"
    },
    "BellBorneGeochelone": {
     "key": "BellBorneGeochelone",
@@ -95,7 +104,8 @@
     "sets": [
      "MoonlitClouds",
      "RejuvenatingGlow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/BellBorneGeochelone.webp"
    },
    "BloomburstPuppet": {
     "key": "BloomburstPuppet",
@@ -103,7 +113,8 @@
     "class": "Common",
     "sets": [
      "HeartofSwornVigil"
-    ]
+    ],
+    "icon": "https://static.nanoka.cc/assets/ww/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_31104_UI.webp"
    },
    "CalamityEffigy": {
     "key": "CalamityEffigy",
@@ -112,7 +123,8 @@
     "sets": [
      "HeartofEvilsPurge",
      "LampofNetherRoad"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/CalamityEffigy.webp"
    },
    "CalcifiedJunrock": {
     "key": "CalcifiedJunrock",
@@ -122,7 +134,8 @@
      "TidebreakingCourage",
      "EmpyreanAnthem",
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/CalcifiedJunrock.webp"
    },
    "Capitaneus": {
     "key": "Capitaneus",
@@ -132,7 +145,8 @@
      "GustsofWelkin",
      "EternalRadiance",
      "WindwardPilgrimage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Capitaneus.webp"
    },
    "Carapace": {
     "key": "Carapace",
@@ -141,7 +155,8 @@
     "sets": [
      "MoonlitClouds",
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Carapace.webp"
    },
    "ChasmGuardian": {
     "key": "ChasmGuardian",
@@ -150,7 +165,8 @@
     "sets": [
      "LingeringTunes",
      "RejuvenatingGlow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ChasmGuardian.webp"
    },
    "ChestMimic": {
     "key": "ChestMimic",
@@ -160,7 +176,8 @@
      "MidnightVeil",
      "EmpyreanAnthem",
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ChestMimic.webp"
    },
    "Chirpuff": {
     "key": "Chirpuff",
@@ -169,7 +186,8 @@
     "sets": [
      "HavocEclipse",
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Chirpuff.webp"
    },
    "ChopChop": {
     "key": "ChopChop",
@@ -179,7 +197,8 @@
      "TidebreakingCourage",
      "EmpyreanAnthem",
      "DreamoftheLost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ChopChop.webp"
    },
    "ChopChopHeadless": {
     "key": "ChopChopHeadless",
@@ -188,7 +207,8 @@
     "sets": [
      "EternalRadiance",
      "TidebreakingCourage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ChopChopHeadless.webp"
    },
    "ChopChopLeftless": {
     "key": "ChopChopLeftless",
@@ -197,7 +217,8 @@
     "sets": [
      "FrostyResolve",
      "TidebreakingCourage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ChopChopLeftless.webp"
    },
    "ChopChopRightless": {
     "key": "ChopChopRightless",
@@ -206,7 +227,8 @@
     "sets": [
      "TidebreakingCourage",
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ChopChopRightless.webp"
    },
    "ClangBang": {
     "key": "ClangBang",
@@ -215,7 +237,8 @@
     "sets": [
      "CelestialLight",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ClangBang.webp"
    },
    "Corrosaurus": {
     "key": "Corrosaurus",
@@ -224,7 +247,8 @@
     "sets": [
      "FlamingClawprint",
      "FlamewingsShadow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Corrosaurus.webp"
    },
    "Crownless": {
     "key": "Crownless",
@@ -232,7 +256,8 @@
     "class": "Overlord",
     "sets": [
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Crownless.webp"
    },
    "Cruisewing": {
     "key": "Cruisewing",
@@ -242,7 +267,8 @@
      "RejuvenatingGlow",
      "MoonlitClouds",
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Cruisewing.webp"
    },
    "CuddleWuddle": {
     "key": "CuddleWuddle",
@@ -251,7 +277,8 @@
     "sets": [
      "FrostyResolve",
      "MidnightVeil"
-    ]
+    ],
+    "icon": "https://static.nanoka.cc/assets/ww/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_32030_UI.webp"
    },
    "CyanFeatheredHeron": {
     "key": "CyanFeatheredHeron",
@@ -260,7 +287,8 @@
     "sets": [
      "SierraGale",
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/CyanFeatheredHeron.webp"
    },
    "DevoteesFlesh": {
     "key": "DevoteesFlesh",
@@ -270,7 +298,8 @@
      "GustsofWelkin",
      "WindwardPilgrimage",
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/DevoteesFlesh.webp"
    },
    "Diamondclaw": {
     "key": "Diamondclaw",
@@ -279,7 +308,8 @@
     "sets": [
      "MoonlitClouds",
      "LingeringTunes"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Diamondclaw.webp"
    },
    "DiggyDuggy": {
     "key": "DiggyDuggy",
@@ -288,7 +318,8 @@
     "sets": [
      "EternalRadiance",
      "TidebreakingCourage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/DiggyDuggy.webp"
    },
    "DiurnusKnight": {
     "key": "DiurnusKnight",
@@ -297,7 +328,8 @@
     "sets": [
      "EternalRadiance",
      "TidebreakingCourage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/DiurnusKnight.webp"
    },
    "DragonofDirge": {
     "key": "DragonofDirge",
@@ -305,7 +337,8 @@
     "class": "Overlord",
     "sets": [
      "TidebreakingCourage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/DragonofDirge.webp"
    },
    "Dreamless": {
     "key": "Dreamless",
@@ -313,7 +346,8 @@
     "class": "Calamity",
     "sets": [
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Dreamless.webp"
    },
    "DwarfCassowary": {
     "key": "DwarfCassowary",
@@ -322,7 +356,8 @@
     "sets": [
      "SierraGale",
      "RejuvenatingGlow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/DwarfCassowary.webp"
    },
    "ElectroDrake": {
     "key": "ElectroDrake",
@@ -332,7 +367,8 @@
      "GustsofWelkin",
      "MidnightVeil",
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ElectroDrake.webp"
    },
    "ElectroPredator": {
     "key": "ElectroPredator",
@@ -341,7 +377,8 @@
     "sets": [
      "MoltenRift",
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ElectroPredator.webp"
    },
    "Excarat": {
     "key": "Excarat",
@@ -350,7 +387,8 @@
     "sets": [
      "FreezingFrost",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Excarat.webp"
    },
    "FaeIgnis": {
     "key": "FaeIgnis",
@@ -360,7 +398,8 @@
      "MidnightVeil",
      "EternalRadiance",
      "DreamoftheLost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FaeIgnis.webp"
    },
    "FallacyOfNoReturn": {
     "key": "FallacyOfNoReturn",
@@ -368,7 +407,8 @@
     "class": "Overlord",
     "sets": [
      "RejuvenatingGlow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FallacyOfNoReturn.webp"
    },
    "FeilianBeringal": {
     "key": "FeilianBeringal",
@@ -376,7 +416,8 @@
     "class": "Overlord",
     "sets": [
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FeilianBeringal.webp"
    },
    "FissionJunrock": {
     "key": "FissionJunrock",
@@ -386,7 +427,8 @@
      "MoonlitClouds",
      "VoidThunder",
      "RejuvenatingGlow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FissionJunrock.webp"
    },
    "Flautist": {
     "key": "Flautist",
@@ -395,7 +437,8 @@
     "sets": [
      "VoidThunder",
      "LingeringTunes"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Flautist.webp"
    },
    "FloraDrone": {
     "key": "FloraDrone",
@@ -406,7 +449,8 @@
      "RiteofGildedRevelation",
      "SoundofTrueName",
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FloraDrone.webp"
    },
    "FloraReindeer": {
     "key": "FloraReindeer",
@@ -415,7 +459,8 @@
     "sets": [
      "RiteofGildedRevelation",
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FloraReindeer.webp"
    },
    "FogLionarch": {
     "key": "FogLionarch",
@@ -425,7 +470,8 @@
      "SongofFeatheredTrace",
      "HeartofEvilsPurge",
      "LampofNetherRoad"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FogLionarch.webp"
    },
    "FogLionarchBody": {
     "key": "FogLionarchBody",
@@ -434,7 +480,8 @@
     "sets": [
      "SongofFeatheredTrace",
      "HeartofSwornVigil"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FogLionarchBody.webp"
    },
    "FogLionarchHead": {
     "key": "FogLionarchHead",
@@ -443,7 +490,8 @@
     "sets": [
      "SongofFeatheredTrace",
      "HeartofSwornVigil"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FogLionarchHead.webp"
    },
    "ForbiddenBastion": {
     "key": "ForbiddenBastion",
@@ -453,7 +501,8 @@
      "SongofFeatheredTrace",
      "HeartofEvilsPurge",
      "LampofNetherRoad"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ForbiddenBastion.webp"
    },
    "Formrender": {
     "key": "Formrender",
@@ -462,7 +511,8 @@
     "sets": [
      "HeartofSwornVigil",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://static.nanoka.cc/assets/ww/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_32070_UI.webp"
    },
    "FractsidusThruster": {
     "key": "FractsidusThruster",
@@ -471,7 +521,8 @@
     "sets": [
      "EternalRadiance",
      "EmpyreanAnthem"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FractsidusThruster.webp"
    },
    "FrostbiteColeoid": {
     "key": "FrostbiteColeoid",
@@ -480,7 +531,8 @@
     "sets": [
      "HaloofStarryRadiance",
      "WishesofQuietSnowfall"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FrostbiteColeoid.webp"
    },
    "FrostscourgeStalker": {
     "key": "FrostscourgeStalker",
@@ -489,7 +541,8 @@
     "sets": [
      "MidnightVeil",
      "EternalRadiance"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FrostscourgeStalker.webp"
    },
    "FusionDrake": {
     "key": "FusionDrake",
@@ -498,7 +551,8 @@
     "sets": [
      "FlamingClawprint",
      "WindwardPilgrimage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FusionDrake.webp"
    },
    "FusionDreadmane": {
     "key": "FusionDreadmane",
@@ -507,7 +561,8 @@
     "sets": [
      "RejuvenatingGlow",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FusionDreadmane.webp"
    },
    "FusionPrism": {
     "key": "FusionPrism",
@@ -517,7 +572,8 @@
      "FreezingFrost",
      "LingeringTunes",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FusionPrism.webp"
    },
    "FusionWarrior": {
     "key": "FusionWarrior",
@@ -527,7 +583,8 @@
      "SierraGale",
      "VoidThunder",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/FusionWarrior.webp"
    },
    "GalescourgeStalker": {
     "key": "GalescourgeStalker",
@@ -536,7 +593,8 @@
     "sets": [
      "FrostyResolve",
      "EmpyreanAnthem"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/GalescourgeStalker.webp"
    },
    "GeospiderS4": {
     "key": "GeospiderS4",
@@ -546,7 +604,8 @@
      "PactofNeonlightLeap",
      "HaloofStarryRadiance",
      "TrailblazingStar"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/GeospiderS4.webp"
    },
    "GlacioDrake": {
     "key": "GlacioDrake",
@@ -555,7 +614,8 @@
     "sets": [
      "GustsofWelkin",
      "WindwardPilgrimage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/GlacioDrake.webp"
    },
    "GlacioDreadmane": {
     "key": "GlacioDreadmane",
@@ -564,7 +624,8 @@
     "sets": [
      "MoonlitClouds",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/GlacioDreadmane.webp"
    },
    "GlacioPredator": {
     "key": "GlacioPredator",
@@ -573,7 +634,8 @@
     "sets": [
      "CelestialLight",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/GlacioPredator.webp"
    },
    "GlacioPrism": {
     "key": "GlacioPrism",
@@ -583,7 +645,8 @@
      "HavocEclipse",
      "MoonlitClouds",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/GlacioPrism.webp"
    },
    "Glommoth": {
     "key": "Glommoth",
@@ -592,7 +655,8 @@
     "sets": [
      "TrailblazingStar",
      "WishesofQuietSnowfall"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Glommoth.webp"
    },
    "GoldenJunrock": {
     "key": "GoldenJunrock",
@@ -602,7 +666,8 @@
      "EternalRadiance",
      "FrostyResolve",
      "LawofHarmony"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/GoldenJunrock.webp"
    },
    "Gulpuff": {
     "key": "Gulpuff",
@@ -611,7 +676,8 @@
     "sets": [
      "FreezingFrost",
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Gulpuff.webp"
    },
    "HavocDrake": {
     "key": "HavocDrake",
@@ -621,7 +687,8 @@
      "FlamingClawprint",
      "WindwardPilgrimage",
      "ThreadofSeveredFate"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/HavocDrake.webp"
    },
    "HavocDreadmane": {
     "key": "HavocDreadmane",
@@ -630,7 +697,8 @@
     "sets": [
      "MoltenRift",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/HavocDreadmane.webp"
    },
    "HavocPrism": {
     "key": "HavocPrism",
@@ -640,7 +708,8 @@
      "VoidThunder",
      "CelestialLight",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/HavocPrism.webp"
    },
    "HavocWarrior": {
     "key": "HavocWarrior",
@@ -649,7 +718,8 @@
     "sets": [
      "CelestialLight",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/HavocWarrior.webp"
    },
    "Hecate": {
     "key": "Hecate",
@@ -663,7 +733,8 @@
      "SierraGale",
      "CelestialLight",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Hecate.webp"
    },
    "Hoartoise": {
     "key": "Hoartoise",
@@ -672,7 +743,8 @@
     "sets": [
      "CelestialLight",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Hoartoise.webp"
    },
    "HocusPocus": {
     "key": "HocusPocus",
@@ -681,7 +753,8 @@
     "sets": [
      "FrostyResolve",
      "EmpyreanAnthem"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/HocusPocus.webp"
    },
    "Hoochief": {
     "key": "Hoochief",
@@ -690,7 +763,8 @@
     "sets": [
      "RejuvenatingGlow",
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Hoochief.webp"
    },
    "Hooscamp": {
     "key": "Hooscamp",
@@ -699,7 +773,8 @@
     "sets": [
      "LingeringTunes",
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Hooscamp.webp"
    },
    "Hurriclaw": {
     "key": "Hurriclaw",
@@ -709,7 +784,8 @@
      "TidebreakingCourage",
      "GustsofWelkin",
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Hurriclaw.webp"
    },
    "Hyvatia": {
     "key": "Hyvatia",
@@ -718,7 +794,8 @@
     "sets": [
      "PactofNeonlightLeap",
      "RiteofGildedRevelation"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Hyvatia.webp"
    },
    "IceglintDancer": {
     "key": "IceglintDancer",
@@ -728,7 +805,8 @@
      "TrailblazingStar",
      "WishesofQuietSnowfall",
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/IceglintDancer.webp"
    },
    "ImpermanenceHeron": {
     "key": "ImpermanenceHeron",
@@ -736,7 +814,8 @@
     "class": "Overlord",
     "sets": [
      "MoonlitClouds"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ImpermanenceHeron.webp"
    },
    "InfernoRider": {
     "key": "InfernoRider",
@@ -744,7 +823,8 @@
     "class": "Overlord",
     "sets": [
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/InfernoRider.webp"
    },
    "Ironhoof": {
     "key": "Ironhoof",
@@ -754,15 +834,17 @@
      "PactofNeonlightLeap",
      "WishesofQuietSnowfall",
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Ironhoof.webp"
    },
    "JadeNetherSerpent": {
     "key": "JadeNetherSerpent",
-    "name": "Jade Nethe rSerpent",
+    "name": "Jade Nether Serpent",
     "class": "Common",
     "sets": [
      "HeartofSwornVigil"
-    ]
+    ],
+    "icon": "https://static.nanoka.cc/assets/ww/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_31103_UI.webp"
    },
    "Jué": {
     "key": "Jué",
@@ -770,7 +852,8 @@
     "class": "Calamity",
     "sets": [
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Jue.png"
    },
    "Kerasaur": {
     "key": "Kerasaur",
@@ -780,7 +863,8 @@
      "WindwardPilgrimage",
      "FlamingClawprint",
      "FlamewingsShadow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Kerasaur.webp"
    },
    "KernelPuppetAnger": {
     "key": "KernelPuppetAnger",
@@ -789,7 +873,8 @@
     "sets": [
      "HeartofEvilsPurge",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/KernelPuppetAnger.webp"
    },
    "KernelPuppetFright": {
     "key": "KernelPuppetFright",
@@ -798,7 +883,8 @@
     "sets": [
      "LampofNetherRoad",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/KernelPuppetFright.webp"
    },
    "KernelPuppetGrief": {
     "key": "KernelPuppetGrief",
@@ -807,7 +893,8 @@
     "sets": [
      "LampofNetherRoad",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/KernelPuppetGrief.webp"
    },
    "KernelPuppetJoy": {
     "key": "KernelPuppetJoy",
@@ -816,7 +903,8 @@
     "sets": [
      "SongofFeatheredTrace",
      "HeartofSwornVigil"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/KernelPuppetJoy.webp"
    },
    "KernelPuppetReflection": {
     "key": "KernelPuppetReflection",
@@ -825,7 +913,8 @@
     "sets": [
      "HeartofEvilsPurge",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/KernelPuppetReflection.webp"
    },
    "KernelPuppetWorry": {
     "key": "KernelPuppetWorry",
@@ -834,7 +923,8 @@
     "sets": [
      "HeartofEvilsPurge",
      "FlashofElectricReflection"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/KernelPuppetWorry.webp"
    },
    "Kronablight": {
     "key": "Kronablight",
@@ -843,7 +933,8 @@
     "sets": [
      "TrailblazingStar",
      "ChromaticFoam"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Kronablight.webp"
    },
    "LadyoftheSea": {
     "key": "LadyoftheSea",
@@ -851,7 +942,8 @@
     "class": "Overlord",
     "sets": [
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/LadyoftheSea.webp"
    },
    "LaGuardia": {
     "key": "LaGuardia",
@@ -861,7 +953,8 @@
      "GustsofWelkin",
      "MidnightVeil",
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/LaGuardia.webp"
    },
    "LampylumenMyriad": {
     "key": "LampylumenMyriad",
@@ -869,7 +962,8 @@
     "class": "Overlord",
     "sets": [
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/LampylumenMyriad.webp"
    },
    "LavaLarva": {
     "key": "LavaLarva",
@@ -878,7 +972,8 @@
     "sets": [
      "LingeringTunes",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/LavaLarva.webp"
    },
    "Lightcrusher": {
     "key": "Lightcrusher",
@@ -886,7 +981,8 @@
     "class": "Elite",
     "sets": [
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Lightcrusher.webp"
    },
    "LionessofGlory": {
     "key": "LionessofGlory",
@@ -894,7 +990,8 @@
     "class": "Overlord",
     "sets": [
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/LionessofGlory.webp"
    },
    "Lorelei": {
     "key": "Lorelei",
@@ -902,7 +999,8 @@
     "class": "Overlord",
     "sets": [
      "MidnightVeil"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Lorelei.webp"
    },
    "LottieLost": {
     "key": "LottieLost",
@@ -911,7 +1009,8 @@
     "sets": [
      "TidebreakingCourage",
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/LottieLost.webp"
    },
    "LumiscaleConstruct": {
     "key": "LumiscaleConstruct",
@@ -920,7 +1019,8 @@
     "sets": [
      "VoidThunder",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/LumiscaleConstruct.webp"
    },
    "MechAbomination": {
     "key": "MechAbomination",
@@ -928,7 +1028,8 @@
     "class": "Overlord",
     "sets": [
      "LingeringTunes"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/MechAbomination.webp"
    },
    "MiningDrone": {
     "key": "MiningDrone",
@@ -939,7 +1040,8 @@
      "RiteofGildedRevelation",
      "SoundofTrueName",
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/MiningDrone.webp"
    },
    "MiningReindeer": {
     "key": "MiningReindeer",
@@ -948,7 +1050,8 @@
     "sets": [
      "PactofNeonlightLeap",
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/MiningReindeer.webp"
    },
    "MourningAix": {
     "key": "MourningAix",
@@ -956,7 +1059,8 @@
     "class": "Overlord",
     "sets": [
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/MourningAix.webp"
    },
    "MyriadSnareRustfireChassis": {
     "key": "MyriadSnareRustfireChassis",
@@ -965,7 +1069,8 @@
     "sets": [
      "HeartofEvilsPurge",
      "LampofNetherRoad"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/MyriadSnareRustfireChassis.webp"
    },
    "NamelessExplorer": {
     "key": "NamelessExplorer",
@@ -974,7 +1079,8 @@
     "sets": [
      "SoundofTrueName",
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NamelessExplorer.webp"
    },
    "NightmareAeroPredator": {
     "key": "NightmareAeroPredator",
@@ -982,7 +1088,8 @@
     "class": "Common",
     "sets": [
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareAeroPredator.webp"
    },
    "NightmareBabyRoseshroom": {
     "key": "NightmareBabyRoseshroom",
@@ -990,7 +1097,8 @@
     "class": "Common",
     "sets": [
      "FlamewingsShadow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareBabyRoseshroom.webp"
    },
    "NightmareBabyViridblazeSaurian": {
     "key": "NightmareBabyViridblazeSaurian",
@@ -998,7 +1106,8 @@
     "class": "Common",
     "sets": [
      "FlamewingsShadow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareBabyViridblazeSaurian.webp"
    },
    "NightmareChirpuff": {
     "key": "NightmareChirpuff",
@@ -1006,7 +1115,8 @@
     "class": "Common",
     "sets": [
      "LawofHarmony"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareChirpuff.webp"
    },
    "NightmareCrownless": {
     "key": "NightmareCrownless",
@@ -1014,7 +1124,8 @@
     "class": "Overlord",
     "sets": [
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareCrownless.webp"
    },
    "NightmareCyanFeatheredHeron": {
     "key": "NightmareCyanFeatheredHeron",
@@ -1022,7 +1133,8 @@
     "class": "Elite",
     "sets": [
      "LawofHarmony"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareCyanFeatheredHeron.webp"
    },
    "NightmareDwarfCassowary": {
     "key": "NightmareDwarfCassowary",
@@ -1030,7 +1142,8 @@
     "class": "Common",
     "sets": [
      "ThreadofSeveredFate"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareDwarfCassowary.webp"
    },
    "NightmareElectroPredator": {
     "key": "NightmareElectroPredator",
@@ -1038,7 +1151,8 @@
     "class": "Common",
     "sets": [
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareElectroPredator.webp"
    },
    "NightmareFeilianBeringal": {
     "key": "NightmareFeilianBeringal",
@@ -1046,7 +1160,8 @@
     "class": "Overlord",
     "sets": [
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareFeilianBeringal.webp"
    },
    "NightmareGlacioPredator": {
     "key": "NightmareGlacioPredator",
@@ -1054,7 +1169,8 @@
     "class": "Common",
     "sets": [
      "DreamoftheLost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareGlacioPredator.webp"
    },
    "NightmareGulpuff": {
     "key": "NightmareGulpuff",
@@ -1062,7 +1178,8 @@
     "class": "Common",
     "sets": [
      "LawofHarmony"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareGulpuff.webp"
    },
    "NightmareHavocWarrior": {
     "key": "NightmareHavocWarrior",
@@ -1070,7 +1187,8 @@
     "class": "Common",
     "sets": [
      "DreamoftheLost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareHavocWarrior.webp"
    },
    "NightmareHecate": {
     "key": "NightmareHecate",
@@ -1078,7 +1196,8 @@
     "class": "Calamity",
     "sets": [
      "DreamoftheLost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareHecate.webp"
    },
    "NightmareImpermanenceHeron": {
     "key": "NightmareImpermanenceHeron",
@@ -1086,7 +1205,8 @@
     "class": "Overlord",
     "sets": [
      "MidnightVeil"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareImpermanenceHeron.webp"
    },
    "NightmareInfernoRider": {
     "key": "NightmareInfernoRider",
@@ -1094,7 +1214,8 @@
     "class": "Overlord",
     "sets": [
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareInfernoRider.webp"
    },
    "NightmareKelpie": {
     "key": "NightmareKelpie",
@@ -1103,7 +1224,8 @@
     "sets": [
      "GustsofWelkin",
      "WindwardPilgrimage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareKelpie.webp"
    },
    "NightmareLampylumenMyriad": {
     "key": "NightmareLampylumenMyriad",
@@ -1112,7 +1234,8 @@
     "sets": [
      "FrostyResolve",
      "EmpyreanAnthem"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareLampylumenMyriad.webp"
    },
    "NightmareMourningAix": {
     "key": "NightmareMourningAix",
@@ -1120,7 +1243,8 @@
     "class": "Overlord",
     "sets": [
      "EternalRadiance"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareMourningAix.webp"
    },
    "NightmareRoseshroom": {
     "key": "NightmareRoseshroom",
@@ -1128,7 +1252,8 @@
     "class": "Elite",
     "sets": [
      "ThreadofSeveredFate"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareRoseshroom.webp"
    },
    "NightmareTambourinist": {
     "key": "NightmareTambourinist",
@@ -1136,7 +1261,8 @@
     "class": "Elite",
     "sets": [
      "DreamoftheLost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareTambourinist.webp"
    },
    "NightmareTempestMephis": {
     "key": "NightmareTempestMephis",
@@ -1145,7 +1271,8 @@
     "sets": [
      "VoidThunder",
      "EmpyreanAnthem"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareTempestMephis.webp"
    },
    "NightmareThunderingMephis": {
     "key": "NightmareThunderingMephis",
@@ -1153,7 +1280,8 @@
     "class": "Overlord",
     "sets": [
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareThunderingMephis.webp"
    },
    "NightmareTickTack": {
     "key": "NightmareTickTack",
@@ -1161,7 +1289,8 @@
     "class": "Common",
     "sets": [
      "ThreadofSeveredFate"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareTickTack.webp"
    },
    "NightmareVioletFeatheredHeron": {
     "key": "NightmareVioletFeatheredHeron",
@@ -1169,7 +1298,8 @@
     "class": "Elite",
     "sets": [
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareVioletFeatheredHeron.webp"
    },
    "NightmareViridblazeSaurian": {
     "key": "NightmareViridblazeSaurian",
@@ -1177,7 +1307,8 @@
     "class": "Elite",
     "sets": [
      "FlamewingsShadow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NightmareViridblazeSaurian.webp"
    },
    "NimbusWraith": {
     "key": "NimbusWraith",
@@ -1187,7 +1318,8 @@
      "EmpyreanAnthem",
      "MidnightVeil",
      "FlamewingsShadow"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NimbusWraith.webp"
    },
    "NocturnusKnight": {
     "key": "NocturnusKnight",
@@ -1196,7 +1328,8 @@
     "sets": [
      "MidnightVeil",
      "EmpyreanAnthem"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/NocturnusKnight.webp"
    },
    "PhantomCapitaneus": {
     "key": "PhantomCapitaneus",
@@ -1205,7 +1338,8 @@
     "sets": [
      "GustsofWelkin",
      "EternalRadiance"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_32033_1_UI.webp"
    },
    "PhantomChestMimic": {
     "key": "PhantomChestMimic",
@@ -1215,7 +1349,8 @@
      "MidnightVeil",
      "EmpyreanAnthem",
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31048_UI.webp"
    },
    "PhantomChopChop": {
     "key": "PhantomChopChop",
@@ -1225,7 +1360,8 @@
      "TidebreakingCourage",
      "EmpyreanAnthem",
      "DreamoftheLost"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32028_UI.webp"
    },
    "PhantomClangBang": {
     "key": "PhantomClangBang",
@@ -1234,7 +1370,8 @@
     "sets": [
      "CelestialLight",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1015_UI.webp"
    },
    "PhantomCrownless": {
     "key": "PhantomCrownless",
@@ -1242,7 +1379,8 @@
     "class": "Overlord",
     "sets": [
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_9991_UI.webp"
    },
    "PhantomCuddleWuddle": {
     "key": "PhantomCuddleWuddle",
@@ -1251,7 +1389,8 @@
     "sets": [
      "MidnightVeil",
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32030_UI.webp"
    },
    "PhantomDiggyDuggy": {
     "key": "PhantomDiggyDuggy",
@@ -1261,7 +1400,8 @@
      "MoonlitClouds",
      "LingeringTunes",
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31047_UI.webp"
    },
    "PhantomDreamless": {
     "key": "PhantomDreamless",
@@ -1269,7 +1409,8 @@
     "class": "Calamity",
     "sets": [
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_998_1_UI.webp"
    },
    "PhantomFaeIgnis": {
     "key": "PhantomFaeIgnis",
@@ -1278,7 +1419,8 @@
     "sets": [
      "MidnightVeil",
      "EternalRadiance"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31043_UI.webp"
    },
    "PhantomFallacyOfNoReturn": {
     "key": "PhantomFallacyOfNoReturn",
@@ -1286,7 +1428,8 @@
     "class": "Overlord",
     "sets": [
      "RejuvenatingGlow"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_350_UI.webp"
    },
    "PhantomFeilianBeringal": {
     "key": "PhantomFeilianBeringal",
@@ -1295,7 +1438,8 @@
     "sets": [
      "SierraGale",
      "RejuvenatingGlow"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1009_UI.webp"
    },
    "PhantomForbiddenBastion": {
     "key": "PhantomForbiddenBastion",
@@ -1305,7 +1449,8 @@
      "SongofFeatheredTrace",
      "HeartofEvilsPurge",
      "LampofNetherRoad"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32068_UI.webp"
    },
    "PhantomGlommoth": {
     "key": "PhantomGlommoth",
@@ -1314,7 +1459,8 @@
     "sets": [
      "TrailblazingStar",
      "WishesofQuietSnowfall"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32061_UI.webp"
    },
    "PhantomGulpuff": {
     "key": "PhantomGulpuff",
@@ -1323,7 +1469,8 @@
     "sets": [
      "CelestialLight",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_115_1_UI.webp"
    },
    "PhantomHoartoise": {
     "key": "PhantomHoartoise",
@@ -1334,7 +1481,8 @@
      "FreezingFrost",
      "FrostyResolve",
      "EmpyreanAnthem"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1010_UI.webp"
    },
    "PhantomIceglintDancer": {
     "key": "PhantomIceglintDancer",
@@ -1342,7 +1490,8 @@
     "class": "Common",
     "sets": [
      "TrailblazingStar"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31083_UI.webp"
    },
    "PhantomImpermanenceHeron": {
     "key": "PhantomImpermanenceHeron",
@@ -1350,7 +1499,8 @@
     "class": "Overlord",
     "sets": [
      "MoonlitClouds"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1014_UI.webp"
    },
    "PhantomInfernoRider": {
     "key": "PhantomInfernoRider",
@@ -1358,7 +1508,8 @@
     "class": "Overlord",
     "sets": [
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_325_1_UI.webp"
    },
    "PhantomKerasaur": {
     "key": "PhantomKerasaur",
@@ -1367,7 +1518,8 @@
     "sets": [
      "WindwardPilgrimage",
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31062_UI.webp"
    },
    "PhantomKronaclaw": {
     "key": "PhantomKronaclaw",
@@ -1376,7 +1528,8 @@
     "sets": [
      "TrailblazingStar",
      "ChromaticFoam"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32060_UI.webp"
    },
    "PhantomLightcrusher": {
     "key": "PhantomLightcrusher",
@@ -1384,7 +1537,8 @@
     "class": "Elite",
     "sets": [
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1016_UI.webp"
    },
    "PhantomLorelei": {
     "key": "PhantomLorelei",
@@ -1392,7 +1546,8 @@
     "class": "Overlord",
     "sets": [
      "MidnightVeil"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_33011_UI.webp"
    },
    "PhantomLumiscaleConstruct": {
     "key": "PhantomLumiscaleConstruct",
@@ -1401,7 +1556,8 @@
     "sets": [
      "VoidThunder",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_329_1_UI.webp"
    },
    "PhantomMourningAix": {
     "key": "PhantomMourningAix",
@@ -1409,7 +1565,8 @@
     "class": "Overlord",
     "sets": [
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1006_UI.webp"
    },
    "PhantomMyriadSnareRustfireChassis": {
     "key": "PhantomMyriadSnareRustfireChassis",
@@ -1418,7 +1575,8 @@
     "sets": [
      "HeartofEvilsPurge",
      "LampofNetherRoad"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_34030_UI.webp"
    },
    "PhantomNightmareCrownless": {
     "key": "PhantomNightmareCrownless",
@@ -1426,7 +1584,8 @@
     "class": "Overlord",
     "sets": [
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_33018_UI.webp"
    },
    "PhantomNightmareInfernoRider": {
     "key": "PhantomNightmareInfernoRider",
@@ -1434,7 +1593,8 @@
     "class": "Overlord",
     "sets": [
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_33019_UI.webp"
    },
    "PhantomNimbusWraith": {
     "key": "PhantomNimbusWraith",
@@ -1443,7 +1603,8 @@
     "sets": [
      "EmpyreanAnthem",
      "MidnightVeil"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31044_UI.webp"
    },
    "PhantomQuestlessKnight": {
     "key": "PhantomQuestlessKnight",
@@ -1452,7 +1613,8 @@
     "sets": [
      "MoltenRift",
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32022_UI.webp"
    },
    "PhantomReactorHusk": {
     "key": "PhantomReactorHusk",
@@ -1461,7 +1623,8 @@
     "sets": [
      "HaloofStarryRadiance",
      "ChromaticFoam"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_34022_UI.webp"
    },
    "PhantomRocksteadyGuardian": {
     "key": "PhantomRocksteadyGuardian",
@@ -1471,7 +1634,8 @@
      "RejuvenatingGlow",
      "CelestialLight",
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1007_UI.webp"
    },
    "PhantomSentryConstruct": {
     "key": "PhantomSentryConstruct",
@@ -1479,7 +1643,8 @@
     "class": "Overlord",
     "sets": [
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_33009_UI.webp"
    },
    "PhantomSigillum": {
     "key": "PhantomSigillum",
@@ -1487,7 +1652,8 @@
     "class": "Calamity",
     "sets": [
      "TrailblazingStar"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_34025_UI.webp"
    },
    "PhantomSkywatchLancer": {
     "key": "PhantomSkywatchLancer",
@@ -1496,7 +1662,8 @@
     "sets": [
      "FlashofElectricReflection",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32069_UI.webp"
    },
    "PhantomSmiter": {
     "key": "PhantomSmiter",
@@ -1504,7 +1671,8 @@
     "class": "Common",
     "sets": [
      "SongofFeatheredTrace"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31090_UI.webp"
    },
    "PhantomSmolder": {
     "key": "PhantomSmolder",
@@ -1512,7 +1680,8 @@
     "class": "Common",
     "sets": [
      "SongofFeatheredTrace"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31102_UI.webp"
    },
    "PhantomTheFalseSovereign": {
     "key": "PhantomTheFalseSovereign",
@@ -1520,7 +1689,8 @@
     "class": "Overlord",
     "sets": [
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_34017_UI.webp"
    },
    "PhantomThunderingMephis": {
     "key": "PhantomThunderingMephis",
@@ -1528,7 +1698,8 @@
     "class": "Overlord",
     "sets": [
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1008_UI.webp"
    },
    "PhantomTwinNovaCollapsarBlade": {
     "key": "PhantomTwinNovaCollapsarBlade",
@@ -1536,7 +1707,8 @@
     "class": "Elite",
     "sets": [
      "RiteofGildedRevelation"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32050_UI.webp"
    },
    "PhantomTwinNovaNebulousCannon": {
     "key": "PhantomTwinNovaNebulousCannon",
@@ -1544,7 +1716,8 @@
     "class": "Elite",
     "sets": [
      "RiteofGildedRevelation"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32049_UI.webp"
    },
    "PhantomVitreumDancer": {
     "key": "PhantomVitreumDancer",
@@ -1553,7 +1726,8 @@
     "sets": [
      "MoltenRift",
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32029_UI.webp"
    },
    "PhantomZipZap": {
     "key": "PhantomZipZap",
@@ -1562,7 +1736,8 @@
     "sets": [
      "PactofNeonlightLeap",
      "RiteofGildedRevelation"
-    ]
+    ],
+    "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31082_UI.webp"
    },
    "PilgrimsShell": {
     "key": "PilgrimsShell",
@@ -1571,7 +1746,8 @@
     "sets": [
      "WindwardPilgrimage",
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/PilgrimsShell.webp"
    },
    "PorcelainPicket": {
     "key": "PorcelainPicket",
@@ -1580,7 +1756,8 @@
     "sets": [
      "LampofNetherRoad",
      "FlashofElectricReflection"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/PorcelainPicket.webp"
    },
    "QuestlessKnight": {
     "key": "QuestlessKnight",
@@ -1589,7 +1766,8 @@
     "sets": [
      "FrostyResolve",
      "MidnightVeil"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/QuestlessKnight.webp"
    },
    "RageAgainsttheStatue": {
     "key": "RageAgainsttheStatue",
@@ -1599,7 +1777,8 @@
      "EternalRadiance",
      "GustsofWelkin",
      "LawofHarmony"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/RageAgainsttheStatue.webp"
    },
    "ReactorHusk": {
     "key": "ReactorHusk",
@@ -1608,7 +1787,8 @@
     "sets": [
      "HaloofStarryRadiance",
      "ChromaticFoam"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReactorHusk.webp"
    },
    "ReminiscenceDenia": {
     "key": "ReminiscenceDenia",
@@ -1616,7 +1796,8 @@
     "class": "Calamity",
     "sets": [
      "ChromaticFoam"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReminiscenceDenia.webp"
    },
    "ReminiscenceFenrico": {
     "key": "ReminiscenceFenrico",
@@ -1625,7 +1806,8 @@
     "sets": [
      "DreamoftheLost",
      "LawofHarmony"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReminiscenceFenrico.webp"
    },
    "ReminiscenceFleurdelys": {
     "key": "ReminiscenceFleurdelys",
@@ -1634,7 +1816,8 @@
     "sets": [
      "GustsofWelkin",
      "WindwardPilgrimage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReminiscenceFleurdelys.webp"
    },
    "ReminiscenceKronaclaw": {
     "key": "ReminiscenceKronaclaw",
@@ -1643,7 +1826,8 @@
     "sets": [
      "TrailblazingStar",
      "ChromaticFoam"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReminiscenceKronaclaw.webp"
    },
    "ReminiscenceNightmareAdamSmasher": {
     "key": "ReminiscenceNightmareAdamSmasher",
@@ -1651,7 +1835,8 @@
     "class": "Overlord",
     "sets": [
      "ShadowofShatteredDreams"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReminiscenceNightmareAdamSmasher.webp"
    },
    "ReminiscenceSuhsintheInevitable": {
     "key": "ReminiscenceSuhsintheInevitable",
@@ -1660,7 +1845,8 @@
     "sets": [
      "HeartofSwornVigil",
      "FlashofElectricReflection"
-    ]
+    ],
+    "icon": "https://static.nanoka.cc/assets/ww/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_34033_2_UI.webp"
    },
    "ReminiscenceThrenodianLeviathan": {
     "key": "ReminiscenceThrenodianLeviathan",
@@ -1669,7 +1855,8 @@
     "sets": [
      "FlamewingsShadow",
      "ThreadofSeveredFate"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReminiscenceThrenodianLeviathan.webp"
    },
    "ReminiscenceThrenodianVoidborneConstruct": {
     "key": "ReminiscenceThrenodianVoidborneConstruct",
@@ -1677,7 +1864,8 @@
     "class": "Calamity",
     "sets": [
      "WishesofQuietSnowfall"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ReminiscenceThrenodianVoidborneConstruct.webp"
    },
    "RocksteadyGuardian": {
     "key": "RocksteadyGuardian",
@@ -1686,7 +1874,8 @@
     "sets": [
      "RejuvenatingGlow",
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/RocksteadyGuardian.webp"
    },
    "Roseshroom": {
     "key": "Roseshroom",
@@ -1695,7 +1884,8 @@
     "sets": [
      "FreezingFrost",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Roseshroom.webp"
    },
    "SabercatProwler": {
     "key": "SabercatProwler",
@@ -1705,7 +1895,8 @@
      "PactofNeonlightLeap",
      "HaloofStarryRadiance",
      "SoundofTrueName"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SabercatProwler.webp"
    },
    "SabercatReaver": {
     "key": "SabercatReaver",
@@ -1715,7 +1906,8 @@
      "PactofNeonlightLeap",
      "HaloofStarryRadiance",
      "SoundofTrueName"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SabercatReaver.webp"
    },
    "SabyrBoar": {
     "key": "SabyrBoar",
@@ -1725,7 +1917,8 @@
      "MoonlitClouds",
      "SierraGale",
      "FreezingFrost"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SabyrBoar.webp"
    },
    "Sacerdos": {
     "key": "Sacerdos",
@@ -1734,7 +1927,8 @@
     "sets": [
      "GustsofWelkin",
      "WindwardPilgrimage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Sacerdos.webp"
    },
    "Sagittario": {
     "key": "Sagittario",
@@ -1744,7 +1938,8 @@
      "GustsofWelkin",
      "EternalRadiance",
      "FlamingClawprint"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Sagittario.webp"
    },
    "SentryConstruct": {
     "key": "SentryConstruct",
@@ -1752,7 +1947,8 @@
     "class": "Overlord",
     "sets": [
      "FrostyResolve"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SentryConstruct.webp"
    },
    "ShadowStepper": {
     "key": "ShadowStepper",
@@ -1762,7 +1958,8 @@
      "TrailblazingStar",
      "ChromaticFoam",
      "WishesofQuietSnowfall"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ShadowStepper.webp"
    },
    "Sigillum": {
     "key": "Sigillum",
@@ -1770,7 +1967,8 @@
     "class": "Calamity",
     "sets": [
      "TrailblazingStar"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Sigillum.webp"
    },
    "SkywatchLancer": {
     "key": "SkywatchLancer",
@@ -1779,7 +1977,8 @@
     "sets": [
      "FlashofElectricReflection",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://static.nanoka.cc/assets/ww/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_32069_UI.webp"
    },
    "Smiter": {
     "key": "Smiter",
@@ -1787,7 +1986,8 @@
     "class": "Common",
     "sets": [
      "SongofFeatheredTrace"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Smiter.webp"
    },
    "Smolder": {
     "key": "Smolder",
@@ -1795,7 +1995,8 @@
     "class": "Common",
     "sets": [
      "SongofFeatheredTrace"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Smolder.webp"
    },
    "SnipSnap": {
     "key": "SnipSnap",
@@ -1805,7 +2006,8 @@
      "LingeringTunes",
      "RejuvenatingGlow",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SnipSnap.webp"
    },
    "Soulfrayer": {
     "key": "Soulfrayer",
@@ -1814,7 +2016,8 @@
     "sets": [
      "HeartofSwornVigil",
      "FlashofElectricReflection"
-    ]
+    ],
+    "icon": "https://static.nanoka.cc/assets/ww/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_32071_UI.webp"
    },
    "SpacetrekExplorer": {
     "key": "SpacetrekExplorer",
@@ -1824,7 +2027,8 @@
      "HaloofStarryRadiance",
      "ChromaticFoam",
      "SoundofTrueName"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SpacetrekExplorer.webp"
    },
    "Spearback": {
     "key": "Spearback",
@@ -1833,7 +2037,8 @@
     "sets": [
      "LingeringTunes",
      "MoonlitClouds"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Spearback.webp"
    },
    "SpectroDrake": {
     "key": "SpectroDrake",
@@ -1842,7 +2047,8 @@
     "sets": [
      "FlamingClawprint",
      "WindwardPilgrimage"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SpectroDrake.webp"
    },
    "SpectroPrism": {
     "key": "SpectroPrism",
@@ -1852,7 +2058,8 @@
      "MoltenRift",
      "VoidThunder",
      "CelestialLight"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/SpectroPrism.webp"
    },
    "StonePicket": {
     "key": "StonePicket",
@@ -1861,7 +2068,8 @@
     "sets": [
      "LampofNetherRoad",
      "FlashofElectricReflection"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/StonePicket.webp"
    },
    "StonewallBracer": {
     "key": "StonewallBracer",
@@ -1870,7 +2078,8 @@
     "sets": [
      "RejuvenatingGlow",
      "MoonlitClouds"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/StonewallBracer.webp"
    },
    "Tambourinist": {
     "key": "Tambourinist",
@@ -1879,7 +2088,8 @@
     "sets": [
      "FreezingFrost",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/Tambourinist.webp"
    },
    "TempestMephis": {
     "key": "TempestMephis",
@@ -1887,7 +2097,8 @@
     "class": "Overlord",
     "sets": [
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/TempestMephis.webp"
    },
    "TheFalseSovereign": {
     "key": "TheFalseSovereign",
@@ -1895,7 +2106,8 @@
     "class": "Overlord",
     "sets": [
      "CrownofValor"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/TheFalseSovereign.webp"
    },
    "ThousandPuppetPavilion": {
     "key": "ThousandPuppetPavilion",
@@ -1904,7 +2116,8 @@
     "sets": [
      "SongofFeatheredTrace",
      "FlowerofTingedYearning"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ThousandPuppetPavilion.webp"
    },
    "ThunderingMephis": {
     "key": "ThunderingMephis",
@@ -1912,7 +2125,8 @@
     "class": "Overlord",
     "sets": [
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ThunderingMephis.webp"
    },
    "TickTack": {
     "key": "TickTack",
@@ -1922,7 +2136,8 @@
      "HavocEclipse",
      "RejuvenatingGlow",
      "LingeringTunes"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/TickTack.webp"
    },
    "TrafficIlluminator": {
     "key": "TrafficIlluminator",
@@ -1932,7 +2147,8 @@
      "VoidThunder",
      "SierraGale",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/TrafficIlluminator.webp"
    },
    "TremorWarrior": {
     "key": "TremorWarrior",
@@ -1942,7 +2158,8 @@
      "HaloofStarryRadiance",
      "ChromaticFoam",
      "WishesofQuietSnowfall"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/TremorWarrior.webp"
    },
    "TwinNovaCollapsarBlade": {
     "key": "TwinNovaCollapsarBlade",
@@ -1952,7 +2169,8 @@
      "RiteofGildedRevelation",
      "TrailblazingStar",
      "SoundofTrueName"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/TwinNovaCollapsarBlade.webp"
    },
    "TwinNovaNebulousCannon": {
     "key": "TwinNovaNebulousCannon",
@@ -1961,7 +2179,8 @@
     "sets": [
      "RiteofGildedRevelation",
      "ChromaticFoam"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/TwinNovaNebulousCannon.webp"
    },
    "VanguardJunrock": {
     "key": "VanguardJunrock",
@@ -1971,7 +2190,8 @@
      "RejuvenatingGlow",
      "VoidThunder",
      "LingeringTunes"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/VanguardJunrock.webp"
    },
    "VioletFeatheredHeron": {
     "key": "VioletFeatheredHeron",
@@ -1980,7 +2200,8 @@
     "sets": [
      "MoltenRift",
      "VoidThunder"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/VioletFeatheredHeron.webp"
    },
    "ViridblazeSaurian": {
     "key": "ViridblazeSaurian",
@@ -1989,7 +2210,8 @@
     "sets": [
      "MoonlitClouds",
      "MoltenRift"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ViridblazeSaurian.webp"
    },
    "VitreumDancer": {
     "key": "VitreumDancer",
@@ -1998,7 +2220,8 @@
     "sets": [
      "EmpyreanAnthem",
      "EternalRadiance"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/VitreumDancer.webp"
    },
    "VoidwingMoth": {
     "key": "VoidwingMoth",
@@ -2006,7 +2229,8 @@
     "class": "Elite",
     "sets": [
      "ReelofSplicedMemories"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/VoidwingMoth.webp"
    },
    "VoltscourgeStalker": {
     "key": "VoltscourgeStalker",
@@ -2015,7 +2239,8 @@
     "sets": [
      "EmpyreanAnthem",
      "MidnightVeil"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/VoltscourgeStalker.webp"
    },
    "WhiffWhaff": {
     "key": "WhiffWhaff",
@@ -2025,7 +2250,8 @@
      "RejuvenatingGlow",
      "MoonlitClouds",
      "SierraGale"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/WhiffWhaff.webp"
    },
    "WindlashColeoid": {
     "key": "WindlashColeoid",
@@ -2034,7 +2260,8 @@
     "sets": [
      "RiteofGildedRevelation",
      "WishesofQuietSnowfall"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/WindlashColeoid.webp"
    },
    "YoungRoseshroom": {
     "key": "YoungRoseshroom",
@@ -2043,7 +2270,8 @@
     "sets": [
      "SierraGale",
      "HavocEclipse"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/BabyRoseshroom.webp"
    },
    "ZigZag": {
     "key": "ZigZag",
@@ -2053,7 +2281,8 @@
      "CelestialLight",
      "MoonlitClouds",
      "LingeringTunes"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ZigZag.webp"
    },
    "ZipZap": {
     "key": "ZipZap",
@@ -2064,7 +2293,8 @@
      "RiteofGildedRevelation",
      "ChromaticFoam",
      "SoundofTrueName"
-    ]
+    ],
+    "icon": "https://ryanbenson.github.io/wuthering-waves-assets/images/echoes/ZipZap.webp"
    }
   },
   "echoCostByClass": {

@@ -1,4 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
+import { activity } from "@/feedback/activity";
+import { isAllowedUrl } from "@/feedback/links";
 import type {
   AppInfo,
   AutoModeStatus,
@@ -28,8 +31,10 @@ export function getWindowCandidates(): Promise<WindowCandidate[]> {
   return invoke<WindowCandidate[]>("window_candidates");
 }
 
-export function startCapture(maxFps: number): Promise<GameWindow> {
-  return invoke<GameWindow>("start_capture", { maxFps });
+export async function startCapture(maxFps: number): Promise<GameWindow> {
+  const window = await invoke<GameWindow>("start_capture", { maxFps });
+  activity.capturesStarted += 1;
+  return window;
 }
 
 export function stopCapture(): Promise<void> {
@@ -66,16 +71,20 @@ export function autoFocusGame(): Promise<AutoModeStatus> {
   return invoke<AutoModeStatus>("auto_focus_game");
 }
 
-export function autoClick(target: FracPoint): Promise<AutoModeStatus> {
-  return invoke<AutoModeStatus>("auto_click", { target });
+export async function autoClick(target: FracPoint): Promise<AutoModeStatus> {
+  const status = await invoke<AutoModeStatus>("auto_click", { target });
+  activity.clicks += 1;
+  return status;
 }
 
 /**
  * Scrolls the mouse wheel `ticks` notches at `target` (negative scrolls down), through the
  * same auto-mode checks as a click. At most 40 notches either way.
  */
-export function autoScroll(target: FracPoint, ticks: number): Promise<AutoModeStatus> {
-  return invoke<AutoModeStatus>("auto_scroll", { target, ticks });
+export async function autoScroll(target: FracPoint, ticks: number): Promise<AutoModeStatus> {
+  const status = await invoke<AutoModeStatus>("auto_scroll", { target, ticks });
+  activity.scrolls += 1;
+  return status;
 }
 
 /**
@@ -98,6 +107,36 @@ export function readRegions(seq: number, regions: RegionRead[]): Promise<RegionT
  */
 export function cropRegions(seq: number, regions: FracRect[]): Promise<ArrayBuffer> {
   return invoke<ArrayBuffer>("crop_regions", { seq, regions });
+}
+
+/**
+ * Opens a GitHub page (or the Fair Play policy) in the user's browser. Only URLs in
+ * `src/feedback/links.ts` are allowed, and Rust's opener scope enforces the same list
+ * (ADR 0028). Wavescan itself makes no connection; the browser does.
+ */
+export async function openUrl(url: string): Promise<void> {
+  if (!isAllowedUrl(url)) throw new Error("Wavescan doesn't open that address");
+  await invoke<void>("plugin:opener|open_url", { url });
+  activity.pagesOpened += 1;
+}
+
+/** Normal window size, restored when leaving the mini window. */
+const NORMAL_SIZE = { width: 1100, height: 760, minWidth: 720, minHeight: 520 };
+/** The mini window: a small always-on-top counter for one-screen setups (ADR 0028). */
+const MINI_SIZE = { width: 340, height: 220 };
+
+/** Shrinks the app to the always-on-top mini window, or back to normal. */
+export async function setMiniWindow(mini: boolean): Promise<void> {
+  const window = getCurrentWindow();
+  if (mini) {
+    await window.setMinSize(new LogicalSize(MINI_SIZE.width, MINI_SIZE.height));
+    await window.setSize(new LogicalSize(MINI_SIZE.width, MINI_SIZE.height));
+    await window.setAlwaysOnTop(true);
+  } else {
+    await window.setAlwaysOnTop(false);
+    await window.setSize(new LogicalSize(NORMAL_SIZE.width, NORMAL_SIZE.height));
+    await window.setMinSize(new LogicalSize(NORMAL_SIZE.minWidth, NORMAL_SIZE.minHeight));
+  }
 }
 
 /** Turns whatever a failed command rejected with into a readable message. */

@@ -30,6 +30,11 @@
     "src/data/**/*.json",
     "src/session/**/*.ts",
     "src/auto/**/*.ts",
-    "src/ocr/**/*.ts"
+    "src/ocr/**/*.ts",
+    "src/feedback/**/*.ts",
+    "src/review/**/*.ts",
+    "src/setup/**/*.ts",
+    "src/help/**/*.ts",
+    "src/ui/**/*.ts"
   ]
 }

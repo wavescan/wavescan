@@ -4,7 +4,7 @@ How the scanner is put together and why. For the reasoning behind each choice, f
 
 > Status: design of record for v0.1 (echoes). Sections marked *(planned)* describe code that doesn't exist yet. Update this file in the same change that makes it true.
 >
-> Implemented so far: capture/OCR/input adapters (Windows, macOS), safety, Diagnostics, bundled game data, batched region reads, and the **watch-mode echo session** (`src/session/`: `echoSession.ts` → `echoExtract.ts` → `exportScan.ts`, UI in `ScanView.vue`).
+> Implemented so far: capture/OCR/input adapters (Windows, macOS), safety, Diagnostics, bundled game data, batched region reads, the **watch-mode echo session** (`src/session/`: `echoSession.ts` → `echoExtract.ts` → `exportScan.ts`), auto mode, and the app shell with Review & export and Help & feedback ([§11](#ui)).
 
 ## 1. The big picture
 
@@ -163,7 +163,7 @@ Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `sr
 | Input gating | `safety::AutoMode`: armed (typed phrase) → window exists, focused, not minimised → cursor where we left it (else the user took over) → target inside the client rect → under the action cap. **Any failure aborts** until the user re-arms |
 | Abort | Cursor-drift check between our clicks, F8 global hotkey, focus-loss event |
 | User ID never read | `crop_outside_user_id` refuses OCR crops (and the Tesseract reader's crops) that overlap it. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
-| Tauri capabilities | `src-tauri/capabilities/default.json`: only our commands + updater + dialog save + clipboard write |
+| Tauri capabilities | `src-tauri/capabilities/default.json`: our commands, `core:default`, three window permissions for the mini window, and `opener:allow-open-url` scoped to our GitHub repository and the Fair Play Policy page ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)) |
 | CSP | `default-src 'self'`. No remote scripts or styles. `script-src 'self' 'wasm-unsafe-eval'` lets the bundled Tesseract compile its WebAssembly (not JavaScript `eval`); `worker-src 'self'` and `connect-src 'self'` let its workers start and load the bundled core and model ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)) |
 | Least privilege | Admin (Windows, the user runs Wavescan as administrator: [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md)) / Accessibility (macOS) needed only for auto mode |
 | Supply chain | `cargo deny`, `npm audit`, lockfiles committed, signed + attested release builds ([ADR 0011](adr/0011-signing-provenance-and-updater.md)) |
@@ -179,13 +179,15 @@ Only these outbound connections exist. Each can be turned off in Settings ([ADR 
 
 Adding a host means: ADR → this table → the README table → CSP `connect-src`.
 
+**Pages opened in the browser aren't Wavescan connections.** Help & feedback, Report a problem and the auto-mode risk step can ask the OS to open a page in the user's default browser, limited by the opener scope to `https://github.com/wavescan/wavescan/*` and Kuro's Fair Play Policy page ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). The browser makes that request; Wavescan sends nothing, and a bug report is only posted when the user presses Submit on GitHub.
+
 The Tesseract reader makes no connections: its worker script, WebAssembly core and model (`public/tesseract/`, served from the app at `/tesseract/` by the Vite config) all load from the app itself, and tesseract.js's default CDN is never used.
 
 ## 8. Game data freshness
 
 Game data (echo names, sets, costs, stat tables, characters, weapons) comes from Wuthering Tools, which publishes it as `https://www.wutheringtools.com/scanner-data.json` on every deploy ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)).
 
-- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). The same command refreshes `src/data/set-icons.json`, 32×32 copies of each set's icon for set matching ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)). That download happens on the developer's machine, never in the app. `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
+- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). The same command refreshes `src/data/set-icons.json`, 32×32 copies of each set's icon for set matching ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)), and `src/data/echo-icons.json`, 80×80 pictures of each echo shown on echo cards and lists ([ADR 0029](adr/0029-bundled-echo-pictures.md)). That download happens on the developer's machine, never in the app. `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
 - **Runtime refresh** *(planned)*: opt-in, signed, and fails safe to the bundled snapshot, so new echoes are recognised without an app update.
 
 ## 9. Output & handoff
@@ -198,3 +200,23 @@ Game data (echo names, sets, costs, stat tables, characters, weapons) comes from
 - CI (`.github/workflows/ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc, and the fixture replay (Tesseract on both, Vision on macOS) on `windows-latest` + `macos-14`.
 - Tester builds (`tester-build.yml`, on merge to `main`): unsigned (macOS ad-hoc signed) `.dmg` + NSIS `.exe` → rolling `tester-build` pre-release with SHA-256 sums. The commit id is compiled in as `WAVESCAN_BUILD`.
 - Release (`release.yml`, on tag): `tauri build` → sign (Azure Trusted Signing for Windows / Developer ID + notarization for macOS) → SHA-256 checksums + `actions/attest-build-provenance` → GitHub Release + updater manifest ([ADR 0011](adr/0011-signing-provenance-and-updater.md)).
+
+## 11. Screens and UI state {#ui}
+
+`App.vue` is a sidebar (`components/AppNav.vue`) plus one screen at a time, chosen by the small reactive `ui/navigation.ts` (no router: there are no URLs). While a scan runs, `navigation.busy` keeps the user on Scan, which stays mounted so the session keeps going.
+
+| Screen | File | What it does |
+|---|---|---|
+| Home | `views/HomeView.vue` | Game setup checklist (`setup/readiness.ts`: window found, not minimised, 16:9/16:10, administrator on Windows; language and HDR are reminders because they can't be detected yet), watch vs auto, a saved scan to continue |
+| Scan | `views/ScanView.vue`, `views/AutoModePanel.vue` | Watch mode live view (just-read echo, pace, pause, mini window) and auto mode as four steps (risk → permissions → prepare the game → typed confirmation) |
+| Review & export | `views/ReviewView.vue`, `components/EchoCard.vue`, `components/FieldFixer.vue` | Every echo, filters, a "check them now" walk through flagged fields, fixes limited to values the game allows, copy the scan |
+| Diagnostics | `views/DiagnosticsView.vue` | Unchanged ([ADR 0016](adr/0016-diagnostics-screen-and-capture-commands.md)) |
+| Help & feedback | `views/HelpView.vue`, `views/ReportView.vue` | Offline troubleshooting (`help/troubleshooting.ts`), what the app did this session (`feedback/activity.ts`, counted in `ipc/commands.ts`), source at the build's commit, and Report a problem (`feedback/issue.ts`) |
+
+**The scan store** (`review/scanStore.ts`) holds the echoes from both modes, oldest first, plus each echo as first read so fixes can be undone. Fixes are pure functions in `review/fields.ts` that return a new candidate: they raise the field's confidence and add it to `checked`, which `exportScan.ts` honours. `flaggedFields` lists exactly what the export would put in `lowConfidence` (a test keeps the two in step).
+
+**Saved scan.** The store keeps a copy in the webview's `localStorage` (`wavescan.scan.v1`) so a scan survives closing the app before exporting: echo data and the raw text of the echo panel only, never pictures or the User ID ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)).
+
+**Problems** from Rust (`{ kind, message }`) and auto-scan endings go through `feedback/problems.ts`, which gives each one a plain cause, fix steps and whether to offer "Report this".
+
+**Theme.** `style.css` defines `wavescan-light` (default) and `wavescan-dark` (follows the system) DaisyUI themes with system fonts. Amber means "please check", violet "checked by you", and every status also has a text label.

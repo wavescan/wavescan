@@ -72,6 +72,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 
 - [ ] `release.yml`: Azure Trusted Signing, Developer ID + notarization, checksums, provenance attestation, updater manifest
 - [ ] Settings → Network toggles, the "What this app does" page, masked bug-report export
+  - [x] Help & feedback: what the app did this session, offline troubleshooting, source at the build's commit, and Report a problem (prefilled GitHub issue, text only) ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). Network toggles and the masked picture export are still to do
 - [ ] Network audit (Little Snitch / Wireshark) recorded in the release notes
 
 ## Phase 7: Closed beta → **v0.1 public**
