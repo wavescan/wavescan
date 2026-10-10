@@ -44,6 +44,9 @@ pub fn run() -> Result<(), Error> {
     tauri::Builder::default()
         .manage(commands::AppState::new(platform::create()))
         .plugin(hotkey::plugin())
+        // Opens GitHub pages (report a problem, source, releases) in the user's browser. The
+        // webview may only open the URLs allowed in capabilities/default.json (ADR 0028).
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
             commands::find_game_window,

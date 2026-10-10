@@ -23,6 +23,16 @@
     "allow-auto-scroll",
     "allow-sample-regions",
     "allow-read-regions",
-    "allow-crop-regions"
+    "allow-crop-regions",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-size",
+    "core:window:allow-set-min-size",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "https://github.com/wavescan/wavescan/*" },
+        { "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/742" }
+      ]
+    }
   ]
 }
