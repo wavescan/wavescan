@@ -54,6 +54,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `public/tesseract/` | Bundled Tesseract model (hash checked in `tests/tesseract.spec.ts`); the worker script and core are served from node_modules by `vite.config.ts` |
 | `src/session/` | Watch-mode echo session: `echoRegions` (regions + `LEVEL_ROW`), `echoExtract` (scanner-core parsing), `echoSession` (stability loop, dedupe), `exportScan` (scan v1 JSON) |
 | `src/auto/` | Auto-mode navigator state machine, grid walking |
+| `src/settings/` | User settings kept on this PC (the in-game name for "Equipped by", [ADR 0030](docs/adr/0030-equipped-by-and-the-in-game-name.md)). Never exported or reported |
 | `src/views/` | Vue UI |
 | `schema/scan.v1.json` | Output contract with the web app ([ADR 0008](docs/adr/0008-scan-json-schema-v1.md)) |
 | `fixtures/` | Real captures + golden JSON ([docs/fixtures.md](docs/fixtures.md)) |

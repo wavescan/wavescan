@@ -28,7 +28,7 @@ const exported = (overrides: Partial<ScanEcho> = {}): ScanEcho => ({
     { type: "CritDMG", value: 17.4 },
     { type: "ATK", value: 8.6 },
   ],
-  equippedBy: null,
+  equippedBy: "Suisui",
   lowConfidence: ["echoSet"],
   ...overrides,
 });
@@ -37,7 +37,7 @@ const outcomes = (golden: GoldenEcho, echo: ScanEcho | null) =>
   Object.fromEntries(compareEcho(golden, echo).map((r) => [r.field, r.outcome]));
 
 describe("compareEcho", () => {
-  it("marks matching fields correct and skips unconfirmed or unread ones", () => {
+  it("marks matching fields correct and skips an unconfirmed set", () => {
     expect(outcomes(golden, exported())).toEqual({
       echo: "correct",
       echoSet: "skipped",
@@ -45,7 +45,7 @@ describe("compareEcho", () => {
       rank: "correct",
       level: "correct",
       stat: "correct",
-      equippedBy: "skipped",
+      equippedBy: "correct",
       "substats[CritDMG 17.4]": "correct",
       "substats[ATK 8.6]": "correct",
     });
@@ -62,6 +62,12 @@ describe("compareEcho", () => {
     expect(outcomes(golden, exported({ stat: "ATK" })).stat).toBe("wrong");
     expect(outcomes(golden, exported({ stat: "ATK", lowConfidence: ["stat"] })).stat).toBe("flagged");
     expect(outcomes(golden, exported({ level: null })).level).toBe("missing");
+  });
+
+  it("calls an unflagged null equippedBy wrong, since null means not equipped", () => {
+    expect(outcomes(golden, exported({ equippedBy: null })).equippedBy).toBe("wrong");
+    expect(outcomes(golden, exported({ equippedBy: null, lowConfidence: ["equippedBy"] })).equippedBy).toBe("flagged");
+    expect(outcomes({ ...golden, equippedBy: null }, exported({ equippedBy: "Lupa" })).equippedBy).toBe("wrong");
   });
 
   it("matches substats by content, so one dropped row doesn't shift the rest", () => {
@@ -92,7 +98,7 @@ describe("compareEcho", () => {
 describe("summarize", () => {
   it("computes accuracy over compared fields only", () => {
     const summary = summarize(compareEcho(golden, exported({ stat: "ATK" })));
-    expect(summary).toMatchObject({ compared: 7, correct: 6, wrong: 1, skipped: 2 });
-    expect(summary.accuracy).toBeCloseTo(6 / 7);
+    expect(summary).toMatchObject({ compared: 8, correct: 7, wrong: 1, skipped: 1 });
+    expect(summary.accuracy).toBeCloseTo(7 / 8);
   });
 });

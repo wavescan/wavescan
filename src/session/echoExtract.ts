@@ -37,7 +37,19 @@ export interface ExtractedEcho {
   /** Dedupe signature (scanner-core `computeSignature`, plus level and rarity). */
   signature: string;
   /** Raw OCR text, kept to explain low-confidence fields in the review UI. */
-  raw: { name: string; level: string; mainStat: string; secondaryStat: string };
+  raw: {
+    name: string;
+    level: string;
+    mainStat: string;
+    secondaryStat: string;
+    /**
+     * The "Equipped by" line's OCR lines, joined by "\n" ("" when the echo isn't equipped).
+     * Missing on echoes saved before it was read. Kept raw, not matched, so who it is follows
+     * the in-game name setting at export time (`src/session/equippedBy.ts`). Can hold the
+     * player's in-game name: never put it in a report without `redactPlayerName`.
+     */
+    equippedBy?: string;
+  };
   /** Set-icon match score per candidate set, when the icon had to be matched. */
   setScores: Record<string, number> | null;
   /**
@@ -185,7 +197,13 @@ export function extractEcho(results: RegionText[], samples: PanelSamples = {}): 
     level,
     rank: rank.rank,
     signature: `${computeSignature(slot)}|L${level ?? "?"}|R${rank.rank ?? "?"}`,
-    raw: { name: nameText, level: levelText, mainStat: mainStatText, secondaryStat: secondaryStatText },
+    raw: {
+      name: nameText,
+      level: levelText,
+      mainStat: mainStatText,
+      secondaryStat: secondaryStatText,
+      ...(byId.has("equippedBy") ? { equippedBy: text("equippedBy", "\n") } : {}),
+    },
     setScores: iconMatch?.scores ?? null,
     echoSkillRow: echoSkillRow(rowText),
   };

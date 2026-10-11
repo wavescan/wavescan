@@ -36,6 +36,17 @@ export function padStatRow(row: RegionFrac): RegionFrac {
   return { ...row, y: row.y - STAT_ROW_PAD_Y, height: row.height + 2 * STAT_ROW_PAD_Y };
 }
 
+/**
+ * The "Equipped by <name>" line under the Echo Skill text, which is only there when a
+ * character has the echo equipped. It doesn't move: the Echo Skill text is cut off above it
+ * however many substats there are. Measured on every fixture (2026-10-10): the yellow text
+ * spans y 0.729–0.754 at 16:10 (top-anchored, so ×1.111 at 16:9 like the rest of the
+ * panel), x from 0.713 to 0.863 for "Equipped by Cartethyia". Padded by 0.006 above and
+ * below; the box starts after the character's small portrait (x 0.689–0.708) and runs to
+ * the panel's right edge for longer names. See docs/screens/echoes.md.
+ */
+export const EQUIPPED_BY_ROW: RegionFrac = { x: 0.71, y: 0.723, width: 0.265, height: 0.037 };
+
 /** Ids of the five per-row substat crops, top to bottom. */
 export const SUBSTAT_ROW_IDS = ["substatRow1", "substatRow2", "substatRow3", "substatRow4", "substatRow5"] as const;
 
@@ -48,6 +59,7 @@ export type EchoRegionId =
   | "substatLabels"
   | "substatValues"
   | "substatBlock"
+  | "equippedBy"
   | (typeof SUBSTAT_ROW_IDS)[number];
 
 /**
@@ -65,6 +77,7 @@ const READ_REGIONS: Record<EchoRegionId, RegionFrac> = {
   substatLabels: SUBSTAT_LABEL_COLUMN,
   substatValues: SUBSTAT_VALUE_COLUMN,
   substatBlock: SUBSTAT_BLOCK,
+  equippedBy: EQUIPPED_BY_ROW,
   ...(Object.fromEntries(SUBSTAT_ROW_IDS.map((id, i) => [id, SUBSTAT_ROWS[i]!])) as Record<
     (typeof SUBSTAT_ROW_IDS)[number],
     RegionFrac

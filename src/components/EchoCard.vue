@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { setName } from "@/data/scannerData";
 import type { EchoCandidate } from "@/session/echoSession";
 import { expectedSubstatCount } from "@/session/exportScan";
+import { equippedByLabel, resolveEquippedBy } from "@/session/equippedBy";
 import {
   candidateCost,
   displayName,
@@ -66,6 +67,9 @@ const untuned = computed(() => {
   if (level === null || isFlagged("substats")) return 0;
   return Math.max(0, expectedSubstatCount(level) - rows.value.length);
 });
+
+/** Who it's equipped by, following the in-game name setting (src/session/equippedBy.ts). */
+const equippedBy = computed(() => resolveEquippedBy(props.candidate));
 
 const stars = computed(() => (props.candidate.rank ? "★".repeat(props.candidate.rank) : null));
 const large = computed(() => props.size === "large");
@@ -258,6 +262,26 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
         No substats yet
       </li>
     </ul>
+
+    <component
+      :is="readonly || !isFlagged('equippedBy') ? 'div' : 'button'"
+      v-if="equippedBy.key !== null || isFlagged('equippedBy')"
+      type="button"
+      class="flex items-center gap-1 border-t border-base-300 pt-2 text-left text-xs"
+      :class="[isFlagged('equippedBy') ? flagClass + ' px-1' : 'opacity-80', active === 'equippedBy' ? activeClass : '']"
+      @click="!readonly && isFlagged('equippedBy') && emit('fix', 'equippedBy')"
+    >
+      <span class="opacity-70">Equipped by</span>
+      <span class="font-semibold">{{ isFlagged("equippedBy") ? "?" : equippedByLabel(equippedBy.key) }}</span>
+      <span
+        v-if="isFlagged('equippedBy')"
+        class="badge badge-warning badge-xs ml-1"
+      >check</span>
+      <span
+        v-if="isChecked('equippedBy')"
+        class="badge badge-secondary badge-outline badge-xs ml-1"
+      >checked</span>
+    </component>
 
     <footer
       v-if="!readonly"

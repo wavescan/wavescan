@@ -24,6 +24,12 @@ export interface EchoCandidate extends ExtractedEcho {
    * as "the substat count is right even though it looks short for the level".
    */
   checked?: string[];
+  /**
+   * Who the echo is equipped by, as set in the review screen: a character key, "Rover" (the
+   * main character) or null (not equipped). Undefined until the user sets it; the read line
+   * is used until then (`src/session/equippedBy.ts`).
+   */
+  equippedByFix?: string | null;
 }
 
 export interface SessionStats {

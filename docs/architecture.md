@@ -217,6 +217,8 @@ Game data (echo names, sets, costs, stat tables, characters, weapons) comes from
 
 **Saved scan.** The store keeps a copy in the webview's `localStorage` (`wavescan.scan.v1`) so a scan survives closing the app before exporting: echo data and the raw text of the echo panel only, never pictures or the User ID ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)).
 
+**Equipped by.** Each echo keeps the "Equipped by" line's raw text (`raw.equippedBy`). `session/equippedBy.ts` works out who it is whenever it's needed, with scanner-core's `matchEquippedBy`, the game data's characters and the player's in-game name (`settings/playerName.ts`, `localStorage` key `wavescan.playerName`, set on the Scan screen). The main character exports as `"Rover"`; an unclear name exports `null`, flagged. Diagnostics and bug reports pass all text through `redactPlayerName`, so the in-game name never leaves the PC ([ADR 0030](adr/0030-equipped-by-and-the-in-game-name.md)).
+
 **Problems** from Rust (`{ kind, message }`) and auto-scan endings go through `feedback/problems.ts`, which gives each one a plain cause, fix steps and whether to offer "Report this".
 
 **Theme.** `style.css` defines `wavescan-light` (default) and `wavescan-dark` (follows the system) DaisyUI themes with system fonts. Amber means "please check", violet "checked by you", and every status also has a text label.

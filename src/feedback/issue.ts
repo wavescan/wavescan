@@ -2,6 +2,7 @@ import type { AppInfo } from "@/ipc/types";
 import type { GameDataInfo } from "@/data/scannerData";
 import type { EchoCandidate } from "@/session/echoSession";
 import { displayName, fieldLabel, rawReading, type FieldId } from "@/review/fields";
+import { redactPlayerName } from "@/session/equippedBy";
 import { REPO_URL } from "./links";
 
 // Writes the text of a bug report and the GitHub "new issue" link that carries it. The user
@@ -80,7 +81,10 @@ function setupSection(context: ReportContext): string[] {
   ];
 }
 
-/** The full report text, exactly as it will appear in the issue. */
+/**
+ * The full report text, exactly as it will appear in the issue. The player's in-game name
+ * is hidden wherever it appears (`redactPlayerName`).
+ */
 export function reportBody(kind: ReportKind, context: ReportContext): string {
   const sections: string[][] = [];
   const note = context.note.trim();
@@ -91,7 +95,7 @@ export function reportBody(kind: ReportKind, context: ReportContext): string {
     sections.push(["### Diagnostics", "_(Run Diagnostics, press Copy report and paste it here)_"]);
   }
   if (context.includeSetup) sections.push(setupSection(context));
-  return sections.map((s) => s.join("\n")).join("\n\n");
+  return redactPlayerName(sections.map((s) => s.join("\n")).join("\n\n"));
 }
 
 /**

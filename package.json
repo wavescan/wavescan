@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.1",
-    "@wutheringtools/scanner-core": "0.1.2",
+    "@wutheringtools/scanner-core": "0.2.0",
     "tesseract.js": "6.0.1",
     "vue": "^3.5.43"
   },

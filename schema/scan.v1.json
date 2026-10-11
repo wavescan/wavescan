@@ -246,7 +246,7 @@
           }
         },
         "equippedBy": {
-          "description": "Character key, or null when unequipped.",
+          "description": "Character key, \"Rover\" for the player's main character (the importing app picks its Rover entry, ADR 0030), or null when unequipped or when the scanner couldn't tell who (then listed in lowConfidence).",
           "oneOf": [
             {
               "$ref": "#/$defs/key"

@@ -1,5 +1,6 @@
 import { mapParsedEchoes, type MappedEcho } from "@wutheringtools/scanner-core";
 import type { EchoCandidate } from "./echoSession";
+import { resolveEquippedBy } from "./equippedBy";
 
 // Builds the WutheringToolsScan v1 file (schema/scan.v1.json, ADR 0008) from candidates.
 
@@ -82,6 +83,10 @@ function substatsOf(mapped: MappedEcho): { type: string; value: number; slot: nu
  * "Echo Skill" heading is the very next row: the level unlocked a slot that wasn't tuned,
  * so the game shows nothing there (Spearback +5 with no substats, 2026-10-09 report).
  * It's also not flagged once the user has checked the count in the review screen.
+ *
+ * `equippedBy` is a character key, "Rover" for the main character (recognised by the
+ * in-game name setting), or null; flagged when the "Equipped by" name didn't clearly match
+ * anyone (`resolveEquippedBy`, ADR 0030).
  */
 export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEcho | null {
   const [mapped] = mapParsedEchoes([candidate.slot], false);
@@ -107,6 +112,8 @@ export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEch
   substats.forEach((s, i) => {
     if (c.substats[s.slot] === "low") low.add(`substats.${i}.value`);
   });
+  const equippedBy = resolveEquippedBy(candidate);
+  if (equippedBy.flagged) low.add("equippedBy");
 
   const echo: ScanEcho = {
     scanId: `scan-echo-${scanIndex}`,
@@ -117,7 +124,7 @@ export function toScanEcho(candidate: EchoCandidate, scanIndex: number): ScanEch
     level: candidate.level,
     stat: mapped.stat,
     substats: substats.map(({ type, value }) => ({ type, value })),
-    equippedBy: null,
+    equippedBy: equippedBy.key,
   };
   if (low.size > 0) echo.lowConfidence = [...low];
   return echo;

@@ -46,7 +46,7 @@ One JSON per echo screenshot, using the scan file's keys ([`schema/scan.v1.json`
 ```
 
 - `echoSet: null` means **not confirmed yet**, so it isn't compared. The game shows the set only as an icon: compare it with the reference icons (the `icon` URLs in `src/data/scanner-data.json` → `echoSets`) or check in game.
-- `equippedBy` is the character key, or `null` when the panel has no "Equipped by" line.
+- `equippedBy` is the character key, `"Rover"` when the line shows the player's in-game name (the fixtures' account is "Clover": `FIXTURE_PLAYER_NAME` in `tests/support/echoReplay.ts`), or `null` when the panel has no "Equipped by" line. An unflagged wrong `equippedBy` counts as **wrong** even when it's `null`, since `null` means "not equipped".
 - Rarity: gold name = 5, purple = 4, blue = 3, green = 2.
 
 ## Fixture replay (`npm run test:fixtures`)
@@ -68,7 +68,7 @@ Each field gets one outcome (`tests/support/fixtureCompare.ts`):
 | flagged | wrong or missing, but in `lowConfidence`, so the web app asks the user | no |
 | missing | exported as `null` ("couldn't read it", ADR 0008) | no |
 | wrong | a different value, or a dropped or extra substat, not flagged: a **silent misread** | **yes** |
-| skipped | golden not confirmed, or a field the scanner doesn't read yet (`equippedBy`, until "Equipped by" reading lands) | no |
+| skipped | golden not confirmed (`echoSet: null`), or a field the scanner doesn't read yet (none right now) | no |
 
 Substats are matched by type and value, not position, so one dropped row doesn't make the rows after it look wrong. The run ends with an accuracy line (`correct / compared`). The release gate is **≥ 99%** (CLAUDE.md). When a fixture has problems, the test prints the raw OCR text of every region, which is usually enough to see what went wrong.
 

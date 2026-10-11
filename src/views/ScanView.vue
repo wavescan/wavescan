@@ -22,6 +22,7 @@ import AppIcon from "@/components/AppIcon.vue";
 import AutoModePanel from "@/views/AutoModePanel.vue";
 import EchoAvatar from "@/components/EchoAvatar.vue";
 import EchoCard from "@/components/EchoCard.vue";
+import PlayerNameField from "@/components/PlayerNameField.vue";
 import ProblemCard from "@/components/ProblemCard.vue";
 
 // Scan echoes: watch mode (the user clicks, Wavescan reads) and the auto mode tab. Both add
@@ -244,6 +245,10 @@ onBeforeUnmount(() => void stop());
           Auto mode
         </button>
       </div>
+    </div>
+
+    <div class="rounded-box border border-base-300 bg-base-100 p-4">
+      <PlayerNameField />
     </div>
 
     <AutoModePanel

@@ -9,6 +9,7 @@ import {
 import { labelForStatKey } from "@/session/echoExtract";
 import { rowValue } from "@/session/echoRank";
 import type { EchoCandidate } from "@/session/echoSession";
+import { resolveEquippedBy } from "@/session/equippedBy";
 import { substatCountFits } from "@/session/exportScan";
 
 // What the review screen shows and lets the user fix, for one scanned echo. Pure functions
@@ -16,7 +17,15 @@ import { substatCountFits } from "@/session/exportScan";
 // `lowConfidence` (exportScan.ts), and every fix is testable without the UI.
 
 /** A field the user can check or fix. Substat rows are `substat.0` … `substat.4` (on-screen order). */
-export type FieldId = "name" | "set" | "mainStat" | "level" | "rank" | "substats" | `substat.${number}`;
+export type FieldId =
+  | "name"
+  | "set"
+  | "mainStat"
+  | "level"
+  | "rank"
+  | "substats"
+  | "equippedBy"
+  | `substat.${number}`;
 
 /** Plain-English name of a field, for buttons, the review queue and bug reports. */
 export function fieldLabel(candidate: EchoCandidate, field: FieldId): string {
@@ -31,6 +40,7 @@ export function fieldLabel(candidate: EchoCandidate, field: FieldId): string {
     level: "Level",
     rank: "Rarity",
     substats: "Number of substats",
+    equippedBy: "Equipped by",
   };
   return labels[field] ?? field;
 }
@@ -133,6 +143,7 @@ export function flaggedFields(candidate: EchoCandidate): FieldId[] {
     "substats",
     candidate.level !== null && !substatCountFits(count, candidate.level, candidate.echoSkillRow),
   );
+  add("equippedBy", resolveEquippedBy(candidate).flagged);
   return out;
 }
 
@@ -160,6 +171,8 @@ export function rawReading(candidate: EchoCandidate, field: FieldId): string | n
   if (field === "name") return candidate.raw.name || null;
   if (field === "level") return candidate.raw.level || null;
   if (field === "mainStat" || field === "rank") return candidate.raw.mainStat || null;
+  // Can hold the player's in-game name: bug reports pass it through `redactPlayerName`.
+  if (field === "equippedBy") return candidate.raw.equippedBy?.replace(/\n/g, " ") || null;
   // Substat rows keep only the parsed value (scanner-core snaps a misread such as "17.5%" to
   // the nearest legal roll and flags it), not the raw text, so there's nothing more to show.
   return null;
@@ -183,6 +196,14 @@ export function confirmField(candidate: EchoCandidate, field: FieldId): EchoCand
     confidence.substats[Number(field.slice(8))] = "high";
   }
   return { ...candidate, confidence, checked: withChecked(candidate, field) };
+}
+
+/**
+ * Sets who the echo is equipped by: a character key, "Rover" for the main character, or
+ * null for "not equipped".
+ */
+export function fixEquippedBy(candidate: EchoCandidate, key: string | null): EchoCandidate {
+  return { ...candidate, equippedByFix: key, checked: withChecked(candidate, "equippedBy") };
 }
 
 /** Sets the level (0–25). */
