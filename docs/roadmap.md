@@ -41,7 +41,8 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] Watch-mode echo session: sample → scanner-core fingerprints/stability → read pinned frame → extract (scanner-core parsing + level) → dedupe → export (`src/session/`)
 - [x] Rarity from the main and secondary stat values at the read level
 - [x] Set-icon matching for multi-set echoes (ADR 0022)
-- [ ] "Equipped by"
+- [x] "Equipped by": scanner-core 0.2.0 `matchEquippedBy`, the player's in-game name for the main character (exported as `"Rover"`), name hidden in reports (ADR 0030)
+  - [ ] Wuthering Tools import applies it (maps `"Rover"`, picks the main echo)
 - [ ] `classifyScreen` (detect Bag → Echoes vs other screens)
 - [x] Watch mode UI: live counter, candidate list, low-confidence highlighting, remove misreads, copy scan JSON
 - [ ] Preview with ROI overlay; save to file

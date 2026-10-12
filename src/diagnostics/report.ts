@@ -9,6 +9,7 @@ import { isSupportedAspect } from "./regions";
 import type { InputTestResult } from "./inputTest";
 import { describeEchoRead, uncertainFields, type EchoRead } from "./echoRead";
 import type { GameDataInfo } from "@/data/scannerData";
+import { redactDeep } from "@/session/equippedBy";
 
 // Builds the Diagnostics report testers paste back to us. It contains facts about the
 // app, window, capture and OCR only. No images, no User ID, no other apps' window titles
@@ -218,6 +219,7 @@ export function buildReport(input: DiagnosticsInput, now: Date = new Date()): Di
   };
 }
 
+/** The report as pasted. The player's in-game name is hidden wherever OCR text holds it (ADR 0030). */
 export function formatReport(report: DiagnosticsReport): string {
-  return JSON.stringify(report, null, 2);
+  return JSON.stringify(redactDeep(report), null, 2);
 }

@@ -8,6 +8,7 @@ import {
   confirmField,
   fieldLabel,
   fixEcho,
+  fixEquippedBy,
   fixLevel,
   fixMainStat,
   fixRank,
@@ -24,6 +25,10 @@ import {
   type FieldId,
 } from "@/review/fields";
 import { MAX_LEVEL_BY_RANK } from "@/session/echoRank";
+import { equipChoices } from "@/session/equippedBy";
+import { playerName } from "@/settings/playerName";
+import { PLAYER_CHARACTER_KEY } from "@wutheringtools/scanner-core";
+import PlayerNameField from "@/components/PlayerNameField.vue";
 
 // Fixes one field: only values the game allows are offered (a substat's legal rolls, the
 // sets this echo comes in, the main stats for its cost), plus "Looks right" to accept what
@@ -68,6 +73,18 @@ const echoMatches = computed(() => {
     .slice(0, 8);
 });
 
+const characterQuery = ref("");
+watch(
+  () => props.candidate.id + props.field,
+  () => (characterQuery.value = ""),
+);
+const characterMatches = computed(() => {
+  const words = characterQuery.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return equipChoices()
+    .filter((c) => words.every((w) => c.name.toLowerCase().includes(w)))
+    .slice(0, 12);
+});
+
 /** True when there's something read that the user can accept as-is. */
 const canConfirm = computed(() => {
   const c = props.candidate;
@@ -84,6 +101,8 @@ const canConfirm = computed(() => {
       return mainStatKey(c) !== null;
     case "substats":
       return true;
+    case "equippedBy":
+      return false; // flagged means no one was recognised, so there's nothing to accept
     default:
       return currentSubstat.value !== null && substatChoices.value.some((s) => Math.abs(s.value - (currentSubstat.value ?? -1)) < 0.05);
   }
@@ -231,6 +250,61 @@ const choiceClass = (selected: boolean) =>
           v-if="echoMatches.length === 0"
           class="text-xs opacity-70"
         >No echo matches. A brand-new echo needs a Wavescan update.</span>
+      </div>
+    </div>
+
+    <div
+      v-else-if="field === 'equippedBy'"
+      class="flex flex-col gap-3"
+    >
+      <div
+        v-if="!playerName()"
+        class="rounded-box bg-base-100 p-3"
+      >
+        <PlayerNameField compact />
+        <p class="mt-1 text-xs opacity-75">
+          Is it your main character? The game shows your name instead of "Rover". Save it and Wavescan re-checks every echo.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        <button
+          type="button"
+          :class="choiceClass(false)"
+          @click="apply(() => fixEquippedBy(candidate, PLAYER_CHARACTER_KEY))"
+        >
+          You (main character)
+        </button>
+        <button
+          type="button"
+          :class="choiceClass(false)"
+          @click="apply(() => fixEquippedBy(candidate, null))"
+        >
+          Not equipped
+        </button>
+      </div>
+      <label class="input input-sm w-full">
+        <span class="sr-only">Character name</span>
+        <input
+          v-model="characterQuery"
+          type="search"
+          placeholder="Type the character's name"
+          autocomplete="off"
+        >
+      </label>
+      <div class="flex flex-wrap gap-1.5">
+        <button
+          v-for="character in characterMatches"
+          :key="character.key"
+          type="button"
+          :class="choiceClass(false)"
+          @click="apply(() => fixEquippedBy(candidate, character.key))"
+        >
+          {{ character.name }}
+        </button>
+        <span
+          v-if="characterMatches.length === 0"
+          class="text-xs opacity-70"
+        >No character matches. A brand-new character needs a Wavescan update.</span>
       </div>
     </div>
 

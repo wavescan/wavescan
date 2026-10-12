@@ -13,7 +13,10 @@ export interface GoldenEcho {
   level: number;
   stat: string;
   substats: { type: string; value: number }[];
-  /** Character key, or null when the panel shows no "Equipped by" line. */
+  /**
+   * Character key, "Rover" when it's the main character ("Equipped by <the player's name>",
+   * see FIXTURE_PLAYER_NAME), or null when the panel shows no "Equipped by" line.
+   */
   equippedBy: string | null;
   notes?: string;
 }
@@ -21,7 +24,8 @@ export interface GoldenEcho {
 /**
  * - `correct`: matches the golden.
  * - `flagged`: wrong or missing, but listed in `lowConfidence`, so the web app asks the user.
- * - `missing`: exported as null (the schema's "couldn't read it", ADR 0008).
+ * - `missing`: exported as null (the schema's "couldn't read it", ADR 0008). Not for
+ *   `equippedBy`, where null means "not equipped": an unflagged wrong one is `wrong`.
  * - `wrong`: a different value, or a dropped substat, not flagged. A silent misread: the
  *   one outcome that fails.
  * - `skipped`: not compared (golden not confirmed, or the scanner doesn't read it yet).
@@ -35,17 +39,16 @@ export interface FieldResult {
   outcome: Outcome;
 }
 
-/**
- * Fields the scanner doesn't read yet, so they're always exported as null. `equippedBy`
- * comes with the "Equipped by" reader (roadmap Phase 2, PR D). Remove it from here then.
- */
-export const NOT_READ_YET = new Set(["equippedBy"]);
+/** Fields the scanner doesn't read yet, so they're always exported as null. None right now. */
+export const NOT_READ_YET = new Set<string>();
 
 const SCALARS = ["echo", "echoSet", "cost", "rank", "level", "stat", "equippedBy"] as const;
 
 function judge(field: string, expected: unknown, actual: unknown, low: Set<string>): Outcome {
   if (expected === actual) return "correct";
   if (low.has(field)) return "flagged";
+  // An unflagged null equippedBy says "not equipped", so the import would unequip it.
+  if (field === "equippedBy") return "wrong";
   if (actual === null || actual === undefined) return "missing";
   return "wrong";
 }
@@ -97,7 +100,10 @@ export function compareEcho(golden: GoldenEcho, actual: ScanEcho | null): FieldR
     const expected = golden[field];
     const got = actual ? actual[field] : null;
     const skip = NOT_READ_YET.has(field) || (field === "echoSet" && expected === null);
-    results.push({ field, expected, actual: got, outcome: skip ? "skipped" : judge(field, expected, got, low) });
+    // An echo that wasn't identified isn't exported, so its fields are missing, not misread.
+    const unexported: Outcome = expected === null ? "correct" : "missing";
+    const outcome = skip ? "skipped" : actual ? judge(field, expected, got, low) : unexported;
+    results.push({ field, expected, actual: got, outcome });
   }
 
   if (actual) results.push(...compareSubstats(golden.substats, actual.substats, low));

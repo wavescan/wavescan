@@ -5,6 +5,7 @@ import type { FrameSize } from "@wutheringtools/scanner-core";
 import type { RegionText } from "@/ipc/types";
 import { extractEcho } from "@/session/echoExtract";
 import { toScanEcho } from "@/session/exportScan";
+import { setPlayerName, usePlayerNameStorage } from "@/settings/playerName";
 import type { PanelSamples } from "@/session/panelSamples";
 import { compareEcho, summarize, type FieldResult, type GoldenEcho } from "./fixtureCompare";
 
@@ -12,6 +13,14 @@ import { compareEcho, summarize, type FieldResult, type GoldenEcho } from "./fix
 // golden, checking one echo, and the accuracy line. Each replay only differs in its OCR.
 
 const SCREEN_DIR = resolve("fixtures/screens/echoes");
+
+/**
+ * The in-game name on the fixtures' account: its main character shows as "Equipped by
+ * Clover" (stonewall-bracer-2star-plus0), which the golden records as "Rover".
+ */
+export const FIXTURE_PLAYER_NAME = "Clover";
+usePlayerNameStorage(null);
+setPlayerName(FIXTURE_PLAYER_NAME);
 
 export interface EchoFixture {
   /** e.g. "1920x1080/hecate-plus25". */

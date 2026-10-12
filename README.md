@@ -57,7 +57,7 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
 ### Watch mode: you click, the scanner reads
 
 1. Open Wuthering Waves and go to **Bag → Echoes**.
-2. Open the scanner. The **Game setup** list on the home screen shows whether it can see the game. Press **Start watching**.
+2. Open the scanner. The **Game setup** list on the home screen shows whether it can see the game. On **Scan**, type **your in-game name** once (see below), then press **Start watching**.
    - *Mac only, first time:* macOS asks for **Screen Recording** permission. Allow it, then reopen the scanner.
 3. Click through your echoes in the game at your own pace. Each time the echo details on the right change, the scanner reads them. You'll see the echo it just read, a counter, and how many need a look.
    - Playing on one screen? Press **Mini window** for a small counter that stays on top of the game.
@@ -65,6 +65,8 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
 5. Press **Copy scan for Wuthering Tools**. (**Open in Wuthering Tools** and **Save file** are coming.)
 
 If you close the scanner before exporting, it offers to carry on with that scan next time.
+
+**Who has each echo equipped.** The scanner reads the "Equipped by" line too. For your main character (Rover), the game shows the name *you* chose instead of "Rover", so the scanner asks for it: **Your in-game name** on the Scan screen. Without it, echoes on your main character are marked **check**. Your name stays on your computer: the scan says "Rover", and bug reports and Diagnostics reports hide it.
 
 ### Auto mode: the scanner clicks for you (optional)
 
@@ -96,6 +98,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 - It works out each echo's set by comparing the small set icon with copies of the set icons that come with the app. Nothing is downloaded for this.
 - It opens a web page only when you click a link in **Help & feedback**, **Report a problem** or the auto mode warning, and only pages on this GitHub repository or Kuro's Fair Play Policy. Your browser opens them; the scanner itself doesn't connect to anything.
 - It keeps a copy of your current scan on your computer (echo stats only, no pictures) so you don't lose it if you close the app. **Clear this scan** on the Review screen deletes it.
+- It keeps your in-game name on your computer, if you enter it, to recognise echoes on your main character. It's never put in the scan or in a report.
 - In auto mode only, it sends mouse clicks and wheel scrolls to the game window. While auto mode is on, it also listens for **F8** so you can stop it; F8 goes back to normal as soon as auto mode stops.
 
 **What it never does**

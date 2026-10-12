@@ -35,6 +35,7 @@
     "src/review/**/*.ts",
     "src/setup/**/*.ts",
     "src/help/**/*.ts",
-    "src/ui/**/*.ts"
+    "src/ui/**/*.ts",
+    "src/settings/**/*.ts"
   ]
 }

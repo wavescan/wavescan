@@ -77,6 +77,14 @@ export function validateScannerData(value: unknown): ScannerDataFile {
 /** Sonata set key → display name ("MoltenRift" → "Molten Rift"), from the loaded data. */
 let setNames: Record<string, string> = {};
 
+/** Every playable character (key + display name), from the loaded data. */
+let characters: { key: string; name: string }[] = [];
+
+/** Every playable character in the loaded data, Rover's per-element entries included. */
+export function allCharacters(): readonly { key: string; name: string }[] {
+  return characters;
+}
+
 /** A set's display name, or the key itself if the data doesn't know it. */
 export function setName(key: string): string {
   return setNames[key] ?? key;
@@ -91,6 +99,7 @@ export function allSetKeys(): string[] {
 export function useScannerData(file: ScannerDataFile): GameDataInfo {
   setScannerGameData(file.data);
   setNames = Object.fromEntries(Object.entries(file.data.echoSets).map(([key, set]) => [key, set.name]));
+  characters = file.data.characters.map(({ key, name }) => ({ key, name }));
   return {
     hash: file.hash,
     version: file.version,
