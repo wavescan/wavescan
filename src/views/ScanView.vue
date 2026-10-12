@@ -33,7 +33,7 @@ const props = defineProps<{ info: AppInfo | null }>();
 const emit = defineEmits<{ mini: [mini: boolean] }>();
 
 const store = useScanStore();
-const stats = ref<SessionStats>({ scanned: 0, duplicates: 0, errors: 0 });
+const stats = ref<SessionStats>({ scanned: 0, duplicates: 0, errors: 0, wrongScreen: 0, screen: null });
 const watching = ref(false);
 const paused = ref(false);
 const problem = ref<{ problem: Problem; details: string } | null>(null);
@@ -322,6 +322,15 @@ onBeforeUnmount(() => void stop());
           </template>
         </div>
       </header>
+
+      <div
+        v-if="watching && stats.screen === 'unknown'"
+        role="status"
+        class="alert alert-warning text-sm"
+      >
+        <AppIcon name="alert" />
+        <span>The game isn't on Bag → Echoes, so nothing is being read. Open the bag and pick the Echoes tab.</span>
+      </div>
 
       <ProblemCard
         v-if="problem"

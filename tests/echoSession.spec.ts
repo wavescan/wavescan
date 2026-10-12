@@ -203,6 +203,30 @@ describe("echo session (watch mode)", () => {
     expect(game.found).toHaveLength(2);
     expect(game.session.stats()).toMatchObject({ scanned: 2, duplicates: 1, errors: 0 });
   });
+
+  it("skips a frame from another screen, counts it, and reads again back on Bag → Echoes", async () => {
+    const game = fakeGame();
+    // Player opens the Weapons tab: a settled frame whose header isn't "Echoes".
+    game.state.panel = sabercatPanel().map((r) => (r.id === "header" ? region("header", [line("Weapons 412/2000", 0)]) : r));
+    await game.ticks(6);
+    expect(game.found).toHaveLength(0);
+    expect(game.session.stats()).toMatchObject({ scanned: 0, wrongScreen: 1, screen: "unknown" });
+
+    // Back on Echoes.
+    game.state.fill = 120;
+    game.state.panel = sabercatPanel();
+    await game.ticks(6);
+    expect(game.found).toHaveLength(1);
+    expect(game.session.stats()).toMatchObject({ scanned: 1, wrongScreen: 1, screen: "bag.echoes" });
+  });
+
+  it("keeps an echo it can't identify when the header says Echoes (a new echo can be fixed in review)", async () => {
+    const game = fakeGame();
+    game.state.panel = sabercatPanel().map((r) => (r.id === "name" ? region("name", [line("Brand New Echo", 0)]) : r));
+    await game.ticks(6);
+    expect(game.found).toHaveLength(1);
+    expect(game.session.stats().wrongScreen).toBe(0);
+  });
 });
 
 describe("echo session errors", () => {

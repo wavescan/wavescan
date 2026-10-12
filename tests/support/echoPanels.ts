@@ -12,6 +12,7 @@ export const region = (id: string, lines: OcrLine[]): RegionText => ({ id, lines
 /** OCR output for the Sabercat Prowler panel in fixtures/screens/echoes (2880x1800). */
 export function sabercatPanel(critDmg = "17.4%"): RegionText[] {
   return [
+    region("header", [line("Echoes 2969/3000", 0)]),
     region("name", [line("Sabercat Prowler", 0)]),
     region("level", [line("+25", 0)]),
     region("mainStat", [line("Fusion DMG Bonus 30.0%", 0)]),

@@ -52,7 +52,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src/ipc/` | Typed wrappers for every Rust command + mirrored types |
 | `src/ocr/` | Which engine reads echo text: Tesseract on Windows (`tesseract.ts` holds every setting; the page starts its tesseract.js workers, never from inside another worker), Vision on macOS ([ADR 0027](docs/adr/0027-tesseract-reads-echo-text-on-windows.md)) |
 | `public/tesseract/` | Bundled Tesseract model (hash checked in `tests/tesseract.spec.ts`); the worker script and core are served from node_modules by `vite.config.ts` |
-| `src/session/` | Watch-mode echo session: `echoRegions` (regions + `LEVEL_ROW`), `echoExtract` (scanner-core parsing), `echoSession` (stability loop, dedupe), `exportScan` (scan v1 JSON) |
+| `src/session/` | Watch-mode echo session: `echoRegions` (regions + `LEVEL_ROW`, `HEADER_ROW`), `classifyScreen` (which screen, ADR 0031), `echoExtract` (scanner-core parsing), `echoSession` (stability loop, dedupe), `exportScan` (scan v1 JSON) |
 | `src/auto/` | Auto-mode navigator state machine, grid walking |
 | `src/settings/` | User settings kept on this PC (the in-game name for "Equipped by", [ADR 0030](docs/adr/0030-equipped-by-and-the-in-game-name.md)). Never exported or reported |
 | `src/views/` | Vue UI |

@@ -72,6 +72,8 @@ Each field gets one outcome (`tests/support/fixtureCompare.ts`):
 
 Substats are matched by type and value, not position, so one dropped row doesn't make the rows after it look wrong. The run ends with an accuracy line (`correct / compared`). The release gate is **≥ 99%** (CLAUDE.md). When a fixture has problems, the test prints the raw OCR text of every region, which is usually enough to see what went wrong.
 
+Every echo fixture is on Bag → Echoes, so each one must also classify as `bag.echoes` and pass the auto-mode screen check (`src/session/classifyScreen.ts`, [ADR 0031](adr/0031-classify-the-screen-from-the-bag-header.md)). A wrong `unknown` fails the test, because it would silently drop the echo. Captures of other screens, which must classify as `unknown`, aren't fixtures yet.
+
 `tests/gridReplay.fixtures.ts` does the same for the grid (auto mode): it samples `GRID_STRIP` through the Rust tool and checks the fully visible rows and scroll shifts in `screens/echoes-grid/grid.json`. It needs no OCR, so it also runs in the Docker container (`npx vitest run --config vitest.fixtures.config.ts tests/gridReplay.fixtures.ts` in `docker compose run --rm shell`).
 
 `npm run test:fixtures` runs every replay this OS supports. CI runs it on the Windows and macOS runners after `cargo nextest`, so every change is checked against both engines. It isn't part of `npm test` because it takes a minute or so. Both replays refuse a screenshot whose User ID area isn't masked, so an unmasked capture fails `npm run check` and CI.

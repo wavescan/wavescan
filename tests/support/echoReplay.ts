@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { FrameSize } from "@wutheringtools/scanner-core";
 import type { RegionText } from "@/ipc/types";
+import { checkScreenForAuto, classifyScreen } from "@/session/classifyScreen";
 import { extractEcho } from "@/session/echoExtract";
 import { toScanEcho } from "@/session/exportScan";
 import { setPlayerName, usePlayerNameStorage } from "@/settings/playerName";
@@ -54,11 +55,16 @@ export function findEchoFixtures(): EchoFixture[] {
 /**
  * Runs one fixture's OCR output through extraction and export, compares it with the golden,
  * and fails on a silent misread, or on a substat-count flag when every substat is right.
+ * Every fixture is on Bag → Echoes, so it must also classify as that screen and pass the
+ * auto-mode check (a wrong "unknown" would silently drop the echo).
  * Flagged and missing fields only count towards accuracy.
  * Prints the OCR text of every region when anything isn't correct.
  */
 export function checkEcho(fixture: EchoFixture, regions: RegionText[], samples: PanelSamples, results: FieldResult[]) {
   const ocrText = Object.fromEntries(regions.map((r) => [r.id, r.lines.map((l) => l.text)]));
+  expect(classifyScreen(regions), `screen. Header read as ${JSON.stringify(ocrText.header)}`).toBe("bag.echoes");
+  expect(checkScreenForAuto(regions), `auto-mode check. OCR text:
+${JSON.stringify(ocrText, null, 2)}`).toBe("ok");
   const extracted = extractEcho(regions, samples);
   const echo = toScanEcho({ ...extracted, id: "echo-1", index: 1 }, 1);
   const fields = compareEcho(fixture.golden, echo);
