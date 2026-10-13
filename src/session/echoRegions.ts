@@ -47,11 +47,21 @@ export function padStatRow(row: RegionFrac): RegionFrac {
  */
 export const EQUIPPED_BY_ROW: RegionFrac = { x: 0.71, y: 0.723, width: 0.265, height: 0.037 };
 
+/**
+ * The bag header ("Echoes  2969/3000", top left), read only to tell which screen this is
+ * (`classifyScreen`). Measured on every fixture (2026-10-12): "Echoes" spans x 0.058–0.102,
+ * y 0.050–0.066 at 16:10 (top-anchored, so ×1.111 at 16:9), and the count ends by x 0.172.
+ * Padded by 0.008 above and below; starts after the bag icon (x 0.028–0.051).
+ * See docs/screens/echoes.md.
+ */
+export const HEADER_ROW: RegionFrac = { x: 0.054, y: 0.042, width: 0.136, height: 0.032 };
+
 /** Ids of the five per-row substat crops, top to bottom. */
 export const SUBSTAT_ROW_IDS = ["substatRow1", "substatRow2", "substatRow3", "substatRow4", "substatRow5"] as const;
 
 /** Region ids used by the echo extractor. */
 export type EchoRegionId =
+  | "header"
   | "name"
   | "level"
   | "mainStat"
@@ -70,6 +80,7 @@ export type EchoRegionId =
  * the OCR runs in parallel and a second request could find the frame already released.
  */
 const READ_REGIONS: Record<EchoRegionId, RegionFrac> = {
+  header: HEADER_ROW,
   name: NAME_BLOCK,
   level: LEVEL_ROW,
   mainStat: padStatRow(MAIN_STAT_ROW),
@@ -84,12 +95,20 @@ const READ_REGIONS: Record<EchoRegionId, RegionFrac> = {
   >),
 };
 
-/** Every region to OCR for one echo, adjusted for this frame's aspect ratio. */
+/**
+ * Every region to OCR for one echo, adjusted for this frame's aspect ratio. Includes the
+ * bag header, so the screen is classified from the same frame (`classifyScreen`).
+ */
 export function echoReadRegions(frame: FrameSize): RegionRead[] {
   return (Object.entries(READ_REGIONS) as [EchoRegionId, RegionFrac][]).map(([id, region]) => ({
     id,
     region: regionForFrame(region, frame),
   }));
+}
+
+/** Just the regions `checkScreenForAuto` needs: the bag header, the name and the secondary stat. */
+export function screenCheckRegions(frame: FrameSize): RegionRead[] {
+  return echoReadRegions(frame).filter(({ id }) => id === "header" || id === "name" || id === "secondaryStat");
 }
 
 /**

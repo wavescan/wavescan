@@ -1,6 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { createAutoScan, type AutoScanDeps } from "@/auto/autoScan";
+import { beforeAll, describe, expect, it } from "vitest";
+import { checkScreenWith, createAutoScan, type AutoScanDeps } from "@/auto/autoScan";
 import type { AutoModeStatus } from "@/ipc/types";
+import { loadBundledScannerData } from "@/data/scannerData";
+import { sabercatPanel } from "./support/echoPanels";
+import { encodeSamples, flatSample } from "./support/samplePayload";
 import { createFakeGame, fakeEchoes, type FakeEcho } from "./support/fakeGame";
 
 // An auto scan from start to finish against the pretend grid (tests/support/fakeGame.ts),
@@ -16,6 +19,7 @@ function setup(overrides: Partial<AutoScanDeps<FakeEcho>> = {}, count = 20) {
     startCapture: async () => calls.push("startCapture"),
     stopCapture: async () => calls.push("stopCapture"),
     frameSize: async () => fake.deps.frameSize(),
+    checkScreen: async () => "ok",
     arm: async (phrase) => {
       calls.push(`arm:${phrase}`);
       if (phrase !== "I understand") throw new Error("the confirmation didn't match");
@@ -135,9 +139,69 @@ describe("auto scan", () => {
     expect(calls.slice(-2)).toEqual(["disarm", "stopCapture"]);
   });
 
+  it.each([
+    ["wrong-screen", "Bag → Echoes"],
+    ["no-echo", "menu"],
+  ] as const)("never arms or clicks when the screen check says %s", async (check, wording) => {
+    const { deps, calls, fake } = setup({ checkScreen: async () => check });
+    const { result, read } = await runScan(deps);
+    expect(result.reason).toBe("not-started");
+    expect(result.detail).toContain(wording);
+    expect(read).toEqual([]);
+    expect(fake.log.clicks).toHaveLength(0);
+    expect(calls).toEqual(["startCapture", "stopCapture"]);
+  });
+
+  it("checks the screen of the frame it measured, before arming", async () => {
+    const order: string[] = [];
+    const { deps } = setup({
+      checkScreen: async (frame) => {
+        order.push(`check:${frame.width}x${frame.height}`);
+        return "ok";
+      },
+      arm: async () => {
+        order.push("arm");
+        return ARMED;
+      },
+    });
+    await runScan(deps);
+    const size = await deps.frameSize();
+    expect(order).toEqual([`check:${size?.width}x${size?.height}`, "arm"]);
+  });
+
+  it("doesn't arm when the screen check itself fails", async () => {
+    const { deps, calls } = setup({
+      checkScreen: async () => {
+        throw new Error("That frame is no longer available");
+      },
+    });
+    const { result } = await runScan(deps);
+    expect(result.reason).toBe("not-started");
+    expect(calls).toEqual(["startCapture", "stopCapture"]);
+  });
+
   it("reports when F8 couldn't be claimed", async () => {
     const { deps } = setup({ arm: async () => ({ ...ARMED, stop_key_active: false }) });
     const { started } = await runScan(deps);
     expect(started).toBe(false);
+  });
+});
+
+describe("checkScreenWith", () => {
+  beforeAll(() => {
+    loadBundledScannerData();
+  });
+
+  it("pins a frame, reads only the screen-check regions of it, and checks them", async () => {
+    const read: { seq: number; ids: string[] }[] = [];
+    const check = checkScreenWith(
+      async () => encodeSamples(7, [flatSample(16, 4)]),
+      async (seq, regions) => {
+        read.push({ seq, ids: regions.map((r) => r.id) });
+        return sabercatPanel();
+      },
+    );
+    expect(await check({ width: 2880, height: 1800 })).toBe("ok");
+    expect(read).toEqual([{ seq: 7, ids: ["header", "name", "secondaryStat"] }]);
   });
 });

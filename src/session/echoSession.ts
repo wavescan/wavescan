@@ -8,6 +8,7 @@ import {
 } from "@wutheringtools/scanner-core";
 import { errorKind, errorMessage } from "@/ipc/commands";
 import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
+import { classifyScreen, type ScreenKind } from "./classifyScreen";
 import { echoReadRegions } from "./echoRegions";
 import { extractEcho, type ExtractedEcho } from "./echoExtract";
 import { panelSampleRegions, splitPanelSamples } from "./panelSamples";
@@ -39,6 +40,10 @@ export interface SessionStats {
   duplicates: number;
   /** Reads that failed (OCR error, window gone, …). */
   errors: number;
+  /** Settled frames skipped because the game wasn't on Bag → Echoes (`classifyScreen`). */
+  wrongScreen: number;
+  /** The screen the last read frame showed, or null before the first read. */
+  screen: ScreenKind | null;
 }
 
 /** What the session needs from the outside world (real IPC in the app, fakes in tests). */
@@ -65,11 +70,13 @@ function asImageData(sample: Sample): ImageData {
  * Watch mode for Bag → Echoes: call `tick()` on a timer (≈8 per second). Each tick
  * samples the panel; when it settles on an echo not seen before, the session reads that
  * exact frame (pinned by the sample), extracts the echo and reports it. Sends no input.
+ * A frame from another screen (`classifyScreen`) is counted in `wrongScreen`, not read as
+ * an echo.
  */
 export function createEchoSession(deps: EchoSessionDeps) {
   const detector = createStableFrameDetector();
   const seen = createDedupeSet();
-  const stats: SessionStats = { scanned: 0, duplicates: 0, errors: 0 };
+  const stats: SessionStats = { scanned: 0, duplicates: 0, errors: 0, wrongScreen: 0, screen: null };
   let reading = false;
 
   const publish = () => deps.onStats?.({ ...stats });
@@ -96,7 +103,13 @@ export function createEchoSession(deps: EchoSessionDeps) {
 
     reading = true;
     try {
-      const echo = extractEcho(await deps.readRegions(samples.seq, echoReadRegions(frame)), extras);
+      const results = await deps.readRegions(samples.seq, echoReadRegions(frame));
+      stats.screen = classifyScreen(results);
+      if (stats.screen !== "bag.echoes") {
+        stats.wrongScreen += 1;
+        return;
+      }
+      const echo = extractEcho(results, extras);
       if (seen.has(echo.signature)) {
         stats.duplicates += 1;
       } else {

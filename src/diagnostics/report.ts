@@ -168,7 +168,11 @@ export function buildChecks(input: DiagnosticsInput): Check[] {
     checks.push({
       id: "echo-read",
       label: "Read the selected echo",
-      status: !read.ok ? "fail" : read.value.echo && unsure.length === 0 ? "pass" : "warn",
+      status: !read.ok
+        ? "fail"
+        : read.value.screen === "bag.echoes" && read.value.echo && unsure.length === 0
+          ? "pass"
+          : "warn",
       detail: read.ok
         ? `${describeEchoRead(read.value)} (${read.value.engine}, ${read.value.totalMs} ms)`
         : read.error,

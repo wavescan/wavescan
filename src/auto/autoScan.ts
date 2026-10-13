@@ -1,8 +1,10 @@
 import type { FrameSize } from "@wutheringtools/scanner-core";
 import type { AutoModeStatus, FracPoint, FracRect, RegionRead, RegionText } from "@/ipc/types";
+import { checkScreenForAuto, screenCheckMessage, type ScreenCheck } from "@/session/classifyScreen";
 import { extractEcho, type ExtractedEcho } from "@/session/echoExtract";
-import { echoReadRegions } from "@/session/echoRegions";
-import type { PanelSamples } from "@/session/panelSamples";
+import { echoReadRegions, screenCheckRegions } from "@/session/echoRegions";
+import { panelSampleRegions, type PanelSamples } from "@/session/panelSamples";
+import { decodeSamples } from "@/session/samples";
 import {
   createNavigator,
   type GridPosition,
@@ -13,6 +15,7 @@ import {
 } from "./navigator";
 
 // One auto-mode scan from start to finish (roadmap Phase 2): start capturing, arm auto mode
+// check the game is on Bag → Echoes with an echo selected (before anything is armed), arm
 // with the phrase the user typed, bring the game to the front, run the navigator, and then
 // always disarm and stop capturing, however the run ended. The UI (ScanView) only shows
 // what this reports. Kept separate from the view so every path is unit-tested.
@@ -40,6 +43,8 @@ export interface AutoScanDeps<Echo extends NavigatorEcho> {
   stopCapture(): Promise<unknown>;
   /** Size of the latest captured frame, or null before the first one. */
   frameSize(): Promise<FrameSize | null>;
+  /** Whether the latest `frame`-sized capture is ready to scan (see `checkScreenWith`). */
+  checkScreen(frame: FrameSize): Promise<ScreenCheck>;
   arm(phrase: string): Promise<AutoModeStatus>;
   focusGame(): Promise<unknown>;
   disarm(): Promise<unknown>;
@@ -73,6 +78,22 @@ export function readEchoWith(readRegions: (seq: number, regions: RegionRead[]) =
     extractEcho(await readRegions(seq, echoReadRegions(frame)), samples);
 }
 
+/**
+ * `checkScreen` for the app: pin the latest frame (sampling does that), OCR its bag header,
+ * echo name and secondary stat, and check them with `checkScreenForAuto`. Reads only;
+ * nothing is clicked.
+ */
+export function checkScreenWith(
+  sampleRegions: (regions: FracRect[], maxWidth: number) => Promise<ArrayBuffer>,
+  readRegions: (seq: number, regions: RegionRead[]) => Promise<RegionText[]>,
+) {
+  return async (frame: FrameSize): Promise<ScreenCheck> => {
+    // One small sample is enough to pin the frame; its pixels aren't used.
+    const { seq } = decodeSamples(await sampleRegions(panelSampleRegions(frame).slice(0, 1), 16));
+    return checkScreenForAuto(await readRegions(seq, screenCheckRegions(frame)));
+  };
+}
+
 const EMPTY: NavigatorProgress = { echoes: 0, unchanged: 0, errors: 0, row: 0 };
 
 /** Creates a scan. Call `run()` once; `stop()` ends it after the current action. */
@@ -102,6 +123,11 @@ export function createAutoScan<Echo extends NavigatorEcho>(
       await deps.startCapture(AUTO_FPS);
       const frame = await waitForFrame();
       if (!frame) return notStarted("No picture from the game yet. Is it minimised?");
+      if (stopRequested) return notStarted("Stopped before the scan started.");
+
+      // Before arming: a click on the wrong screen, or into a menu over the bag, must never happen.
+      const check = await deps.checkScreen(frame);
+      if (check !== "ok") return notStarted(screenCheckMessage(check));
       if (stopRequested) return notStarted("Stopped before the scan started.");
 
       const status = await deps.arm(options.phrase);

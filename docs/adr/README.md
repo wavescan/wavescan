@@ -62,3 +62,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0028](./0028-browser-links-mini-window-and-saved-scan.md) | Open GitHub pages in the browser, a mini window, and a saved copy of the scan | accepted | | ui, security, dependencies, privacy |
 | [0029](./0029-bundled-echo-pictures.md) | Bundled echo pictures on the Review and Scan screens | accepted | | data, ui |
 | [0030](./0030-equipped-by-and-the-in-game-name.md) | "Equipped by": the "Rover" key and the player's in-game name | accepted | | schema, interop, privacy, ocr |
+| [0031](./0031-classify-the-screen-from-the-bag-header.md) | Classify the screen from the bag header, and check it before auto mode arms | accepted | | ocr, accuracy, input, security |

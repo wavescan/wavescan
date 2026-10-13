@@ -11,7 +11,7 @@ import type { PanelSamples } from "@/session/panelSamples";
 import { decodeSamples } from "@/session/samples";
 import { setIconSearchRegion } from "@/session/setIcon";
 import type { FieldResult } from "./support/fixtureCompare";
-import { accuracyLine, checkEcho, findEchoFixtures } from "./support/echoReplay";
+import { accuracyLine, checkEcho, checkOtherScreen, findEchoFixtures, findOtherScreenFixtures } from "./support/echoReplay";
 
 // Fixture replay through macOS Vision (docs/fixtures.md): every committed echo screenshot
 // that has a golden JSON goes through the app's real pipeline (regions → Vision, plus the
@@ -26,6 +26,7 @@ import { accuracyLine, checkEcho, findEchoFixtures } from "./support/echoReplay"
 const SAMPLE_WIDTH = 128;
 
 const fixtures = findEchoFixtures();
+const otherScreens = findOtherScreenFixtures();
 const ocrByImage = new Map<string, { regions: RegionText[]; samples: PanelSamples }>();
 const allResults: FieldResult[] = [];
 
@@ -38,7 +39,7 @@ describe.runIf(process.platform === "darwin")("fixture replay: echoes through ma
     writeFileSync(
       manifest,
       JSON.stringify(
-        fixtures.map(({ image, frame }) => ({
+        [...fixtures, ...otherScreens].map(({ image, frame }) => ({
           image,
           regions: echoReadRegions(frame),
           samples: [setIconSearchRegion(frame), mainStatLabelRegion(frame)],
@@ -69,6 +70,18 @@ describe.runIf(process.platform === "darwin")("fixture replay: echoes through ma
       const read = ocrByImage.get(fixture.image);
       expect(read, "no OCR output for this image").toBeDefined();
       checkEcho(fixture, read?.regions ?? [], read?.samples ?? {}, allResults);
+    });
+  }
+
+  it("found captures of other screens", () => {
+    expect(otherScreens.length).toBeGreaterThan(0);
+  });
+
+  for (const fixture of otherScreens) {
+    it(`other screen: ${fixture.name}`, () => {
+      const read = ocrByImage.get(fixture.image);
+      expect(read, "no OCR output for this image").toBeDefined();
+      checkOtherScreen(fixture, read?.regions ?? []);
     });
   }
 });

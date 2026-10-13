@@ -1,5 +1,6 @@
 import type { FrameSize } from "@wutheringtools/scanner-core";
 import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
+import { classifyScreen, type ScreenKind } from "@/session/classifyScreen";
 import { echoReadRegions } from "@/session/echoRegions";
 import { extractEcho } from "@/session/echoExtract";
 import { panelSampleRegions, splitPanelSamples } from "@/session/panelSamples";
@@ -28,6 +29,8 @@ export interface EchoRead {
   ms: number;
   /** The whole read (every region, plus queueing and moving crops), in milliseconds. */
   totalMs: number;
+  /** Which screen the frame showed (`classifyScreen`); a scan skips anything but `bag.echoes`. */
+  screen: ScreenKind;
   /** The echo as it would be exported, or null if the echo couldn't be identified. */
   echo: ScanEcho | null;
   /** Set-icon match score per candidate set, when the icon had to be matched. */
@@ -51,6 +54,7 @@ export async function readEchoForDiagnostics(deps: EchoReadDeps, frame: FrameSiz
     engine: await deps.engineName(),
     ms: Math.round(Math.max(0, ...results.map((r) => r.elapsed_ms))),
     totalMs,
+    screen: classifyScreen(results),
     echo: toScanEcho({ ...extracted, id: "diagnostics", index: 1 }, 1),
     setScores: extracted.setScores,
   };
@@ -59,6 +63,9 @@ export async function readEchoForDiagnostics(deps: EchoReadDeps, frame: FrameSiz
 /** One-line summary for the checks list, e.g. "WhiffWhaff +0, 2★, main stat HP". */
 export function describeEchoRead(read: EchoRead): string {
   const echo = read.echo;
+  if (read.screen !== "bag.echoes") {
+    return `Not on Bag → Echoes (header read as "${(read.regions.header ?? []).join(" ")}"), so a scan would skip this frame`;
+  }
   if (!echo) return `Couldn't identify the echo (name read as "${(read.regions.name ?? []).join(" ")}")`;
   const summary = `${echo.echo} +${echo.level ?? "?"}, ${echo.rank ? `${echo.rank}★` : "rarity ?"}, main stat ${
     echo.stat ?? "?"

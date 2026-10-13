@@ -200,7 +200,7 @@ describe("diagnostics echo read", () => {
   const lines = (...texts: string[]) =>
     texts.map((text, i) => ({ text, bounds: { x: 0, y: i * 40, width: 300, height: 30 } }));
 
-  function fakeGame(mainStat: string[]) {
+  function fakeGame(mainStat: string[], header = ["Echoes 2969/3000"]) {
     const reads: number[] = [];
     let clock = 1000;
     const deps = {
@@ -208,6 +208,7 @@ describe("diagnostics echo read", () => {
       readRegions: async (seq: number, regions: RegionRead[]): Promise<RegionText[]> => {
         reads.push(seq);
         const text: Record<string, string[]> = {
+          header,
           name: ["Whiff Whaff"],
           level: ["+0"],
           mainStat,
@@ -246,6 +247,16 @@ describe("diagnostics echo read", () => {
     const input = { ...healthy(), echoRead: { ok: true as const, value: read } };
     expect(statusOf(input, "echo-read")).toBe("warn");
     expect(describeEchoRead(read)).toContain("Unsure: stat");
+  });
+
+  it("warns, and says a scan would skip it, when the game isn't on Bag → Echoes", async () => {
+    const read = await readEchoForDiagnostics(fakeGame(["HP 2.8%"], ["Weapons 412/2000"]).deps, { width: 2880, height: 1800 });
+    expect(read.screen).toBe("unknown");
+    const input = { ...healthy(), echoRead: { ok: true as const, value: read } };
+    expect(statusOf(input, "echo-read")).toBe("warn");
+    expect(describeEchoRead(read)).toBe(
+      'Not on Bag → Echoes (header read as "Weapons 412/2000"), so a scan would skip this frame',
+    );
   });
 
   it("fails with the error when the read itself fails", () => {

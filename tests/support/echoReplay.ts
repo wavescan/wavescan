@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { FrameSize } from "@wutheringtools/scanner-core";
 import type { RegionText } from "@/ipc/types";
+import { checkScreenForAuto, classifyScreen, type ScreenCheck, type ScreenKind } from "@/session/classifyScreen";
 import { extractEcho } from "@/session/echoExtract";
 import { toScanEcho } from "@/session/exportScan";
 import { setPlayerName, usePlayerNameStorage } from "@/settings/playerName";
@@ -13,6 +14,8 @@ import { compareEcho, summarize, type FieldResult, type GoldenEcho } from "./fix
 // golden, checking one echo, and the accuracy line. Each replay only differs in its OCR.
 
 const SCREEN_DIR = resolve("fixtures/screens/echoes");
+/** Captures of other screens, which a scan must skip (ADR 0031). */
+const OTHER_SCREEN_DIR = resolve("fixtures/screens/unknown");
 
 /**
  * The in-game name on the fixtures' account: its main character shows as "Equipped by
@@ -51,14 +54,69 @@ export function findEchoFixtures(): EchoFixture[] {
   return fixtures.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+/** What a capture of another screen must classify as (its `<name>.json`). */
+export interface OtherScreenGolden {
+  /** What the capture shows, for whoever reads the golden. */
+  shows: string;
+  screen: ScreenKind;
+  autoCheck: ScreenCheck;
+}
+
+export interface OtherScreenFixture {
+  /** e.g. "1920x1080/inventory-weapons". */
+  name: string;
+  image: string;
+  golden: OtherScreenGolden;
+  frame: FrameSize;
+}
+
+/** Every capture in `fixtures/screens/unknown` with a golden JSON, sorted by name. */
+export function findOtherScreenFixtures(): OtherScreenFixture[] {
+  const fixtures: OtherScreenFixture[] = [];
+  for (const sizeDir of readdirSync(OTHER_SCREEN_DIR)) {
+    const size = /^(\d+)x(\d+)$/.exec(sizeDir);
+    if (!size) continue;
+    const frame = { width: Number(size[1]), height: Number(size[2]) };
+    for (const file of readdirSync(join(OTHER_SCREEN_DIR, sizeDir))) {
+      if (!file.endsWith(".json")) continue;
+      const base = file.slice(0, -".json".length);
+      fixtures.push({
+        name: `${sizeDir}/${base}`,
+        image: join(OTHER_SCREEN_DIR, sizeDir, `${base}.png`),
+        golden: JSON.parse(readFileSync(join(OTHER_SCREEN_DIR, sizeDir, file), "utf8")) as OtherScreenGolden,
+        frame,
+      });
+    }
+  }
+  return fixtures.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Checks a capture of another screen: it must classify as its golden says (so watch mode
+ * skips it), and fail the auto-mode check (so auto mode never arms on it).
+ */
+export function checkOtherScreen(fixture: OtherScreenFixture, regions: RegionText[]) {
+  const ocrText = Object.fromEntries(regions.map((r) => [r.id, r.lines.map((l) => l.text)]));
+  expect(classifyScreen(regions), `screen. Header read as ${JSON.stringify(ocrText.header)}`).toBe(fixture.golden.screen);
+  expect(checkScreenForAuto(regions), `auto-mode check. OCR text:
+${JSON.stringify(ocrText, null, 2)}`).toBe(
+    fixture.golden.autoCheck,
+  );
+}
+
 /**
  * Runs one fixture's OCR output through extraction and export, compares it with the golden,
  * and fails on a silent misread, or on a substat-count flag when every substat is right.
+ * Every fixture is on Bag → Echoes, so it must also classify as that screen and pass the
+ * auto-mode check (a wrong "unknown" would silently drop the echo).
  * Flagged and missing fields only count towards accuracy.
  * Prints the OCR text of every region when anything isn't correct.
  */
 export function checkEcho(fixture: EchoFixture, regions: RegionText[], samples: PanelSamples, results: FieldResult[]) {
   const ocrText = Object.fromEntries(regions.map((r) => [r.id, r.lines.map((l) => l.text)]));
+  expect(classifyScreen(regions), `screen. Header read as ${JSON.stringify(ocrText.header)}`).toBe("bag.echoes");
+  expect(checkScreenForAuto(regions), `auto-mode check. OCR text:
+${JSON.stringify(ocrText, null, 2)}`).toBe("ok");
   const extracted = extractEcho(regions, samples);
   const echo = toScanEcho({ ...extracted, id: "echo-1", index: 1 }, 1);
   const fields = compareEcho(fixture.golden, echo);

@@ -29,6 +29,7 @@ export interface OverlayBox {
 export const USER_ID_REGION: RegionFrac = { x: 0.86, y: 0.975, width: 0.14, height: 0.025 };
 
 const TEXT_LABELS: Record<EchoRegionId, string> = {
+  header: "bag header",
   name: "name",
   level: "level",
   mainStat: "main stat",

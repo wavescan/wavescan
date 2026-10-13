@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef } from "vue";
 import type { FrameSize } from "@wutheringtools/scanner-core";
-import { createAutoScan, readEchoWith, type AutoScanResult } from "@/auto/autoScan";
+import { checkScreenWith, createAutoScan, readEchoWith, type AutoScanResult } from "@/auto/autoScan";
 import type { NavigatorProgress } from "@/auto/navigator";
 import { CONFIRMATION_PHRASE } from "@/diagnostics/inputTest";
 import { isSupportedAspect } from "@/diagnostics/regions";
@@ -112,6 +112,7 @@ async function start() {
         const status = await getCaptureStatus();
         return status.frame ? { width: status.frame.width, height: status.frame.height } : null;
       },
+      checkScreen: checkScreenWith(sampleRegions, readEchoRegions),
       arm: armAutoMode,
       focusGame: autoFocusGame,
       disarm: disarmAutoMode,

@@ -14,7 +14,15 @@ import { echoReadRegions } from "@/session/echoRegions";
 import { mainStatLabelRegion } from "@/session/hpLabel";
 import { setIconSearchRegion } from "@/session/setIcon";
 import type { FieldResult } from "./support/fixtureCompare";
-import { accuracyLine, checkEcho, findEchoFixtures, type EchoFixture } from "./support/echoReplay";
+import {
+  accuracyLine,
+  checkEcho,
+  checkOtherScreen,
+  findEchoFixtures,
+  findOtherScreenFixtures,
+  type EchoFixture,
+  type OtherScreenFixture,
+} from "./support/echoReplay";
 import { samplePng } from "./support/pngSample";
 
 // Fixture replay through the Tesseract reader (docs/fixtures.md, ADR 0027): the engine that
@@ -62,7 +70,7 @@ function userIdMasked(rgba: Buffer, width: number, height: number): boolean {
 }
 
 /** Reads the fixture's scan regions. Refuses a screenshot whose User ID isn't masked. */
-async function readFixture(reader: TesseractReader, fixture: EchoFixture): Promise<RegionText[]> {
+async function readFixture(reader: TesseractReader, fixture: EchoFixture | OtherScreenFixture): Promise<RegionText[]> {
   const { data, info } = await sharp(fixture.image).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   if (!userIdMasked(data, info.width, info.height)) {
     throw new Error(`${fixture.name}: the User ID isn't masked. Run \`npm run fixtures:mask\` (docs/fixtures.md)`);
@@ -73,6 +81,7 @@ async function readFixture(reader: TesseractReader, fixture: EchoFixture): Promi
 }
 
 const fixtures = findEchoFixtures();
+const otherScreens = findOtherScreenFixtures();
 const reads = new Map<string, RegionText[]>();
 const allResults: FieldResult[] = [];
 const timings: number[] = [];
@@ -86,7 +95,7 @@ describe("fixture replay: echoes through Tesseract", () => {
     try {
       // All fixtures at once: their crops share the pool, like overlapping reads in auto mode.
       await Promise.all(
-        fixtures.map(async (fixture) => {
+        [...fixtures, ...otherScreens].map(async (fixture) => {
           const regions = await readFixture(reader, fixture);
           timings.push(...regions.map((r) => r.elapsed_ms));
           reads.set(fixture.name, regions);
@@ -118,6 +127,18 @@ describe("fixture replay: echoes through Tesseract", () => {
         mainStatLabel: await samplePng(fixture.image, mainStatLabelRegion(fixture.frame), SAMPLE_WIDTH),
       };
       checkEcho(fixture, regions ?? [], samples, allResults);
+    });
+  }
+
+  it("found captures of other screens", () => {
+    expect(otherScreens.length).toBeGreaterThan(0);
+  });
+
+  for (const fixture of otherScreens) {
+    it(`other screen: ${fixture.name}`, () => {
+      const regions = reads.get(fixture.name);
+      expect(regions, "no OCR output for this image").toBeDefined();
+      checkOtherScreen(fixture, regions ?? []);
     });
   }
 });
