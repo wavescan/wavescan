@@ -67,7 +67,7 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
 
 If you close the scanner before exporting, it offers to carry on with that scan next time.
 
-**Who has each echo equipped.** The scanner reads the "Equipped by" line too. For your main character (Rover), the game shows the name *you* chose instead of "Rover", so the scanner asks for it: **Your in-game name** on the Scan screen. Without it, echoes on your main character are marked **check**. Your name stays on your computer: the scan says "Rover", and bug reports and Diagnostics reports hide it.
+**Who has each echo equipped.** The scanner reads the "Equipped by" line too. For your main character (Rover), the game shows the name *you* chose instead of "Rover", so the scanner asks for it: **Your in-game name** on the Scan screen. Without it, echoes on your main character are marked **check**. Your name stays on your computer: the scan says "Rover", and bug reports and Diagnostics reports hide it. Sometimes the game shows the "Equipped by" line a moment after the rest of the echo (more often on a PC that's short of memory). Watch mode notices, reads the line then, and marks it **check** so you can confirm it's the right character.
 
 ### Auto mode: the scanner clicks for you (optional)
 

@@ -19,6 +19,10 @@ export interface EquippedByInput {
   raw: { equippedBy?: string };
   /** Set in the review screen: a character key, "Rover", or null for "not equipped". */
   equippedByFix?: string | null;
+  /** The line was read after the rest of the echo (`equippedByWatch.ts`). */
+  equippedByLate?: boolean;
+  /** Fields the user checked in the review screen. */
+  checked?: string[];
 }
 
 /**
@@ -26,18 +30,20 @@ export interface EquippedByInput {
  * matched against every character and the player's in-game name: the main character exports
  * as "Rover" (the importing app picks its Rover entry), and an unclear name exports null,
  * flagged. Echoes read before this field existed have no raw text and export null, unflagged,
- * as they always did.
+ * as they always did. A line read late (after the rest of the echo) exports its name but
+ * stays flagged until the user checks it in the review screen.
  */
 export function resolveEquippedBy(candidate: EquippedByInput, name: string | null = playerName()): EquippedBy {
   if (candidate.equippedByFix !== undefined) return { key: candidate.equippedByFix, flagged: false };
   const text = candidate.raw.equippedBy;
   if (text === undefined) return { key: null, flagged: false };
   const match = matchEquippedBy(text.split("\n"), allCharacters(), name);
+  const late = candidate.equippedByLate === true && !candidate.checked?.includes("equippedBy");
   switch (match.kind) {
     case "character":
-      return { key: match.key, flagged: false };
+      return { key: match.key, flagged: late };
     case "player":
-      return { key: PLAYER_CHARACTER_KEY, flagged: false };
+      return { key: PLAYER_CHARACTER_KEY, flagged: late };
     case "unknown":
       return { key: null, flagged: true };
     default:

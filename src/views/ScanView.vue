@@ -43,6 +43,8 @@ const mini = ref(false);
 /** Echo ids read since Start, newest first, and when each arrived (for the pace). */
 const recent = ref<string[]>([]);
 const arrivals: number[] = [];
+/** The session's echo ids → the list's, for an "Equipped by" line read after the echo was added. */
+const storeIds = new Map<string, string>();
 let frame = { width: 0, height: 0 };
 let sizeTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -84,6 +86,7 @@ async function start() {
   problem.value = null;
   recent.value = [];
   arrivals.length = 0;
+  storeIds.clear();
   try {
     await startCapture(WATCH_FPS);
     for (let i = 0; i < 20 && frame.width === 0; i++) {
@@ -97,9 +100,14 @@ async function start() {
       frameSize: () => frame,
       onCandidate: (c) => {
         const added = store.add(c, "watch");
+        storeIds.set(c.id, added.id);
         arrivals.push(performance.now());
         recent.value = [added.id, ...recent.value];
         problem.value = null;
+      },
+      onCandidateUpdate: (c) => {
+        const id = storeIds.get(c.id);
+        if (id && c.raw.equippedBy !== undefined) store.addLateEquippedBy(id, c.raw.equippedBy);
       },
       onStats: (s) => (stats.value = s),
       onError: (message, kind) => {

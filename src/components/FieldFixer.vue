@@ -25,7 +25,7 @@ import {
   type FieldId,
 } from "@/review/fields";
 import { MAX_LEVEL_BY_RANK } from "@/session/echoRank";
-import { equipChoices } from "@/session/equippedBy";
+import { equipChoices, resolveEquippedBy } from "@/session/equippedBy";
 import { playerName } from "@/settings/playerName";
 import { PLAYER_CHARACTER_KEY } from "@wutheringtools/scanner-core";
 import PlayerNameField from "@/components/PlayerNameField.vue";
@@ -102,7 +102,8 @@ const canConfirm = computed(() => {
     case "substats":
       return true;
     case "equippedBy":
-      return false; // flagged means no one was recognised, so there's nothing to accept
+      // Flagged with a name only when the line was read late; otherwise no one was recognised.
+      return resolveEquippedBy(c).key !== null;
     default:
       return currentSubstat.value !== null && substatChoices.value.some((s) => Math.abs(s.value - (currentSubstat.value ?? -1)) < 0.05);
   }
@@ -257,6 +258,12 @@ const choiceClass = (selected: boolean) =>
       v-else-if="field === 'equippedBy'"
       class="flex flex-col gap-3"
     >
+      <p
+        v-if="candidate.equippedByLate"
+        class="text-xs opacity-80"
+      >
+        The game showed this line a moment after the rest of the echo, so Wavescan read it separately. Check it's the right character.
+      </p>
       <div
         v-if="!playerName()"
         class="rounded-box bg-base-100 p-3"

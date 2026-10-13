@@ -85,6 +85,18 @@ describe("scan store", () => {
     expect(store.state.candidates).toEqual([]);
   });
 
+  it("adds an Equipped by line read late, keeping fixes, and undo keeps the line", () => {
+    const store = createScanStore(null);
+    const added = store.add(echo(), "watch");
+    store.update(fixSet(added, SET));
+    store.addLateEquippedBy(added.id, "Equipped by Augusta");
+    expect(store.get(added.id)).toMatchObject({ raw: { equippedBy: "Equipped by Augusta" }, equippedByLate: true });
+    expect(store.get(added.id)?.slot.set).toBe(SET);
+    store.undo(added.id);
+    expect(store.get(added.id)).toMatchObject({ raw: { equippedBy: "Equipped by Augusta" }, equippedByLate: true });
+    expect(store.get(added.id)?.slot.set).toBeNull();
+  });
+
   it("keeps a copy in storage that a later launch can restore or discard", () => {
     const storage = memoryStorage();
     const first = createScanStore(storage, () => new Date("2026-10-10T14:12:00Z"));

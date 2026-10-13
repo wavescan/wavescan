@@ -1,0 +1,17 @@
+{
+  "echo": "NightmareAeroPredator",
+  "echoSet": "CrownofValor",
+  "cost": 1,
+  "rank": 5,
+  "level": 25,
+  "stat": "ATK",
+  "substats": [
+    { "type": "CritDMG", "value": 17.4 },
+    { "type": "ATK_FLAT", "value": 40 },
+    { "type": "CritRate", "value": 8.7 },
+    { "type": "HP", "value": 6.4 },
+    { "type": "HeavyAttackDMGBonus", "value": 10.9 }
+  ],
+  "equippedBy": "Augusta",
+  "notes": "16:9 windowed: rebuilt from a 1920x1080 desktop screenshot of a 1920x1080 window (title bar cropped, the bottom 58 px and right 2 px were off screen and are black). One of 7 echoes whose \"Equipped by\" line watch mode missed on a low-memory laptop (2026-10-12): the settled panel reads fine, so the line was most likely drawn after the read. Nightmare name with a colon; the set is the echo's only one."
+}

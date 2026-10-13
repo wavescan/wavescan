@@ -136,11 +136,17 @@ describe("echoSkillRow", () => {
   });
 });
 
-/** Encodes a sample_regions payload of two solid images (panel + stats). */
-function samples(seq: number, fill: number): ArrayBuffer {
+/**
+ * Encodes a sample_regions payload of solid images: the panel and stats in `fill`, the
+ * set icon and main-stat label, and the "Equipped by" box in `rowFill`.
+ */
+function samples(seq: number, fill: number, rowFill = fill): ArrayBuffer {
   const sizes = [
     [128, 296],
     [128, 64],
+    [8, 8],
+    [8, 8],
+    [128, 11],
   ] as const;
   const total = 12 + sizes.reduce((n, [w, h]) => n + 8 + w * h * 4, 0);
   const buffer = new ArrayBuffer(total);
@@ -148,33 +154,47 @@ function samples(seq: number, fill: number): ArrayBuffer {
   view.setBigUint64(0, BigInt(seq), true);
   view.setUint32(8, sizes.length, true);
   let offset = 12;
-  for (const [w, h] of sizes) {
+  for (const [i, [w, h]] of sizes.entries()) {
     view.setUint32(offset, w, true);
     view.setUint32(offset + 4, h, true);
-    new Uint8Array(buffer, offset + 8, w * h * 4).fill(fill);
+    new Uint8Array(buffer, offset + 8, w * h * 4).fill(i === sizes.length - 1 ? rowFill : fill);
     offset += 8 + w * h * 4;
   }
   return buffer;
 }
 
-/** A fake game: `screen` is what's showing; each tick samples it. */
+/**
+ * A fake game: `panel` is the OCR of what's showing, `fill` its pixels, and `equipped` /
+ * `rowFill` the "Equipped by" box's text and pixels. Each tick samples it, 125 ms apart.
+ */
 function fakeGame() {
-  const state = { seq: 0, fill: 10, panel: sabercatPanel(), reads: 0 };
+  const state = { seq: 0, fill: 10, rowFill: 10, panel: sabercatPanel(), equipped: [] as string[], reads: 0, boxReads: 0, time: 0 };
   const found: EchoCandidate[] = [];
+  const updated: EchoCandidate[] = [];
   const session = createEchoSession({
-    sampleRegions: async () => samples(++state.seq, state.fill),
-    readRegions: async (seq) => {
-      state.reads += 1;
+    sampleRegions: async () => samples(++state.seq, state.fill, state.rowFill),
+    readRegions: async (seq, regions) => {
       expect(seq).toBe(state.seq); // reads the frame that was just sampled
-      return state.panel;
+      const box = region("equippedBy", state.equipped.map((t, i) => line(t, i * 30)));
+      if (regions.length === 1 && regions[0]?.id === "equippedBy") {
+        state.boxReads += 1;
+        return [box];
+      }
+      state.reads += 1;
+      return state.panel.some((r) => r.id === "equippedBy") ? state.panel : [...state.panel, box];
     },
     frameSize: () => ({ width: 2880, height: 1800 }),
     onCandidate: (c) => found.push(c),
+    onCandidateUpdate: (c) => updated.push(c),
+    now: () => state.time,
   });
   const ticks = async (n: number) => {
-    for (let i = 0; i < n; i++) await session.tick();
+    for (let i = 0; i < n; i++) {
+      await session.tick();
+      state.time += 125;
+    }
   };
-  return { state, found, session, ticks };
+  return { state, found, updated, session, ticks };
 }
 
 describe("echo session (watch mode)", () => {
@@ -226,6 +246,76 @@ describe("echo session (watch mode)", () => {
     await game.ticks(6);
     expect(game.found).toHaveLength(1);
     expect(game.session.stats().wrongScreen).toBe(0);
+  });
+});
+
+describe("echo session: an Equipped by line drawn after the read", () => {
+  /** The game shows the stats first; the line (and its pixels) arrive a few ticks later. */
+  async function lineDrawnLate(game: ReturnType<typeof fakeGame>) {
+    await game.ticks(4);
+    expect(game.found).toHaveLength(1);
+    expect(game.found[0]?.raw.equippedBy).toBe("");
+    game.state.rowFill = 200;
+    game.state.equipped = ["Equipped by Augusta"];
+  }
+
+  it("reads the box again and reports the echo with the line, marked as read late", async () => {
+    const game = fakeGame();
+    await lineDrawnLate(game);
+    await game.ticks(6);
+    expect(game.state.reads).toBe(1);
+    expect(game.state.boxReads).toBe(1);
+    expect(game.found).toHaveLength(1);
+    expect(game.updated).toHaveLength(1);
+    expect(game.updated[0]).toMatchObject({ id: game.found[0]?.id, equippedByLate: true });
+    expect(game.updated[0]?.raw.equippedBy).toBe("Equipped by Augusta");
+  });
+
+  it("doesn't watch an echo whose line was there at the read", async () => {
+    const game = fakeGame();
+    game.state.equipped = ["Equipped by Chisa"];
+    await game.ticks(4);
+    game.state.rowFill = 200; // anything changing in the box afterwards is ignored
+    game.state.equipped = ["Equipped by Augusta"];
+    await game.ticks(6);
+    expect(game.found[0]?.raw.equippedBy).toBe("Equipped by Chisa");
+    expect(game.state.boxReads).toBe(0);
+    expect(game.updated).toHaveLength(0);
+  });
+
+  it("never gives an echo the line of the next one the user clicks", async () => {
+    const game = fakeGame();
+    await game.ticks(4);
+    // The player clicks another echo, which is equipped.
+    game.state.fill = 120;
+    game.state.rowFill = 200;
+    game.state.panel = sabercatPanel("21.0%");
+    game.state.equipped = ["Equipped by Augusta"];
+    await game.ticks(6);
+    expect(game.found).toHaveLength(2);
+    expect(game.found[1]?.raw.equippedBy).toBe("Equipped by Augusta");
+    expect(game.updated).toHaveLength(0);
+    expect(game.state.boxReads).toBe(0);
+  });
+
+  it("stops watching after a moment", async () => {
+    const game = fakeGame();
+    await game.ticks(4);
+    await game.ticks(14); // 1.75 s
+    game.state.rowFill = 200;
+    game.state.equipped = ["Equipped by Augusta"];
+    await game.ticks(6);
+    expect(game.state.boxReads).toBe(0);
+    expect(game.updated).toHaveLength(0);
+  });
+
+  it("leaves the echo as it was when the box changed but has no line", async () => {
+    const game = fakeGame();
+    await game.ticks(4);
+    game.state.rowFill = 200; // e.g. the background behind the panel moved
+    await game.ticks(6);
+    expect(game.state.boxReads).toBe(1);
+    expect(game.updated).toHaveLength(0);
   });
 });
 
