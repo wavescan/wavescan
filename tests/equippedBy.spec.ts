@@ -2,7 +2,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { loadBundledScannerData } from "@/data/scannerData";
 import { buildReport, formatReport, type DiagnosticsInput } from "@/diagnostics/report";
 import { reportBody } from "@/feedback/issue";
-import { fixEquippedBy, flaggedFields, rawReading } from "@/review/fields";
+import { confirmField, fixEquippedBy, flaggedFields, rawReading } from "@/review/fields";
 import { extractEcho } from "@/session/echoExtract";
 import type { EchoCandidate } from "@/session/echoSession";
 import { equipChoices, equippedByLabel, redactDeep, redactPlayerName, resolveEquippedBy } from "@/session/equippedBy";
@@ -101,6 +101,18 @@ describe("export and review", () => {
     expect(flaggedFields(fixed)).not.toContain("equippedBy");
     expect(toScanEcho(fixed, 1)?.equippedBy).toBe("Rover");
     expect(toScanEcho(fixed, 1)?.lowConfidence ?? []).not.toContain("equippedBy");
+  });
+
+  it("exports a line read late with its name, flagged until the user checks it", () => {
+    const late: EchoCandidate = { ...candidate("Equipped by Augusta"), equippedByLate: true };
+    expect(resolveEquippedBy(late)).toEqual({ key: "Augusta", flagged: true });
+    expect(toScanEcho(late, 1)?.equippedBy).toBe("Augusta");
+    expect(toScanEcho(late, 1)?.lowConfidence).toContain("equippedBy");
+    expect(flaggedFields(late)).toContain("equippedBy");
+    const checked = confirmField(late, "equippedBy");
+    expect(resolveEquippedBy(checked)).toEqual({ key: "Augusta", flagged: false });
+    expect(toScanEcho(checked, 1)?.lowConfidence ?? []).not.toContain("equippedBy");
+    expect(flaggedFields(checked)).not.toContain("equippedBy");
   });
 
   it("offers every character except Rover's per-element entries", () => {

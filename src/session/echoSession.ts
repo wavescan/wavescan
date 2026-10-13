@@ -9,8 +9,10 @@ import {
 import { errorKind, errorMessage } from "@/ipc/commands";
 import type { FracRect, RegionRead, RegionText } from "@/ipc/types";
 import { classifyScreen, type ScreenKind } from "./classifyScreen";
-import { echoReadRegions } from "./echoRegions";
+import { echoReadRegions, equippedByRowRegion } from "./echoRegions";
 import { extractEcho, type ExtractedEcho } from "./echoExtract";
+import { createEquippedByWatch, equippedRowFingerprint, hasEquippedByLine, type EquippedByWatch } from "./equippedByWatch";
+import { readingOrder } from "./ocrText";
 import { panelSampleRegions, splitPanelSamples } from "./panelSamples";
 import { decodeSamples, type Sample } from "./samples";
 
@@ -31,6 +33,11 @@ export interface EchoCandidate extends ExtractedEcho {
    * is used until then (`src/session/equippedBy.ts`).
    */
   equippedByFix?: string | null;
+  /**
+   * True when the "Equipped by" line was read a moment after the rest of the echo, because
+   * the game drew it late (`equippedByWatch.ts`). Flagged for review until the user checks it.
+   */
+  equippedByLate?: boolean;
 }
 
 export interface SessionStats {
@@ -53,6 +60,13 @@ export interface EchoSessionDeps {
   /** Size of the captured game frame (for aspect-ratio adjustment of regions). */
   frameSize(): FrameSize;
   onCandidate(candidate: EchoCandidate): void;
+  /**
+   * An echo already reported got its "Equipped by" line, which the game drew after the read.
+   * `candidate` has the same `id` as the one passed to `onCandidate`.
+   */
+  onCandidateUpdate?(candidate: EchoCandidate): void;
+  /** Milliseconds from any fixed point (`performance.now()` by default; a fake clock in tests). */
+  now?(): number;
   onStats?(stats: SessionStats): void;
   /** A read failed. `kind` is the Rust error kind (src-tauri/src/error.rs), or null. */
   onError?(message: string, kind: string | null): void;
@@ -71,13 +85,17 @@ function asImageData(sample: Sample): ImageData {
  * samples the panel; when it settles on an echo not seen before, the session reads that
  * exact frame (pinned by the sample), extracts the echo and reports it. Sends no input.
  * A frame from another screen (`classifyScreen`) is counted in `wrongScreen`, not read as
- * an echo.
+ * an echo. After reading an echo with no "Equipped by" line, it watches that box for a
+ * moment in case the game draws the line late (`equippedByWatch.ts`).
  */
 export function createEchoSession(deps: EchoSessionDeps) {
   const detector = createStableFrameDetector();
   const seen = createDedupeSet();
   const stats: SessionStats = { scanned: 0, duplicates: 0, errors: 0, wrongScreen: 0, screen: null };
   let reading = false;
+  const now = deps.now ?? (() => performance.now());
+  /** The echo whose "Equipped by" box is being watched, if any. */
+  let late: { watch: EquippedByWatch; candidate: EchoCandidate } | null = null;
 
   const publish = () => deps.onStats?.({ ...stats });
 
@@ -87,19 +105,35 @@ export function createEchoSession(deps: EchoSessionDeps) {
     let samples;
     try {
       // The extractor's samples are taken with the fingerprints, so they come from the frame that's read.
-      samples = decodeSamples(await deps.sampleRegions(panelSampleRegions(frame), SAMPLE_WIDTH));
+      const regions = [...panelSampleRegions(frame), equippedByRowRegion(frame)];
+      samples = decodeSamples(await deps.sampleRegions(regions, SAMPLE_WIDTH));
     } catch {
       return; // no frame yet, or the window is momentarily unavailable
     }
     const { panel, stats: statsArea, extras } = splitPanelSamples(samples.images);
+    const equippedRow = samples.images[4];
     if (!panel || !statsArea) return;
 
     const fingerprints = {
       panel: computeFingerprint(asImageData(panel), PANEL_FINGERPRINT_GRID),
       stats: computeFingerprint(asImageData(statsArea), STATS_FINGERPRINT_GRID),
     };
-    if (detector.observe(fingerprints) !== "stable-novel") return;
+    const rowFingerprint = equippedRow ? equippedRowFingerprint(equippedRow) : null;
+    const event = detector.observe(fingerprints);
+
+    if (late) {
+      const step = rowFingerprint ? late.watch.step(event, fingerprints, rowFingerprint, now()) : "end";
+      if (step === "read") {
+        await readLateLine(late.candidate, samples.seq, frame);
+        late = null;
+        return;
+      }
+      if (step === "end") late = null;
+    }
+
+    if (event !== "stable-novel") return;
     detector.commitScan(fingerprints);
+    late = null;
 
     reading = true;
     try {
@@ -115,7 +149,11 @@ export function createEchoSession(deps: EchoSessionDeps) {
       } else {
         seen.add(echo.signature);
         stats.scanned += 1;
-        deps.onCandidate({ ...echo, id: `echo-${stats.scanned}`, index: stats.scanned });
+        const candidate: EchoCandidate = { ...echo, id: `echo-${stats.scanned}`, index: stats.scanned };
+        deps.onCandidate(candidate);
+        if (rowFingerprint && echo.raw.equippedBy !== undefined && !hasEquippedByLine(echo.raw.equippedBy)) {
+          late = { watch: createEquippedByWatch(fingerprints, rowFingerprint, now()), candidate };
+        }
       }
     } catch (error) {
       stats.errors += 1;
@@ -123,6 +161,30 @@ export function createEchoSession(deps: EchoSessionDeps) {
     } finally {
       reading = false;
       publish();
+    }
+  }
+
+  /**
+   * OCRs only the "Equipped by" box of frame `seq`. When it now has a line, reports the echo
+   * again with it, flagged as read late. A failed read is left as it was: the echo already
+   * went out without a line, as before this watch existed.
+   */
+  async function readLateLine(candidate: EchoCandidate, seq: number, frame: FrameSize) {
+    reading = true;
+    try {
+      const box = echoReadRegions(frame).filter(({ id }) => id === "equippedBy");
+      const [result] = await deps.readRegions(seq, box);
+      // Same as the extractor's `raw.equippedBy`.
+      const text = readingOrder(result?.lines ?? [])
+        .map((l) => l.text)
+        .join("\n")
+        .trim();
+      if (!hasEquippedByLine(text)) return;
+      deps.onCandidateUpdate?.({ ...candidate, raw: { ...candidate.raw, equippedBy: text }, equippedByLate: true });
+    } catch {
+      // Not counted as an error: the echo itself was read fine.
+    } finally {
+      reading = false;
     }
   }
 

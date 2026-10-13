@@ -112,6 +112,14 @@ export function screenCheckRegions(frame: FrameSize): RegionRead[] {
 }
 
 /**
+ * The "Equipped by" box for this frame, sampled every tick in watch mode so a line the game
+ * draws after the read is still caught (`equippedByWatch.ts`).
+ */
+export function equippedByRowRegion(frame: FrameSize): RegionFrac {
+  return regionForFrame(EQUIPPED_BY_ROW, frame);
+}
+
+/**
  * Regions sampled every tick for change detection: the whole panel (a different echo's
  * art and name) and the stats block (a different roll of the same echo).
  */

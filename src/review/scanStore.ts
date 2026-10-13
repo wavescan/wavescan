@@ -101,6 +101,21 @@ export function createScanStore(storage: KeyValueStorage | null, now: () => Date
       touch();
     },
 
+    /**
+     * Adds an "Equipped by" line read after the echo was added (the game drew it late,
+     * `equippedByWatch.ts`). It's part of the read, not a fix, so "undo" keeps it, and any
+     * fix the user already made stays.
+     */
+    addLateEquippedBy(id: string, equippedBy: string) {
+      const withLine = (c: EchoCandidate): EchoCandidate => ({ ...c, raw: { ...c.raw, equippedBy }, equippedByLate: true });
+      const i = state.candidates.findIndex((c) => c.id === id);
+      const original = state.originals[id];
+      if (i === -1 || !original) return;
+      state.candidates[i] = withLine(state.candidates[i]!);
+      state.originals[id] = withLine(original);
+      touch();
+    },
+
     /** Puts an echo back the way it was first read. */
     undo(id: string) {
       const original = state.originals[id];
