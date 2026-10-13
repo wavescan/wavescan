@@ -44,7 +44,8 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] "Equipped by": scanner-core 0.2.0 `matchEquippedBy`, the player's in-game name for the main character (exported as `"Rover"`), name hidden in reports (ADR 0030)
   - [ ] Wuthering Tools import applies it (maps `"Rover"`, picks the main echo)
 - [x] `classifyScreen` (detect Bag → Echoes vs other screens): the bag header, read with every echo; watch mode skips and counts other screens, auto mode checks before arming (ADR 0031)
-  - [ ] Negative fixtures: captures of other screens (another Bag tab, the character Echo tab, the Data Bank, a menu over the bag) that must classify as `unknown`
+  - [x] Negative fixtures in `fixtures/screens/unknown/`: Bag → Weapons, Data Bank → Echo Gallery, a character's echo screen
+  - [ ] A menu or popup open over the bag (should fail the auto-mode check with `no-echo`)
 - [x] Watch mode UI: live counter, candidate list, low-confidence highlighting, remove misreads, copy scan JSON
 - [ ] Preview with ROI overlay; save to file
   - [x] Diagnostics preview draws every read region, the pixel checks, the change checks and the User ID mask (`src/diagnostics/overlay.ts`), with "Copy picture". Saving to a file would need a new Tauri permission (ADR), so it's not done

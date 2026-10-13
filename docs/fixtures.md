@@ -9,6 +9,7 @@ fixtures/
   screens/<screen>/<WxH>/<name>.png    full-size capture, User ID masked, one folder per resolution
   screens/<screen>/<WxH>/<name>.json   golden: what the image really shows (same basename)
   screens/echoes-grid/<WxH>/<name>.png  grid frames for auto mode (masked), goldens in screens/echoes-grid/grid.json
+  screens/unknown/<WxH>/<name>.png      other screens a scan must skip (masked); <name>.json says what it shows and how it must classify
   raw/                                 ignored by git: originals, videos, unmasked captures
 ```
 
@@ -72,7 +73,7 @@ Each field gets one outcome (`tests/support/fixtureCompare.ts`):
 
 Substats are matched by type and value, not position, so one dropped row doesn't make the rows after it look wrong. The run ends with an accuracy line (`correct / compared`). The release gate is **≥ 99%** (CLAUDE.md). When a fixture has problems, the test prints the raw OCR text of every region, which is usually enough to see what went wrong.
 
-Every echo fixture is on Bag → Echoes, so each one must also classify as `bag.echoes` and pass the auto-mode screen check (`src/session/classifyScreen.ts`, [ADR 0031](adr/0031-classify-the-screen-from-the-bag-header.md)). A wrong `unknown` fails the test, because it would silently drop the echo. Captures of other screens, which must classify as `unknown`, aren't fixtures yet.
+Every echo fixture is on Bag → Echoes, so each one must also classify as `bag.echoes` and pass the auto-mode screen check (`src/session/classifyScreen.ts`, [ADR 0031](adr/0031-classify-the-screen-from-the-bag-header.md)). A wrong `unknown` fails the test, because it would silently drop the echo. Captures of other screens are in `screens/unknown/`: each must classify as `unknown` and fail the auto-mode check with `wrong-screen`, so watch mode skips it and auto mode never arms on it. So far: Bag → Weapons, Data Bank → Echo Gallery (its header says "Echo Gallery", two edits from "Echoes"), and a character's echo screen, which shows a full echo panel but no bag header (added 2026-10-12, windowed 1920×1080, rebuilt like the echo captures). A menu open over the bag is still wanted.
 
 `tests/gridReplay.fixtures.ts` does the same for the grid (auto mode): it samples `GRID_STRIP` through the Rust tool and checks the fully visible rows and scroll shifts in `screens/echoes-grid/grid.json`. It needs no OCR, so it also runs in the Docker container (`npx vitest run --config vitest.fixtures.config.ts tests/gridReplay.fixtures.ts` in `docker compose run --rm shell`).
 

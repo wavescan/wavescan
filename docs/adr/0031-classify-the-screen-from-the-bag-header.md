@@ -27,12 +27,12 @@ Auto mode was partly covered: the navigator stops with `grid-not-found` when it 
 - Pros:
   - No junk candidates from other screens, and the user is told why nothing is being read.
   - Auto mode can't start on the wrong screen or with a menu open, which is the safety gain.
-  - Every fixture is checked: the replays (Tesseract and Vision) fail if a real Bag → Echoes capture classifies as `unknown`.
+  - Every fixture is checked: the replays (Tesseract and Vision) fail if a real Bag → Echoes capture classifies as `unknown`, or if a capture of another screen doesn't.
 - Cons:
   - A game in another language reads as `unknown` everywhere. That's accepted: the name tables are English-only anyway, and a clear message beats misreads.
   - If a patch renames or moves the header, every frame is `unknown` and watch mode reads nothing. The notice on the Scan screen and the Diagnostics check make that visible straight away rather than silent.
   - Auto mode won't start when the selected echo is an unknown echo below +25 (neither the name nor the secondary stat identifies it). Selecting another echo works around it.
-  - The negative side (screens that must classify as `unknown`) is only covered by unit tests until captures of other screens are added as fixtures.
+  - The negative side is covered by three captures so far (`fixtures/screens/unknown/`: Bag → Weapons, the Data Bank's Echo Gallery, a character's echo screen). A menu over the bag isn't captured yet, so the `no-echo` path is only unit-tested.
 
 ## Guidance
 
