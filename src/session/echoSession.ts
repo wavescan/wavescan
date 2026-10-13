@@ -15,6 +15,7 @@ import { createEquippedByWatch, equippedRowFingerprint, hasEquippedByLine, type 
 import { readingOrder } from "./ocrText";
 import { panelSampleRegions, splitPanelSamples } from "./panelSamples";
 import { decodeSamples, type Sample } from "./samples";
+import { isBelowScanLevel } from "./scanLevel";
 
 /** A scanned echo as kept by the session (an ExtractedEcho plus bookkeeping). */
 export interface EchoCandidate extends ExtractedEcho {
@@ -49,6 +50,8 @@ export interface SessionStats {
   errors: number;
   /** Settled frames skipped because the game wasn't on Bag → Echoes (`classifyScreen`). */
   wrongScreen: number;
+  /** Echoes skipped because they're below +5 (`MIN_SCAN_LEVEL`). */
+  belowMinLevel: number;
   /** The screen the last read frame showed, or null before the first read. */
   screen: ScreenKind | null;
 }
@@ -85,13 +88,14 @@ function asImageData(sample: Sample): ImageData {
  * samples the panel; when it settles on an echo not seen before, the session reads that
  * exact frame (pinned by the sample), extracts the echo and reports it. Sends no input.
  * A frame from another screen (`classifyScreen`) is counted in `wrongScreen`, not read as
- * an echo. After reading an echo with no "Equipped by" line, it watches that box for a
+ * an echo, and an echo below +5 (`MIN_SCAN_LEVEL`) is counted in `belowMinLevel`, not kept.
+ * After reading an echo with no "Equipped by" line, it watches that box for a
  * moment in case the game draws the line late (`equippedByWatch.ts`).
  */
 export function createEchoSession(deps: EchoSessionDeps) {
   const detector = createStableFrameDetector();
   const seen = createDedupeSet();
-  const stats: SessionStats = { scanned: 0, duplicates: 0, errors: 0, wrongScreen: 0, screen: null };
+  const stats: SessionStats = { scanned: 0, duplicates: 0, errors: 0, wrongScreen: 0, belowMinLevel: 0, screen: null };
   let reading = false;
   const now = deps.now ?? (() => performance.now());
   /** The echo whose "Equipped by" box is being watched, if any. */
@@ -144,7 +148,9 @@ export function createEchoSession(deps: EchoSessionDeps) {
         return;
       }
       const echo = extractEcho(results, extras);
-      if (seen.has(echo.signature)) {
+      if (isBelowScanLevel(echo.level)) {
+        stats.belowMinLevel += 1;
+      } else if (seen.has(echo.signature)) {
         stats.duplicates += 1;
       } else {
         seen.add(echo.signature);

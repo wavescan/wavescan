@@ -10,6 +10,7 @@ import {
 import type { FracPoint, FracRect } from "@/ipc/types";
 import { panelSampleRegions, splitPanelSamples, type PanelSamples } from "@/session/panelSamples";
 import { decodeSamples, type Sample } from "@/session/samples";
+import { MIN_SCAN_LEVEL } from "@/session/scanLevel";
 import {
   GRID_SAMPLE_WIDTH,
   SAME_ROW_DISTANCE,
@@ -77,7 +78,7 @@ export interface NavigatorResult extends NavigatorProgress {
 }
 
 export interface NavigatorOptions {
-  /** Stop at the first echo below this level. 0 reads everything. */
+  /** Stop at the first echo below this level. Never lower than `MIN_SCAN_LEVEL` (+5): a lower value counts as +5. */
   minLevel: number;
 }
 
@@ -237,6 +238,7 @@ export function createNavigator<Echo extends NavigatorEcho>(
   deps: NavigatorDeps<Echo>,
   options: NavigatorOptions,
 ) {
+  const minLevel = Math.max(options.minLevel, MIN_SCAN_LEVEL);
   const progress: NavigatorProgress = { echoes: 0, unchanged: 0, errors: 0, row: 0 };
   let stopRequested = false;
 
@@ -412,10 +414,10 @@ export function createNavigator<Echo extends NavigatorEcho>(
         progress.errors += 1;
       } else if (maybeRepeat && echo.signature === lastSignature) {
         progress.unchanged += 1;
-      } else if (echo.level !== null && echo.level < options.minLevel) {
+      } else if (echo.level !== null && echo.level < minLevel) {
         belowMin = stopWith(
           "below-min-level",
-          `Reached an echo at +${echo.level}, below the minimum of +${options.minLevel}. Done.`,
+          `Reached an echo at +${echo.level}, below the minimum of +${minLevel}. Done.`,
         );
         return;
       } else {

@@ -38,9 +38,9 @@ const props = defineProps<{ info: AppInfo | null; disabled: boolean }>();
 const emit = defineEmits<{ echo: [echo: ExtractedEcho]; running: [running: boolean]; frame: [frame: FrameSize] }>();
 
 const STEPS = ["Understand the risk", "Permissions", "Prepare the game", "Confirm and start"] as const;
+// Lower levels are opt-in; +25 is the default. Nothing below +5 is ever read (MIN_SCAN_LEVEL).
 const MIN_LEVELS = [
-  { value: 0, label: "All echoes", hint: "Longest scan" },
-  { value: 5, label: "+5 and up", hint: "Stops at the first +4" },
+  { value: 5, label: "+5 and up", hint: "Longest scan. Stops at the first +4" },
   { value: 10, label: "+10 and up", hint: "Stops at the first +9" },
   { value: 15, label: "+15 and up", hint: "Stops at the first +14" },
   { value: 20, label: "+20 and up", hint: "Stops at the first +19" },
@@ -50,7 +50,7 @@ const MIN_LEVELS = [
 const step = ref(0);
 const riskRead = ref(false);
 const confirmation = ref("");
-const minLevel = ref(0);
+const minLevel = ref(25);
 const running = ref(false);
 const progress = ref<NavigatorProgress | null>(null);
 const result = ref<AutoScanResult | null>(null);
@@ -193,7 +193,7 @@ onBeforeUnmount(stop);
       />
       <span class="opacity-80">
         <template v-if="lastEcho">Last: {{ lastEcho }} · </template>
-        {{ minLevel > 0 ? `stops at the first echo below +${minLevel}` : "reads to the end of the list" }}
+        stops at the first echo below +{{ minLevel }}
       </span>
     </div>
     <button

@@ -240,6 +240,22 @@ describe("echo session (watch mode)", () => {
     expect(game.session.stats()).toMatchObject({ scanned: 1, wrongScreen: 1, screen: "bag.echoes" });
   });
 
+  it("skips an echo below +5 and counts it, but reads a +5 echo", async () => {
+    const atLevel = (level: string) => sabercatPanel().map((r) => (r.id === "level" ? region("level", [line(level, 0)]) : r));
+    const game = fakeGame();
+    game.state.panel = atLevel("+4");
+    await game.ticks(6);
+    expect(game.found).toHaveLength(0);
+    expect(game.session.stats()).toMatchObject({ scanned: 0, belowMinLevel: 1 });
+
+    game.state.fill = 120;
+    game.state.panel = atLevel("+5");
+    await game.ticks(6);
+    expect(game.found).toHaveLength(1);
+    expect(game.found[0]?.level).toBe(5);
+    expect(game.session.stats()).toMatchObject({ scanned: 1, belowMinLevel: 1 });
+  });
+
   it("keeps an echo it can't identify when the header says Echoes (a new echo can be fixed in review)", async () => {
     const game = fakeGame();
     game.state.panel = sabercatPanel().map((r) => (r.id === "name" ? region("name", [line("Brand New Echo", 0)]) : r));

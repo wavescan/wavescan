@@ -52,7 +52,7 @@ The scanner checks your setup before it starts and tells you exactly what to cha
 
 ## Your first scan
 
-The scanner has two modes. **Watch mode is the default, and it's what we recommend.**
+The scanner has two modes. **Watch mode is the default, and it's what we recommend.** Either way, it only reads echoes at **+5 and up**. Lower ones have no substats yet, so they're skipped.
 
 ### Watch mode: you click, the scanner reads
 
@@ -71,7 +71,7 @@ If you close the scanner before exporting, it offers to carry on with that scan 
 
 ### Auto mode: the scanner clicks for you (optional)
 
-Auto mode clicks through your whole echo list for you. A full 3,000-echo bag takes about 8 minutes, and a "+25 only" scan takes a few minutes.
+Auto mode clicks through your echo list for you. A "+25 only" scan (the default) takes a few minutes, and reading everything from +5 up in a full 3,000-echo bag takes up to about 8 minutes.
 
 > ⚠️ **Read this before turning on Auto mode.** Kuro Games' [Fair Play Policy](https://wutheringwaves.kurogames.com/en/main/news/detail/742) prohibits third-party tools and macros. Auto mode sends mouse clicks to the game, which some people consider a macro. We don't know of anyone being banned for scanning, and the scanner never touches the game's memory or files. **But Kuro hasn't said tools like this are allowed, so there is some risk to your account.** Watch mode doesn't send any input to the game, so that risk doesn't apply to it.
 
@@ -80,13 +80,13 @@ To use it:
 1. In the scanner, open **Scan → Auto mode**. It walks you through four steps: the warning above, permissions, getting the game ready, then typing `I understand`. You type it again for every auto scan.
    - *Windows:* auto mode needs the scanner to run as administrator, because Windows blocks clicks from normal apps into the game. Close the scanner, right-click it and choose **Run as administrator**. Watch mode never needs this.
    - *Mac:* macOS asks for **Accessibility** permission (needed to click). Watch mode never asks for this.
-2. Go to **Bag → Echoes** in the game, sorted by **Level** (highest first). Choose which echoes to read: all of them, or only from a level up (for example **+25 only**). The scan stops at the first echo below that level.
+2. Go to **Bag → Echoes** in the game, sorted by **Level** (highest first). Choose which echoes to read: **+25 only** (the default), or from a lower level up, down to **+5 and up**. The scan stops at the first echo below that level. Echoes below +5 are never read.
 3. Press **Start auto scan** and **don't touch the mouse or keyboard**. Before it clicks anything, the scanner checks that the game is on **Bag → Echoes** with an echo selected and no menu open. If not, it doesn't start, and tells you what to fix. The scanner scrolls back to the top of the list first, then reads every echo and scrolls down by itself. A big "Hands off the mouse" banner shows how far it's got.
 4. To stop at any time, **move the mouse** or press **F8**. The scanner stops immediately and keeps everything it read so far.
 
 At the end of the list the scanner clicks the empty spaces in the last row and tries to scroll once more. That's how it makes sure it really is the end.
 
-**Known gap:** if two echoes next to each other look exactly the same on the details panel (same echo, same main stat, no substats yet, so mostly +0 echoes), the scanner can't tell it moved and reads only the first. That's true even when their sonata sets differ. Echoes with substats always differ, so it doesn't affect leveled echoes.
+**Known gap:** if two echoes next to each other look exactly the same on the details panel (same echo, same main stat, same substats, so only on low-level echoes with a single substat), the scanner can't tell it moved and reads only the first. That's true even when their sonata sets differ.
 
 ## Is it safe?
 

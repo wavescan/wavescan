@@ -33,7 +33,7 @@ describe("navigator", () => {
   // (Hoartoise, ATK, Celestial Light) have the same panel apart from the small set icon.
   // The 6th used to count as "unchanged" because it looked like an echo read earlier.
   it("reads an echo that looks like one read earlier, as long as the one before it differs", async () => {
-    const echoes = fakeEchoes(9, 0).map((echo) => (echo.id === 5 ? { ...echo, look: 3 } : echo));
+    const echoes = fakeEchoes(9, 5).map((echo) => (echo.id === 5 ? { ...echo, look: 3 } : echo));
     const { result, ids } = await scan({ echoes });
     expect(result.reason).toBe("end-of-list");
     expect(ids).toEqual(range(9));
@@ -45,7 +45,7 @@ describe("navigator", () => {
   // set (Hoartoise DEF, Fusion Prism ATK, Snip Snap DEF). Only the set icon and "Owned"
   // changed, too little for the panel fingerprints, so the click counted as "unchanged".
   it("reads an echo whose panel differs from the one before it only by the set icon", async () => {
-    const echoes = fakeEchoes(9, 0).map((echo) => (echo.id === 3 || echo.id === 4 ? { ...echo, look: 2, set: echo.id } : echo));
+    const echoes = fakeEchoes(9, 5).map((echo) => (echo.id === 3 || echo.id === 4 ? { ...echo, look: 2, set: echo.id } : echo));
     const { result, ids } = await scan({ echoes });
     expect(result.reason).toBe("end-of-list");
     expect(ids).toEqual(range(9));
@@ -53,7 +53,7 @@ describe("navigator", () => {
   });
 
   it("reads set-only changes with input that shows up late", async () => {
-    const echoes = fakeEchoes(40, 0).map((echo) => ({ ...echo, look: Math.floor(echo.id / 3), set: echo.id }));
+    const echoes = fakeEchoes(40, 5).map((echo) => ({ ...echo, look: Math.floor(echo.id / 3), set: echo.id }));
     const { result, ids } = await scan({ echoes, lag: 3 });
     expect(result.reason).toBe("end-of-list");
     expect(ids).toEqual(range(40));
@@ -77,7 +77,7 @@ describe("navigator", () => {
   // Two copies of the same +0 echo in the same set show exactly the same panel, so there's
   // nothing to tell the second click apart from one that didn't land.
   it("counts an exact copy of the echo before it as unchanged", async () => {
-    const echoes = fakeEchoes(9, 0).map((echo) => (echo.id === 4 ? { ...echo, look: 3 } : echo));
+    const echoes = fakeEchoes(9, 5).map((echo) => (echo.id === 4 ? { ...echo, look: 3 } : echo));
     const { result, ids } = await scan({ echoes });
     expect(result.reason).toBe("end-of-list");
     expect(ids).toEqual([0, 1, 2, 3, 5, 6, 7, 8]);
@@ -89,7 +89,7 @@ describe("navigator", () => {
   // average over.
   it("ends a short list normally when the selection nudges a row edge", async () => {
     for (const selectedDrop of [1, -1, 2, -2]) {
-      const { result, ids } = await scan({ echoes: fakeEchoes(9, 0), selectedDrop });
+      const { result, ids } = await scan({ echoes: fakeEchoes(9, 5), selectedDrop });
       expect(result.reason, `selectedDrop ${selectedDrop}`).toBe("end-of-list");
       expect(ids).toEqual(range(9));
     }
@@ -158,6 +158,14 @@ describe("navigator", () => {
     const { result, ids } = await scan({ echoes: fakeEchoes(60, levels) }, { minLevel: 20 });
     expect(result.reason).toBe("below-min-level");
     expect(ids).toEqual(range(24));
+  });
+
+  it("never reads an echo below +5, even when asked for a lower minimum", async () => {
+    const levels = (i: number) => (i < 10 ? 5 : 4);
+    const { result, ids } = await scan({ echoes: fakeEchoes(30, levels) }, { minLevel: 0 });
+    expect(result.reason).toBe("below-min-level");
+    expect(result.detail).toContain("minimum of +5");
+    expect(ids).toEqual(range(10));
   });
 
   it("clicks the next echo while the last one is read, at most two reads at once, in order", async () => {

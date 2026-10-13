@@ -33,7 +33,7 @@ const props = defineProps<{ info: AppInfo | null }>();
 const emit = defineEmits<{ mini: [mini: boolean] }>();
 
 const store = useScanStore();
-const stats = ref<SessionStats>({ scanned: 0, duplicates: 0, errors: 0, wrongScreen: 0, screen: null });
+const stats = ref<SessionStats>({ scanned: 0, duplicates: 0, errors: 0, wrongScreen: 0, belowMinLevel: 0, screen: null });
 const watching = ref(false);
 const paused = ref(false);
 const problem = ref<{ problem: Problem; details: string } | null>(null);
@@ -338,6 +338,14 @@ onBeforeUnmount(() => void stop());
       >
         <AppIcon name="alert" />
         <span>Can't see Bag → Echoes in the game, so nothing is being read. Open the bag and pick the Echoes tab, and close any popup over it.</span>
+      </div>
+
+      <div
+        v-if="watching && stats.belowMinLevel > 0"
+        role="status"
+        class="alert text-sm"
+      >
+        <span>Skipped {{ stats.belowMinLevel }} {{ stats.belowMinLevel === 1 ? "echo" : "echoes" }} below +5. Wavescan only reads echoes at +5 and up.</span>
       </div>
 
       <ProblemCard
