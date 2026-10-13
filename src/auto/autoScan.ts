@@ -61,7 +61,7 @@ export interface AutoScanDeps<Echo extends NavigatorEcho> {
 export interface AutoScanOptions {
   /** The confirmation the user typed (checked again by Rust). */
   phrase: string;
-  /** Stop at the first echo below this level. 0 reads everything. */
+  /** Stop at the first echo below this level (never lower than +5, `MIN_SCAN_LEVEL`). */
   minLevel: number;
 }
 

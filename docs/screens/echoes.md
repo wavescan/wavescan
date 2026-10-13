@@ -122,6 +122,7 @@ About 2.7 scrolls per row, so a full 3,000-echo inventory is about 4,300 guarded
 - A row scroll settles in about **0.7 s**.
 - Manual click cadence in the videos was **one echo every 2–3 s**, so watch mode is never capture-bound.
 - **Auto target:** ≤150 ms per echo, i.e. about 7–8 min for 3,000 echoes, or 2–3 min for "+25 only" (stop early once the level-sorted list drops below the minimum).
+- **Minimum level:** auto mode defaults to +25, and the user can opt down to +5. Nothing below +5 is read in either mode (`MIN_SCAN_LEVEL` in `src/session/scanLevel.ts`): below +5 an echo has no substats. Watch mode counts such echoes in `belowMinLevel` and says so; an unread level is kept and flagged.
 
 ## Overlays and edge cases
 
