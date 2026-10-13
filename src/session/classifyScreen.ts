@@ -43,7 +43,8 @@ export function headerSaysEchoes(headerText: string): boolean {
 
 /**
  * Which screen the read regions show: `bag.echoes` when the bag header (the `header`
- * region) says "Echoes", otherwise `unknown`.
+ * region) says "Echoes", otherwise `unknown`. A popup over the bag is `unknown` too: the
+ * game blurs everything behind it, header included (fixtures/screens/unknown).
  *
  * Only the header decides, not the panel: an echo the bundled data doesn't know yet (new
  * game patch) is still on this screen, and the user can fix its name in review. Whether an
@@ -80,6 +81,6 @@ export function checkScreenForAuto(results: readonly RegionText[]): ScreenCheck 
 /** Plain-language explanation of a failed check, for the UI. */
 export function screenCheckMessage(check: Exclude<ScreenCheck, "ok">): string {
   return check === "wrong-screen"
-    ? "The game isn't on Bag → Echoes. Open the bag, pick the Echoes tab, then try again."
+    ? "Can't see Bag → Echoes in the game. Open the bag and pick the Echoes tab, close any popup over it, then try again."
     : "Couldn't read the selected echo. Close any menu or message over the bag, click an echo, then try again.";
 }

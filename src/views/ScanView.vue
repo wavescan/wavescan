@@ -329,7 +329,7 @@ onBeforeUnmount(() => void stop());
         class="alert alert-warning text-sm"
       >
         <AppIcon name="alert" />
-        <span>The game isn't on Bag → Echoes, so nothing is being read. Open the bag and pick the Echoes tab.</span>
+        <span>Can't see Bag → Echoes in the game, so nothing is being read. Open the bag and pick the Echoes tab, and close any popup over it.</span>
       </div>
 
       <ProblemCard

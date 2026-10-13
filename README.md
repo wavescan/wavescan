@@ -61,7 +61,7 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
    - *Mac only, first time:* macOS asks for **Screen Recording** permission. Allow it, then reopen the scanner.
 3. Click through your echoes in the game at your own pace. Each time the echo details on the right change, the scanner reads them. You'll see the echo it just read, a counter, and how many need a look.
    - Playing on one screen? Press **Mini window** for a small counter that stays on top of the game.
-   - If you go to another screen in the game, the scanner stops reading and says so. Go back to **Bag → Echoes** and it carries on.
+   - If you go to another screen in the game, or a popup covers the bag, the scanner stops reading and says so. Go back to **Bag → Echoes** (or close the popup) and it carries on.
 4. When you're done, press **Stop and review**. Each echo shows its picture from the game, so you can spot it quickly. Anything the scanner wasn't sure about is marked **check**. Press **Check them now** to go through them one by one. For a stat, the scanner only offers values the game can actually roll.
 5. Press **Copy scan for Wuthering Tools**. (**Open in Wuthering Tools** and **Save file** are coming.)
 
@@ -153,8 +153,8 @@ This usually means one of these:
 
 The message tells you which one it is.
 
-**"The game isn't on Bag → Echoes"**
-The scanner reads the word **Echoes** at the top left of the bag to know it's on the right screen. Open the bag and pick the Echoes tab. If you're already there, run **Diagnostics**: its "Read the selected echo" line shows what the scanner read there. A game that isn't in English always shows this message for now.
+**"Can't see Bag → Echoes in the game"**
+The scanner reads the word **Echoes** at the top left of the bag to know it's on the right screen. Open the bag and pick the Echoes tab. A popup (an item's details, a tutorial) blurs the whole bag, so close it. If you're already there, run **Diagnostics**: its "Read the selected echo" line shows what the scanner read there. A game that isn't in English always shows this message for now.
 
 **Mac: the scanner shows a black window**
 Go to **System Settings → Privacy & Security → Screen Recording**, turn on *Wavescan*, then quit and reopen the scanner.

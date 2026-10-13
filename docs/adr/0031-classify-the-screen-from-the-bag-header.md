@@ -18,7 +18,7 @@ Auto mode was partly covered: the navigator stops with `grid-not-found` when it 
 
 - **The bag header decides the screen.** The header reads "Echoes  2969/3000" at the top left of Bag → Echoes. A new region, `HEADER_ROW` (`src/session/echoRegions.ts`), is part of every echo read, so the screen is classified from the same pinned frame the extractor reads, with no second request. `classifyScreen` (`src/session/classifyScreen.ts`) is `bag.echoes` when a word in it is within one edit of "echoes" (letters only, a "0" taken as "o"), otherwise `unknown`.
 - **Text, not pixels.** A check on the header text is easy to test against fixtures and to explain in a report. The region is one small crop, read in parallel with the rest (14 of Rust's 16-region limit).
-- **Watch mode drops `unknown` frames and counts them** (`SessionStats.wrongScreen`), and the Scan screen says "The game isn't on Bag → Echoes". It doesn't drop frames whose panel doesn't read: an echo the bundled data doesn't know yet (a new patch) is still on this screen, and the user can fix its name in review, as before.
+- **Watch mode drops `unknown` frames and counts them** (`SessionStats.wrongScreen`), and the Scan screen says "Can't see Bag → Echoes in the game". It doesn't drop frames whose panel doesn't read: an echo the bundled data doesn't know yet (a new patch) is still on this screen, and the user can fix its name in review, as before.
 - **Auto mode checks before arming** (`checkScreenForAuto`, run by `createAutoScan` before `arm`). It needs the Echoes header **and** a panel that reads as an echo (scanner-core's `readsAsPanel`: a known name, or a secondary stat that gives a cost). If either fails, the scan doesn't start, nothing is armed, and nothing is clicked. The navigator's `grid-not-found` stays as the second line of defence.
 - **Diagnostics shows the classified screen**, and the echo-read check warns when it isn't `bag.echoes`.
 
@@ -32,7 +32,7 @@ Auto mode was partly covered: the navigator stops with `grid-not-found` when it 
   - A game in another language reads as `unknown` everywhere. That's accepted: the name tables are English-only anyway, and a clear message beats misreads.
   - If a patch renames or moves the header, every frame is `unknown` and watch mode reads nothing. The notice on the Scan screen and the Diagnostics check make that visible straight away rather than silent.
   - Auto mode won't start when the selected echo is an unknown echo below +25 (neither the name nor the secondary stat identifies it). Selecting another echo works around it.
-  - The negative side is covered by three captures so far (`fixtures/screens/unknown/`: Bag → Weapons, the Data Bank's Echo Gallery, a character's echo screen). A menu over the bag isn't captured yet, so the `no-echo` path is only unit-tested.
+  - The negative side is covered by four captures (`fixtures/screens/unknown/`: Bag → Weapons, the Data Bank's Echo Gallery, a character's echo screen, an item popup over Bag → Echoes). The game blurs the bag behind a popup, so the header check catches it; no capture reaches the `no-echo` path, which is only unit-tested and stays as a backstop.
 
 ## Guidance
 
