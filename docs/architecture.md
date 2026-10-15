@@ -187,7 +187,8 @@ The Tesseract reader makes no connections: its worker script, WebAssembly core a
 
 Game data (echo names, sets, costs, stat tables, characters, weapons) comes from Wuthering Tools, which publishes it as `https://www.wutheringtools.com/scanner-data.json` on every deploy ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)).
 
-- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). The same command refreshes `src/data/set-icons.json`, 32×32 copies of each set's icon for set matching ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)), and `src/data/echo-icons.json`, 80×80 pictures of each echo shown on echo cards and lists ([ADR 0029](adr/0029-bundled-echo-pictures.md)). That download happens on the developer's machine, never in the app. `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
+- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). The same command refreshes `src/data/set-icons.json`, 32×32 copies of each set's icon for set matching ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)), and `src/data/echo-icons.json`, 80×80 pictures of each echo shown on echo cards and lists ([ADR 0029](adr/0029-bundled-echo-pictures.md)). That download happens on the developer's machine or in CI, never in the app. `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
+- **Automated sync:** `game-data-sync.yml` runs `data:update` daily (or on demand) and opens a PR when Wuthering Tools published different data, listing the changed entries for review. Tester builds run `npm run data:check` and flag stale data in their notes ([ADR 0033](adr/0033-automated-game-data-sync.md)).
 - **Runtime refresh** *(planned)*: opt-in, signed, and fails safe to the bundled snapshot, so new echoes are recognised without an app update.
 
 ## 9. Output & handoff
@@ -198,7 +199,8 @@ Game data (echo names, sets, costs, stat tables, characters, weapons) comes from
 ## 10. Build & release
 
 - CI (`.github/workflows/ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc, and the fixture replay (Tesseract on both, Vision on macOS) on `windows-latest` + `macos-14`.
-- Tester builds (`tester-build.yml`, on merge to `main`): unsigned (macOS ad-hoc signed) `.dmg` + NSIS `.exe` → rolling `tester-build` pre-release with SHA-256 sums. The commit id is compiled in as `WAVESCAN_BUILD`.
+- Tester builds (`tester-build.yml`, on merge to `main`): unsigned (macOS ad-hoc signed) `.dmg` + NSIS `.exe` → rolling `tester-build` pre-release with SHA-256 sums. The commit id is compiled in as `WAVESCAN_BUILD`. A warning is added when the bundled game data is older than wutheringtools.com.
+- Game-data sync (`game-data-sync.yml`, daily): opens a PR updating `src/data/` when Wuthering Tools' data changed, then starts CI on it ([ADR 0033](adr/0033-automated-game-data-sync.md)).
 - Release (`release.yml`, on tag): `tauri build` → sign (Azure Trusted Signing for Windows / Developer ID + notarization for macOS) → SHA-256 checksums + `actions/attest-build-provenance` → GitHub Release + updater manifest ([ADR 0011](adr/0011-signing-provenance-and-updater.md)).
 
 ## 11. Screens and UI state {#ui}

@@ -18,6 +18,7 @@ Wavescan supplies scanner-core with game data ([ADR 0019](./0019-consume-scanner
   - Every build bundles the snapshot, so scanning works offline and on first launch with no network at all.
 - `src/data/scannerData.ts` validates the file (`validateScannerData`) and hands it to scanner-core at startup, before any scanning code runs. The data hash is shown on the home screen and included in Diagnostics reports, so every report names its data version.
 - **The game-data host is `www.wutheringtools.com`** (the canonical host; the bare domain redirects to it), replacing `ryanbenson.github.io` from ADR 0010. Today the app makes **no** game-data requests; only the dev-time script fetches.
+  - **Superseded 2026-10-15:** see ADR 0033. CI also runs the script, in a daily sync workflow that opens a PR.
 - The future runtime refresh will be:
   - opt-in under Settings → Network
   - signed (a detached signature checked against a public key built into the app)
@@ -38,6 +39,7 @@ Wavescan supplies scanner-core with game data ([ADR 0019](./0019-consume-scanner
 ## Guidance
 
 - **Do** run `npm run data:update` before a release, and commit the snapshot.
+  - **Superseded 2026-10-15:** see ADR 0033. The sync workflow opens that PR for you, and `npm run data:check` tells you whether the snapshot is current.
 - **Don't** edit `scanner-data.json` by hand. Fix the data in Wuthering Tools.
 
 ## Related

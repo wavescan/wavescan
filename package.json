@@ -20,6 +20,7 @@
     "lint": "eslint . && vue-tsc -b",
     "check": "docker compose run --rm check",
     "data:update": "node scripts/update-scanner-data.mjs && node scripts/update-set-icons.mjs && node scripts/update-echo-icons.mjs",
+    "data:check": "node scripts/update-scanner-data.mjs --check",
     "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask",
     "data:set-icons": "node scripts/update-set-icons.mjs"
   },

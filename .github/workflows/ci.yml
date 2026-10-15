@@ -6,6 +6,9 @@ on:
   # PRs from forks need this trigger; same-repo PRs are already covered by `push`
   # (see the job-level `if` that skips the duplicate run).
   pull_request:
+  # The game-data sync workflow starts CI on its PR this way, because pushes made with the
+  # workflow token don't trigger `push` (ADR 0033).
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -21,7 +24,7 @@ concurrency:
 jobs:
   frontend:
     name: Frontend (lint, types, tests, build)
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -36,7 +39,7 @@ jobs:
 
   rust:
     name: Rust (${{ matrix.os }})
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
       matrix:
@@ -79,7 +82,7 @@ jobs:
 
   supply-chain:
     name: Supply chain (cargo deny, npm audit)
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
