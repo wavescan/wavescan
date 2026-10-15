@@ -1,9 +1,10 @@
 import { setIconReference, type RgbImage } from "@/data/setIcons";
 
-// Turns the bundled 32×32 set icons (set-icons.json, the same ones used to recognise sets)
-// into image URLs for the echo cards. Drawn once per set on a canvas, then cached.
+// Turns the 32×32 set icons (the same ones used to recognise sets, src/data/setIcons.ts)
+// into image URLs for the echo cards. Drawn once per icon on a canvas, then cached. The
+// cache is keyed by the icon itself, so newer icons downloaded at launch are drawn afresh.
 
-const cache = new Map<string, string | null>();
+const cache = new WeakMap<RgbImage, string | null>();
 
 /** RGB bytes → RGBA bytes (fully opaque). */
 export function rgbToRgba(image: RgbImage): Uint8ClampedArray<ArrayBuffer> {
@@ -20,10 +21,11 @@ export function rgbToRgba(image: RgbImage): Uint8ClampedArray<ArrayBuffer> {
 /** A `data:` PNG of the set's icon, or null when there's no icon (or no canvas). */
 export function setIconUrl(key: string | null): string | null {
   if (!key) return null;
-  if (cache.has(key)) return cache.get(key) ?? null;
-  let url: string | null = null;
   const image = setIconReference(key);
-  if (image && typeof document !== "undefined") {
+  if (!image) return null;
+  if (cache.has(image)) return cache.get(image) ?? null;
+  let url: string | null = null;
+  if (typeof document !== "undefined") {
     const canvas = document.createElement("canvas");
     canvas.width = image.width;
     canvas.height = image.height;
@@ -33,6 +35,6 @@ export function setIconUrl(key: string | null): string | null {
       url = canvas.toDataURL("image/png");
     }
   }
-  cache.set(key, url);
+  cache.set(image, url);
   return url;
 }

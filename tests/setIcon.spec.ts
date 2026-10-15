@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { scannerGameData } from "@wutheringtools/scanner-core";
-import bundledIcons from "@/data/set-icons.json";
+import bundledAssets from "@/data/scanner-assets.json";
 import scannerData from "@/data/scanner-data.json";
 import { loadBundledScannerData } from "@/data/scannerData";
 import { loadSetIcons, setIconReference } from "@/data/setIcons";
@@ -18,9 +18,11 @@ describe("bundled set icons", () => {
     }
   });
 
-  it("rejects files it can't use", () => {
-    expect(() => loadSetIcons({ format: "other" })).toThrow("not a set-icons file");
-    expect(() => loadSetIcons({ ...bundledIcons, icons: { Broken: "AAAA" } })).toThrow("Broken has the wrong size");
+  it("rejects sections it can't use", () => {
+    expect(() => loadSetIcons({ format: "other" })).toThrow("not a set-icons section");
+    expect(() => loadSetIcons({ ...bundledAssets.data.setIcons, icons: { Broken: "AAAA" } })).toThrow(
+      "Broken has the wrong size",
+    );
   });
 });
 

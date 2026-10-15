@@ -41,7 +41,7 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0007](./0007-shared-scanner-core-package.md) | Share scanning logic with the web app via `@wuthering-tools/scanner-core` | accepted | 0019 (name, data injection) | architecture, reuse |
 | [0008](./0008-scan-json-schema-v1.md) | `WutheringToolsScan` JSON schema v1 | accepted | | schema, interop |
 | [0009](./0009-handoff-via-file-and-clipboard-no-server.md) | Hand off via file or clipboard, never a server | accepted | | interop, privacy |
-| [0010](./0010-no-telemetry-network-allowlist.md) | No telemetry, explicit network allow-list | accepted | 0020 (game-data host) | privacy, network |
+| [0010](./0010-no-telemetry-network-allowlist.md) | No telemetry, explicit network allow-list | accepted | 0020 (game-data host), 0034 (no off switch for game data) | privacy, network |
 | [0011](./0011-signing-provenance-and-updater.md) | Signed builds, provenance attestations, signed updater | accepted | | distribution, supply-chain |
 | [0012](./0012-echoes-first-release-strategy.md) | Ship echoes first, then characters and weapons | accepted | | product, roadmap |
 | [0013](./0013-user-id-masking.md) | Never read the User ID, and mask it in any saved frame | accepted | | privacy |
@@ -51,17 +51,18 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0017](./0017-input-spike-and-auto-mode-commands.md) | Input spike: auto-mode commands, Windows `SendInput`, and verifying clicks by their effect | accepted | 0023 (elevation advice) | input, security, testing |
 | [0018](./0018-macos-adapters.md) | macOS adapters: ScreenCaptureKit (via objc2), Vision, Core Graphics events, and a type-check probe | accepted | | capture, ocr, input, macos, testing |
 | [0019](./0019-consume-scanner-core-with-injected-data.md) | Consume `@wutheringtools/scanner-core` from npm, with game data supplied by Wavescan | accepted | | architecture, reuse, data |
-| [0020](./0020-game-data-snapshot-and-source.md) | Bundle a game-data snapshot; refresh it from wutheringtools.com | accepted | 0033 (who refreshes it) | data, network, privacy |
+| [0020](./0020-game-data-snapshot-and-source.md) | Bundle a game-data snapshot; refresh it from wutheringtools.com | accepted | 0033 (who refreshes it), 0034 (runtime download) | data, network, privacy |
 | [0021](./0021-batched-region-reads-with-pinned-frames.md) | Batched region reads with pinned frames | accepted | 0025 (frames kept pinned) | capture, ocr, ipc |
-| [0022](./0022-set-icon-matching-with-bundled-references.md) | Set-icon matching against bundled reference icons | accepted | | data, ocr, accuracy |
+| [0022](./0022-set-icon-matching-with-bundled-references.md) | Set-icon matching against bundled reference icons | accepted | 0034 (references made by WT, downloaded) | data, ocr, accuracy |
 | [0023](./0023-auto-mode-requires-administrator-on-windows.md) | Auto mode on Windows needs Wavescan to run as administrator | accepted | | input, security, product, windows |
 | [0024](./0024-f8-stop-key-and-auto-scroll.md) | F8 stop key via the global-shortcut plugin, and the `auto_scroll` command | accepted | | input, security, dependencies |
 | [0025](./0025-keep-recent-frames-pinned-so-reads-overlap-clicks.md) | Keep the last few sampled frames pinned, so auto mode reads one echo while clicking the next | accepted | | capture, ocr, ipc, performance |
 | [0026](./0026-crop-windows-captures-to-the-client-area.md) | Crop Windows captures to the game area ourselves | accepted | | capture, windows, accuracy |
 | [0027](./0027-tesseract-reads-echo-text-on-windows.md) | Tesseract (tesseract.js) reads echo text on Windows | accepted | | ocr, accuracy, windows, security, dependencies |
 | [0028](./0028-browser-links-mini-window-and-saved-scan.md) | Open GitHub pages in the browser, a mini window, and a saved copy of the scan | accepted | | ui, security, dependencies, privacy |
-| [0029](./0029-bundled-echo-pictures.md) | Bundled echo pictures on the Review and Scan screens | accepted | | data, ui |
+| [0029](./0029-bundled-echo-pictures.md) | Bundled echo pictures on the Review and Scan screens | accepted | 0034 (made by WT, downloaded, loaded at startup) | data, ui |
 | [0030](./0030-equipped-by-and-the-in-game-name.md) | "Equipped by": the "Rover" key and the player's in-game name | accepted | | schema, interop, privacy, ocr |
 | [0031](./0031-classify-the-screen-from-the-bag-header.md) | Classify the screen from the bag header, and check it before auto mode arms | accepted | | ocr, accuracy, input, security |
 | [0032](./0032-no-virtual-controller-for-auto-mode.md) | No virtual game controller for auto mode (tried, and deliberately dropped) | accepted | | input, security, product, windows |
-| [0033](./0033-automated-game-data-sync.md) | Sync the game-data snapshot with a scheduled PR, not at build time | accepted | | data, ci, network |
+| [0033](./0033-automated-game-data-sync.md) | Sync the game-data snapshot with a scheduled PR, not at build time | accepted | 0034 (pictures from WT) | data, ci, network |
+| [0034](./0034-download-signed-game-data-on-launch.md) | Download signed game data and pictures on every launch, with no off switch | accepted | | data, network, security, privacy |

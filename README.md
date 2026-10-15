@@ -96,7 +96,8 @@ We built the scanner so you don't have to trust us. You can check everything you
 
 - It takes pictures of **only the Wuthering Waves window**. Never your whole screen or other apps.
 - It reads text from those pictures **on your computer**. On Windows it uses Tesseract, a free text reader that comes inside the app, because it reads echoes far more accurately than the one built into Windows. On macOS it uses the reader built into macOS. Nothing is downloaded or uploaded for this.
-- It works out each echo's set by comparing the small set icon with copies of the set icons that come with the app. Nothing is downloaded for this.
+- It works out each echo's set by comparing the small set icon with reference copies of the set icons. The copies come with the app, and newer ones arrive with the game-data download below. Your pictures are never uploaded for this.
+- Each time it opens, it downloads the newest list of echoes, sets and their pictures from Wuthering Tools, so new echoes and fixes are recognised without updating the app. See the table below.
 - It opens a web page only when you click a link in **Help & feedback**, **Report a problem** or the auto mode warning, and only pages on this GitHub repository or Kuro's Fair Play Policy. Your browser opens them; the scanner itself doesn't connect to anything.
 - It keeps a copy of your current scan on your computer (echo stats only, no pictures) so you don't lose it if you close the app. **Clear this scan** on the Review screen deletes it.
 - It keeps your in-game name on your computer, if you enter it, to recognise echoes on your main character. It's never put in the scan or in a report.
@@ -111,12 +112,14 @@ We built the scanner so you don't have to trust us. You can check everything you
 - ❌ It never reads your **User ID**. The game prints it in the bottom-right corner. The scanner skips that area and blacks it out of any picture it saves for bug reports.
 - ❌ It never saves screenshots, unless you turn on "Save debug frames" yourself.
 
-**The only internet connections it makes** (each one can be switched off in **Settings → Network**):
+**The only internet connections it makes:**
 
 | Connection | Why | Sends |
 |---|---|---|
 | `github.com` (Releases) | Checks for a new version of the scanner | Nothing about you, just a request for the latest version number |
-| `www.wutheringtools.com` | Downloads the newest list of echoes/characters so new releases are recognised without updating the app *(coming later; scans always work offline with the list built into the app)* | Nothing about you |
+| `www.wutheringtools.com` | Each time the app opens, downloads the newest list of echoes, sets and characters, and their pictures, so new echoes and fixes are recognised without updating the app. The list is signed by Wuthering Tools, and the app ignores anything that isn't. Without internet, it uses the list it already has. | Nothing about you. It's the same public file for everyone: no account, no ID, no cookies |
+
+The game-data download has no off switch, because an old list means misread echoes. If you block it in a firewall, the scanner keeps working with the list it came with. **Help & feedback** shows whether your list is up to date.
 
 You can confirm this with a firewall app like Little Snitch (Mac) or Windows Defender Firewall. **Help & feedback → What Wavescan did this session** also lists what it captured, how many clicks it sent and which pages it opened.
 

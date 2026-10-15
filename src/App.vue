@@ -47,6 +47,7 @@ onMounted(async () => {
         v-if="navigation.view === 'home'"
         :info="info"
         :error="error"
+        :game-data="gameData"
       />
       <ReviewView
         v-else-if="navigation.view === 'review'"

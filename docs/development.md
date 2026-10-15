@@ -90,7 +90,7 @@ Intel Macs can build and run the app, but can't run Wuthering Waves, so real-gam
 
 Every merge to `main` runs `.github/workflows/tester-build.yml`. It builds an unsigned Apple Silicon `.dmg` (ad-hoc signed so macOS will open it) and a Windows installer, then replaces the **[tester-build](https://github.com/wavescan/wavescan/releases/tag/tester-build)** pre-release with them, plus SHA-256 checksums. You can also run it by hand from the Actions tab. The commit id is baked in (`WAVESCAN_BUILD`) and shown on the home screen and in Diagnostics reports. Share [testing-guide.md](testing-guide.md) with testers.
 
-Game data is kept current by `.github/workflows/game-data-sync.yml`. Every day it checks wutheringtools.com, and when the published `scanner-data.json` differs from `src/data/`, it opens a **chore: sync game data** PR listing the changed entries. Review that list, then merge it. `npm run data:check` tells you locally whether the snapshot is current ([ADR 0033](adr/0033-automated-game-data-sync.md)).
+Installed apps download the newest game data from wutheringtools.com every time they open ([ADR 0034](adr/0034-download-signed-game-data-on-launch.md)), so a data fix in Wuthering Tools reaches users without a release. The bundled copy is their fallback offline. It's kept current by `.github/workflows/game-data-sync.yml`. Every day it checks wutheringtools.com, and when the published `scanner-data.json` differs from `src/data/`, it opens a **chore: sync game data** PR listing the changed entries. Review that list, then merge it. `npm run data:check` tells you locally whether the snapshot is current ([ADR 0033](adr/0033-automated-game-data-sync.md)).
 
 ## 5. Release builds
 

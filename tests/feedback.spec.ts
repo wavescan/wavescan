@@ -51,7 +51,17 @@ describe("issue reports", () => {
   const candidate = () => ({ ...extractEcho(sabercatPanel("17.5%")), id: "watch-35", index: 35 });
   const context = (over: Partial<ReportContext> = {}): ReportContext => ({
     app,
-    gameData: { hash: "6f2a91c0".padEnd(64, "0"), version: 1, echoes: 412, characters: 40 },
+    gameData: {
+      hash: "6f2a91c0".padEnd(64, "0"),
+      version: 1,
+      echoes: 412,
+      characters: 40,
+      source: "downloaded",
+      publishedAt: "2026-10-15T12:00:00.000Z",
+      checkedAt: "2026-10-15T12:05:00.000Z",
+      problem: null,
+      appUpdateNeeded: false,
+    },
     resolution: { width: 2560, height: 1440 },
     reader: "Tesseract",
     mode: "watch",

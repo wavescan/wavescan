@@ -15,10 +15,22 @@ export interface Activity {
   scrolls: number;
   /** Pages opened in the user's browser (GitHub links). */
   pagesOpened: number;
+  /**
+   * Downloads from www.wutheringtools.com (game data, ADR 0034), counted where the request is
+   * made (src/data/gameDataDownload.ts). Wavescan's only internet connections.
+   */
+  downloads: number;
 }
 
 export function createActivity(now: () => Date = () => new Date()): Activity {
-  return reactive({ since: now().toISOString(), capturesStarted: 0, clicks: 0, scrolls: 0, pagesOpened: 0 });
+  return reactive({
+    since: now().toISOString(),
+    capturesStarted: 0,
+    clicks: 0,
+    scrolls: 0,
+    pagesOpened: 0,
+    downloads: 0,
+  });
 }
 
 /** The app's activity record. */

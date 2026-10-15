@@ -25,6 +25,7 @@ We considered three options:
 - **`game-data-sync.yml`** runs daily, by hand, or when another repo sends it a `scanner-data-published` repository dispatch:
   1. It fetches `scanner-data.json` (format, version and hash checks as before).
   2. If the data changed, it refreshes the set and echo icons too.
+     - **Superseded 2026-10-15:** see ADR 0034. It fetches WT's `scanner-assets.json` when the data names new pictures. Installed apps also download the data themselves at launch, so this PR only keeps the offline fallback current.
   3. It force-pushes `chore/sync-game-data` and opens a PR, or updates the open one. The PR body lists the changed entries in each section, so the change can be reviewed by eye.
   4. It doesn't push again when the branch already holds the same data.
 - Pushes made with the workflow token don't trigger other workflows, so the sync workflow starts `ci.yml` itself through `workflow_dispatch`. CI accepts that trigger for this reason.

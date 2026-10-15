@@ -15,7 +15,8 @@ Those URLs point at the `wuthering-waves-assets` site, and for newer echoes at o
 ## Decision
 
 - **Snapshot, like set icons ([ADR 0022](./0022-set-icon-matching-with-bundled-references.md)).** `npm run data:update` also runs `scripts/update-echo-icons.mjs`. It downloads each echo's picture from the URL in the bundled `scanner-data.json`, whichever host that is, shrinks it to 80×80 (keeping transparency) and writes WebP `data:` URLs to `src/data/echo-icons.json` (about 1 MB, committed), with each source URL and SHA-256. The download happens on the developer's machine only. Every picture is decoded and re-encoded by `sharp` (dev-only), so the app never loads a file as it was served.
-- **Loaded on demand.** `src/data/echoIcons.ts` imports the JSON as a separate chunk the first time a picture is needed, so startup isn't slower. `EchoAvatar.vue` shows the picture, or the name's initials (or "?" for an unrecognised echo) when there's none.
+- **Superseded 2026-10-15:** see ADR 0034. WT makes the pictures and publishes them in `scanner-assets.json`. The app bundles a copy and downloads newer ones at launch.
+- **Loaded on demand.** `src/data/echoIcons.ts` imports the JSON as a separate chunk the first time a picture is needed, so startup isn't slower. (**Superseded 2026-10-15:** see ADR 0034. They load at startup with the set icons, because they can change at runtime.) `EchoAvatar.vue` shows the picture, or the name's initials (or "?" for an unrecognised echo) when there's none.
 - **Where:** echo cards (instead of the set icon, which moves into the set chip), the Review table and the Scan screen's session list.
 - **Display only.** Pictures aren't used for recognition.
 

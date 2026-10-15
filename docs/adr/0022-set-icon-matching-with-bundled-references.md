@@ -32,12 +32,13 @@ Measured on the 12 fixtures: once the icon is lined up, each echo's own 2–3 ca
   - The fixture replay checks set accuracy on both OSes, because the Rust tool returns the same `regions::sample` pixels the app uses.
 - Cons:
   - A new set needs `npm run data:update` and an app release before it can be matched. Until then it's flagged, never guessed.
+    - **Superseded 2026-10-15:** see ADR 0034. Wuthering Tools makes the references (same processing) and publishes them in `scanner-assets.json`. The app downloads them at launch, so a new set is matched without an app release.
   - About 20–60 ms of matching per echo that has more than one possible set. This runs once per echo, not on every check.
   - Thresholds come from 12 fixtures at two resolutions. More fixtures, especially 16:9 and macOS, should confirm them.
 
 ## Guidance
 
-- Never hand-edit `set-icons.json`. Rerun `npm run data:update`.
+- Never hand-edit `set-icons.json`. Rerun `npm run data:update`. (**Superseded 2026-10-15:** see ADR 0034. The references are in `scanner-assets.json`; fix them in Wuthering Tools with `npm run scanner:icons`.)
 - Before changing a threshold or the scoring, run `npm run test:fixtures` and check `tests/setIcon.spec.ts`, which shows every set among each multi-set echo's candidates.
 - Don't add full-pool matching (all sets at once) without fixtures showing it's reliable. An unknown echo isn't exported anyway.
 

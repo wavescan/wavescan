@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { errorMessage, openUrl } from "@/ipc/commands";
 import { readEngineName } from "@/ocr/appReader";
 import type { AppInfo } from "@/ipc/types";
-import type { GameDataInfo } from "@/data/scannerData";
+import { describeGameData, gameDataStatus, type GameDataInfo } from "@/data/scannerData";
 import { activity } from "@/feedback/activity";
 import { LICENSE_URL, RELEASES_URL, SECURITY_URL, sourceUrl } from "@/feedback/links";
 import { searchTopics } from "@/help/troubleshooting";
@@ -45,7 +45,7 @@ const appDetails = computed(() =>
     `Wavescan ${props.info?.version ?? "?"}${props.info?.build ? ` (build ${props.info.build})` : " (local build)"}`,
     `Platform: ${props.info?.platform ?? "?"}`,
     `Text reader: ${reader.value}`,
-    `Game data: ${props.gameData ? `${props.gameData.hash.slice(0, 8)} (${props.gameData.echoes} echoes)` : "?"}`,
+    `Game data: ${describeGameData(props.gameData)}`,
   ].join("\n"),
 );
 
@@ -176,7 +176,9 @@ async function copyDetails() {
           </div>
           <div class="flex justify-between gap-3 py-2">
             <dt>Internet connections made by Wavescan</dt>
-            <dd>None (this version makes none)</dd>
+            <dd>
+              {{ activity.downloads ? `${activity.downloads} to www.wutheringtools.com (game data)` : "None yet" }}
+            </dd>
           </div>
           <div class="flex justify-between gap-3 py-2">
             <dt>Pages opened in your browser</dt>
@@ -220,7 +222,13 @@ async function copyDetails() {
           <dt class="opacity-70">
             Game data
           </dt>
-          <dd>{{ gameData ? `${gameData.echoes} echoes · ` : "" }}<span class="font-mono">{{ gameData?.hash.slice(0, 8) }}</span></dd>
+          <dd>
+            {{ gameData ? `${gameData.echoes} echoes · ` : "" }}<span class="font-mono">{{ gameData?.hash.slice(0, 8) }}</span>
+            <span
+              v-if="gameData"
+              class="block text-xs opacity-70"
+            >{{ gameDataStatus(gameData) }}</span>
+          </dd>
           <dt class="opacity-70">
             Text reader
           </dt>
