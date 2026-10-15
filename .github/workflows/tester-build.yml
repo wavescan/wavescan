@@ -17,6 +17,34 @@ env:
   CARGO_TERM_COLOR: never
 
 jobs:
+  # Is the bundled game data the same as what Wuthering Tools publishes? A stale snapshot
+  # doesn't block the build (the sync PR fixes it, ADR 0033), but it's flagged on the run
+  # and in the release notes, so nobody tests old data without knowing.
+  game-data:
+    name: Game data freshness
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      status: ${{ steps.check.outputs.status }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - id: check
+        shell: bash
+        run: |
+          code=0
+          node scripts/update-scanner-data.mjs --check || code=$?
+          case "$code" in
+            0) echo "status=current" >> "$GITHUB_OUTPUT" ;;
+            2) echo "status=stale" >> "$GITHUB_OUTPUT"
+               echo "::warning::Bundled game data is older than wutheringtools.com. Merge the game-data sync PR (or run npm run data:update)." ;;
+            *) echo "status=unknown" >> "$GITHUB_OUTPUT"
+               echo "::warning::Couldn't compare the bundled game data with wutheringtools.com." ;;
+          esac
+
   build:
     name: Build (${{ matrix.name }})
     permissions:
@@ -68,7 +96,7 @@ jobs:
 
   publish:
     name: Publish tester build
-    needs: build
+    needs: [build, game-data]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -78,12 +106,18 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Checksums and notes
+        env:
+          GAME_DATA: ${{ needs.game-data.outputs.status }}
         run: |
           cd dist
           sha256sum * > SHA256SUMS.txt
           {
             echo "**Unsigned test build** from commit ${GITHUB_SHA::7}. Not an official release."
             echo
+            if [ "$GAME_DATA" = "stale" ]; then
+              echo "⚠️ Built with game data older than wutheringtools.com, so recent echo fixes may be missing."
+              echo
+            fi
             echo "How to install and test: https://github.com/${GITHUB_REPOSITORY}/blob/main/docs/testing-guide.md"
             echo
             echo '```'
