@@ -63,3 +63,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0029](./0029-bundled-echo-pictures.md) | Bundled echo pictures on the Review and Scan screens | accepted | | data, ui |
 | [0030](./0030-equipped-by-and-the-in-game-name.md) | "Equipped by": the "Rover" key and the player's in-game name | accepted | | schema, interop, privacy, ocr |
 | [0031](./0031-classify-the-screen-from-the-bag-header.md) | Classify the screen from the bag header, and check it before auto mode arms | accepted | | ocr, accuracy, input, security |
+| [0032](./0032-no-virtual-controller-for-auto-mode.md) | No virtual game controller for auto mode (tried, and deliberately dropped) | accepted | | input, security, product, windows |
