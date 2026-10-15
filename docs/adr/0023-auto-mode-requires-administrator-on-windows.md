@@ -44,4 +44,5 @@ We looked at ways to click without administrator rights and rejected them for no
 ## Related
 
 - Partly supersedes [ADR 0006](./0006-watch-and-auto-modes-and-fair-play-risk.md) (the Windows elevation bullet) and [ADR 0017](./0017-input-spike-and-auto-mode-commands.md) ("the advice is a best guess")
+- [ADR 0032](./0032-no-virtual-controller-for-auto-mode.md): a virtual game controller was tried as another way around UIPI (2026-10-15) and dropped
 - `src/diagnostics/report.ts`, `src/diagnostics/inputTest.ts`, `src-tauri/src/platform/windows/process.rs`, README "Auto mode"
