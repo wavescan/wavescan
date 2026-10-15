@@ -1,7 +1,7 @@
 {
  "format": "WutheringToolsScannerData",
  "version": 1,
- "hash": "768b9a508e1b436f09f069bc9557b8f56da15ccc2f3f39e571bfb0b3834eca43",
+ "hash": "029a196f0571d9c2efa4c76c519c2108c5eb15ff684cb17ed18cb708bbdc32df",
  "data": {
   "echoes": {
    "AbyssalGladius": {
@@ -1337,7 +1337,8 @@
     "class": "Elite",
     "sets": [
      "GustsofWelkin",
-     "EternalRadiance"
+     "EternalRadiance",
+     "WindwardPilgrimage"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_32033_1_UI.webp"
    },
@@ -1397,9 +1398,8 @@
     "name": "Phantom: Diggy Duggy",
     "class": "Common",
     "sets": [
-     "MoonlitClouds",
-     "LingeringTunes",
-     "CelestialLight"
+     "EternalRadiance",
+     "TidebreakingCourage"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31047_UI.webp"
    },
@@ -1418,7 +1418,8 @@
     "class": "Common",
     "sets": [
      "MidnightVeil",
-     "EternalRadiance"
+     "EternalRadiance",
+     "DreamoftheLost"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31043_UI.webp"
    },
@@ -1436,8 +1437,7 @@
     "name": "Phantom: Feilian Beringal",
     "class": "Overlord",
     "sets": [
-     "SierraGale",
-     "RejuvenatingGlow"
+     "SierraGale"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1009_UI.webp"
    },
@@ -1478,9 +1478,7 @@
     "class": "Common",
     "sets": [
      "CelestialLight",
-     "FreezingFrost",
-     "FrostyResolve",
-     "EmpyreanAnthem"
+     "FreezingFrost"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1010_UI.webp"
    },
@@ -1489,7 +1487,9 @@
     "name": "Phantom: Iceglint Dancer",
     "class": "Common",
     "sets": [
-     "TrailblazingStar"
+     "TrailblazingStar",
+     "WishesofQuietSnowfall",
+     "ReelofSplicedMemories"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31083_UI.webp"
    },
@@ -1517,7 +1517,8 @@
     "class": "Elite",
     "sets": [
      "WindwardPilgrimage",
-     "FlamingClawprint"
+     "FlamingClawprint",
+     "FlamewingsShadow"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31062_UI.webp"
    },
@@ -1536,7 +1537,7 @@
     "name": "Phantom: Lightcrusher",
     "class": "Elite",
     "sets": [
-     "HavocEclipse"
+     "CelestialLight"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1016_UI.webp"
    },
@@ -1602,7 +1603,8 @@
     "class": "Common",
     "sets": [
      "EmpyreanAnthem",
-     "MidnightVeil"
+     "MidnightVeil",
+     "FlamewingsShadow"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31044_UI.webp"
    },
@@ -1611,8 +1613,8 @@
     "name": "Phantom: Questless Knight",
     "class": "Elite",
     "sets": [
-     "MoltenRift",
-     "VoidThunder"
+     "FrostyResolve",
+     "MidnightVeil"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32022_UI.webp"
    },
@@ -1632,8 +1634,7 @@
     "class": "Elite",
     "sets": [
      "RejuvenatingGlow",
-     "CelestialLight",
-     "FrostyResolve"
+     "CelestialLight"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterHead/T_IconMonsterHead_1007_UI.webp"
    },
@@ -1642,7 +1643,7 @@
     "name": "Phantom: Sentry Construct",
     "class": "Overlord",
     "sets": [
-     "VoidThunder"
+     "FrostyResolve"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_33009_UI.webp"
    },
@@ -1706,7 +1707,9 @@
     "name": "Phantom: Twin Nova - Collapsar Blade",
     "class": "Elite",
     "sets": [
-     "RiteofGildedRevelation"
+     "RiteofGildedRevelation",
+     "TrailblazingStar",
+     "SoundofTrueName"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32050_UI.webp"
    },
@@ -1715,7 +1718,8 @@
     "name": "Phantom: Twin Nova - Nebulous Cannon",
     "class": "Elite",
     "sets": [
-     "RiteofGildedRevelation"
+     "RiteofGildedRevelation",
+     "ChromaticFoam"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32049_UI.webp"
    },
@@ -1724,8 +1728,8 @@
     "name": "Phantom: Vitreum Dancer",
     "class": "Elite",
     "sets": [
-     "MoltenRift",
-     "VoidThunder"
+     "EternalRadiance",
+     "EmpyreanAnthem"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_32029_UI.webp"
    },
@@ -1735,7 +1739,9 @@
     "class": "Common",
     "sets": [
      "PactofNeonlightLeap",
-     "RiteofGildedRevelation"
+     "RiteofGildedRevelation",
+     "ChromaticFoam",
+     "SoundofTrueName"
     ],
     "icon": "https://api.encore.moe/resource/Data/Game/Aki/UI/UIResources/Common/Image/IconMonsterGoods/T_IconMonsterGoods_SG_31082_UI.webp"
    },
