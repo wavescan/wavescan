@@ -36,6 +36,7 @@
     "src/setup/**/*.ts",
     "src/help/**/*.ts",
     "src/ui/**/*.ts",
-    "src/settings/**/*.ts"
+    "src/settings/**/*.ts",
+    "src/update/**/*.ts"
   ]
 }

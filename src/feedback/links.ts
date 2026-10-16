@@ -22,6 +22,12 @@ export function sourceUrl(build: string | null): string {
 }
 
 export const RELEASES_URL = `${REPO_URL}/releases`;
+
+/** What's new in a version: its release, or the rolling tester build (ADR 0035). */
+export function releaseUrl(version: string): string {
+  return /-tester\./.test(version) ? `${RELEASES_URL}/tag/tester-build` : `${RELEASES_URL}/tag/v${version}`;
+}
+
 export const SECURITY_URL = `${REPO_URL}/security/policy`;
 export const LICENSE_URL = `${REPO_URL}/blob/main/LICENSE`;
 export const ISSUES_URL = `${REPO_URL}/issues`;

@@ -17,9 +17,13 @@ export interface Activity {
   pagesOpened: number;
   /**
    * Downloads from www.wutheringtools.com (game data, ADR 0034), counted where the request is
-   * made (src/data/gameDataDownload.ts). Wavescan's only internet connections.
+   * made (src/data/gameDataDownload.ts).
    */
   downloads: number;
+  /** Update checks to github.com (ADR 0035), counted in src/update/tauriUpdater.ts. */
+  updateChecks: number;
+  /** Update downloads from github.com. */
+  updateDownloads: number;
 }
 
 export function createActivity(now: () => Date = () => new Date()): Activity {
@@ -30,6 +34,8 @@ export function createActivity(now: () => Date = () => new Date()): Activity {
     scrolls: 0,
     pagesOpened: 0,
     downloads: 0,
+    updateChecks: 0,
+    updateDownloads: 0,
   });
 }
 

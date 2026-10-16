@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-10-05
 tags: [privacy, network]
-superseded_by: [20]
+superseded_by: [20, 34, 35]
 ---
 
 # 10. No telemetry, explicit network allow-list
@@ -20,6 +20,7 @@ superseded_by: [20]
      **Superseded 2026-10-06:** the game-data host is `www.wutheringtools.com`; see [ADR 0020](./0020-game-data-snapshot-and-source.md).
 - Each is **toggleable** in Settings → Network. With both off, the app is fully offline.
   - **Superseded 2026-10-15:** see ADR 0034. The signed game-data download from `www.wutheringtools.com` has no off switch: it sends nothing about the user, and stale data means misread echoes.
+  - **Superseded 2026-10-16:** see [ADR 0035](./0035-in-app-updates.md). The update check has no off switch either, for the same reason: old versions misread echoes. It runs in Rust (tauri-plugin-updater), so the webview CSP doesn't cover it; only the endpoint in `tauri.conf.json` is contacted.
 - The README and `architecture.md#network` list these hosts and show users how to verify with a firewall.
 
 ## Consequences

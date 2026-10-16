@@ -47,6 +47,12 @@ pub fn run() -> Result<(), Error> {
         // Opens GitHub pages (report a problem, source, releases) in the user's browser. The
         // webview may only open the URLs allowed in capabilities/default.json (ADR 0028).
         .plugin(tauri_plugin_opener::init())
+        // App updates (ADR 0035): checks the channel's update file on GitHub (the endpoint in
+        // tauri.conf.json), and installs an update only if it's signed with the updater key
+        // compiled in (`plugins.updater.pubkey`). The webview decides when; Rust verifies.
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        // Restarts the app after an update installs (macOS; Windows' installer does it itself).
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
             commands::find_game_window,

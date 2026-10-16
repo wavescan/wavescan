@@ -2,6 +2,7 @@
 status: accepted
 date: 2026-10-05
 tags: [distribution, supply-chain]
+superseded_by: [35]
 ---
 
 # 11. Signed builds, provenance attestations, signed updater
@@ -17,6 +18,7 @@ Unsigned apps trigger Windows SmartScreen ("Windows protected your PC") and macO
 - **macOS:** **Developer ID Application** certificate, hardened runtime, notarization + stapling. Signing secrets are GitHub encrypted secrets, scoped to the release environment with required reviewers.
 - **Provenance:** `actions/attest-build-provenance` for every artifact, plus SHA-256 checksums in the release notes. The README explains `gh attestation verify`.
 - **Updates:** Tauri updater plugin with a minisign key pair. The public key is compiled into the app and the private key is a GitHub secret. Update checks can be turned off ([ADR 0010](./0010-no-telemetry-network-allowlist.md)).
+  **Superseded 2026-10-16:** see [ADR 0035](./0035-in-app-updates.md). Update checks can't be turned off; there are a stable and a tester channel; releases are made from Actions → Release. Authenticode and notarization below are still planned.
 
 ## Consequences
 

@@ -88,10 +88,19 @@ Intel Macs can build and run the app, but can't run Wuthering Waves, so real-gam
 
 ## 4. Tester builds
 
-Every merge to `main` runs `.github/workflows/tester-build.yml`. It builds an unsigned Apple Silicon `.dmg` (ad-hoc signed so macOS will open it) and a Windows installer, then replaces the **[tester-build](https://github.com/wavescan/wavescan/releases/tag/tester-build)** pre-release with them, plus SHA-256 checksums. You can also run it by hand from the Actions tab. The commit id is baked in (`WAVESCAN_BUILD`) and shown on the home screen and in Diagnostics reports. Share [testing-guide.md](testing-guide.md) with testers.
+Every merge to `main` runs `.github/workflows/tester-build.yml`. It builds an Apple Silicon `.dmg` (ad-hoc signed so macOS will open it) and a Windows installer at version `<patch after the latest release>-tester.<run number>`, then replaces the **[tester-build](https://github.com/wavescan/wavescan/releases/tag/tester-build)** pre-release with them, plus `latest.json` and SHA-256 checksums. Installed tester builds update themselves to it ([ADR 0035](adr/0035-in-app-updates.md)). You can also run it by hand from the Actions tab. The commit id is baked in (`WAVESCAN_BUILD`) and shown on the home screen and in Diagnostics reports. Share [testing-guide.md](testing-guide.md) with testers.
 
 Installed apps download the newest game data from wutheringtools.com every time they open ([ADR 0034](adr/0034-download-signed-game-data-on-launch.md)), so a data fix in Wuthering Tools reaches users without a release. The bundled copy is their fallback offline. It's kept current by `.github/workflows/game-data-sync.yml`. Every day it checks wutheringtools.com, and when the published `scanner-data.json` differs from `src/data/`, it opens a **chore: sync game data** PR listing the changed entries. Review that list, then merge it. `npm run data:check` tells you locally whether the snapshot is current ([ADR 0033](adr/0033-automated-game-data-sync.md)).
 
 ## 5. Release builds
 
-`npm run tauri build` makes an installer for the current OS in `src-tauri/target/release/bundle/`. Official, signed releases are only built by CI ([ADR 0011](adr/0011-signing-provenance-and-updater.md)).
+`npm run tauri build` makes an installer for the current OS in `src-tauri/target/release/bundle/`. A local build never updates itself (it has no `WAVESCAN_BUILD`).
+
+Releases are only built by CI ([ADR 0035](adr/0035-in-app-updates.md)): **Actions → Release → Run workflow** on `main`, with the version (`0.2.0`). It checks that the version is newer than the last release, builds both platforms, tags `v0.2.0`, and publishes a release with `latest.json`. Every installed release then offers the update on its next launch, and installs it on the launch after at the latest. Optional inputs:
+
+- **minimum-version:** versions older than this must update before scanning. Use it only for a version with a known bad bug.
+- **notes:** one line shown with the update. The release page also lists the merged PRs.
+
+**The updater key.** Update files are signed with a minisign key: the public half is `plugins.updater.pubkey` in `src-tauri/tauri.conf.json`, the private half and its password are the repository secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Keep a copy in a password manager: without it, installed copies can't be updated, and everyone would have to reinstall a build with a new key. A tester build without the secrets still builds, but isn't offered as an update; a release fails.
+
+To build a signed update locally (to test updates): set both variables and run `npm run tauri build -- -c src-tauri/tauri.updates.conf.json`. Point a test build at your own update file with another `-c` that sets `plugins.updater.endpoints`.

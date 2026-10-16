@@ -32,6 +32,10 @@ Open the **[Tester build](https://github.com/wavescan/wavescan/releases/tag/test
 1. Run the `setup.exe`. If **"Windows protected your PC"** appears, click **More info → Run anyway**.
 2. Finish the installer and open **Wavescan** from the Start menu.
 
+### Updates
+
+You only install once. Tester builds update themselves to the newest tester build: when there's one, Wavescan downloads it and shows **Restart to update**, and if you don't, it installs the next time you open it. **Help & feedback → About this copy** shows your version and whether it's up to date. (Builds from before October 16, 2026 can't update themselves: install the latest one once.)
+
 ## 3. Run Diagnostics
 
 1. Start Wuthering Waves and go to **Bag → Echoes**. Click any echo so its details show on the right. If you have one, pick an echo that's **levelled part-way** (for example +5 or +12, not +0 and not fully levelled). That helps us check the rarity detection.
