@@ -110,7 +110,7 @@ export function cropRegions(seq: number, regions: FracRect[]): Promise<ArrayBuff
 }
 
 /**
- * Opens a GitHub page (or the Fair Play policy) in the user's browser. Only URLs in
+ * Opens a GitHub page, the Fair Play policy or Wuthering Tools' import in the user's browser. Only URLs in
  * `src/feedback/links.ts` are allowed, and Rust's opener scope enforces the same list
  * (ADR 0028). Wavescan itself makes no connection; the browser does.
  */

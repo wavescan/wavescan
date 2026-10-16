@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { loadBundledScannerData } from "@/data/scannerData";
 import { extractEcho } from "@/session/echoExtract";
 import { newIssueUrl, MAX_URL_BODY, reportBody, reportTitle, type ReportContext } from "@/feedback/issue";
-import { ALLOWED_URL_PREFIXES, isAllowedUrl, issueSearchUrl, REPO_URL, sourceUrl } from "@/feedback/links";
+import { ALLOWED_URL_PREFIXES, isAllowedUrl, issueSearchUrl, REPO_URL, sourceUrl, WT_IMPORT_URL } from "@/feedback/links";
 import { problemForAutoStop, problemForError } from "@/feedback/problems";
 import type { AutoScanStop } from "@/auto/autoScan";
 import { readinessItems, readinessSummary } from "@/setup/readiness";
@@ -19,8 +19,10 @@ beforeAll(() => {
 const app: AppInfo = { name: "Wavescan", version: "0.1.0", platform: "windows", build: "269ae79", elevated: false };
 
 describe("links", () => {
-  it("only allows the repository's pages and the Fair Play policy", () => {
+  it("only allows the repository's pages, the Fair Play policy and Wuthering Tools' import", () => {
     expect(isAllowedUrl(`${REPO_URL}/issues/new?title=x`)).toBe(true);
+    expect(isAllowedUrl(WT_IMPORT_URL)).toBe(true);
+    expect(isAllowedUrl("https://www.wutheringtools.com/")).toBe(false);
     expect(isAllowedUrl("https://github.com/wavescan/wavescan-evil/issues")).toBe(false);
     expect(isAllowedUrl("https://github.com/someone/else")).toBe(false);
     expect(isAllowedUrl("https://example.com")).toBe(false);

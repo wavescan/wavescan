@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, reactive, ref } from "vue";
 import { setName } from "@/data/scannerData";
-import { errorMessage } from "@/ipc/commands";
+import { WT_IMPORT_URL } from "@/feedback/links";
+import { errorMessage, openUrl } from "@/ipc/commands";
 import type { AppInfo } from "@/ipc/types";
 import type { EchoCandidate } from "@/session/echoSession";
 import { buildScan } from "@/session/exportScan";
@@ -15,7 +16,8 @@ import EchoCard from "@/components/EchoCard.vue";
 import FieldFixer from "@/components/FieldFixer.vue";
 
 // Review and export: every echo in the scan, what still needs a look, fixes limited to
-// values the game allows, and the copy-to-clipboard export.
+// values the game allows, and the export: copy to the clipboard, optionally opening
+// Wuthering Tools' import page to paste it into.
 
 const props = defineProps<{ info: AppInfo | null }>();
 
@@ -26,6 +28,7 @@ const layout = ref<"cards" | "table">("cards");
 const fixing = ref<{ id: string; field: FieldId } | null>(null);
 const walkthrough = ref(false);
 const copied = ref(false);
+const opened = ref(false);
 const message = ref<string | null>(null);
 const confirmClear = ref(false);
 
@@ -97,14 +100,28 @@ function report(candidate: EchoCandidate, field: FieldId | null) {
   goReport({ kind: "misread", echoId: candidate.id, field });
 }
 
-async function copyScan() {
+/** Copies the scan; true when it worked. Problems are shown under the buttons. */
+async function copyScan(): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(JSON.stringify(built.value.scan, null, 2));
     copied.value = true;
     message.value = null;
     setTimeout(() => (copied.value = false), 2500);
+    return true;
   } catch (error) {
     message.value = errorMessage(error);
+    return false;
+  }
+}
+
+/** Copies the scan, then opens Wuthering Tools' import in the browser to paste it into. */
+async function copyAndOpen() {
+  if (!(await copyScan())) return;
+  try {
+    await openUrl(WT_IMPORT_URL);
+    opened.value = true;
+  } catch (error) {
+    message.value = `Copied, but the browser didn't open: ${errorMessage(error)}`;
   }
 }
 
@@ -449,10 +466,24 @@ const queuePosition = computed(() => {
         type="button"
         class="btn btn-primary"
         :disabled="built.scan.echoes.length === 0"
+        @click="copyAndOpen"
+      >
+        <AppIcon name="external" /> Copy and open Wuthering Tools
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline btn-sm"
+        :disabled="built.scan.echoes.length === 0"
         @click="copyScan"
       >
-        <AppIcon name="copy" /> {{ copied ? "Copied" : "Copy scan for Wuthering Tools" }}
+        <AppIcon name="copy" /> {{ copied ? "Copied" : "Copy scan only" }}
       </button>
+      <p
+        v-if="opened"
+        class="text-xs leading-relaxed"
+      >
+        Wuthering Tools opened in your browser. Paste the scan in Settings → Wavescan.
+      </p>
       <p
         v-if="message"
         role="alert"
@@ -464,7 +495,7 @@ const queuePosition = computed(() => {
         <template v-if="summary.toCheck">
           You can export now: values you haven't checked are marked so Wuthering Tools can ask you about them.
         </template>
-        Nothing is uploaded. The scan goes to your clipboard and stays on this computer.
+        Nothing is uploaded. The scan goes to your clipboard, and Wuthering Tools keeps it in your browser.
       </p>
       <div class="border-t border-base-300 pt-3">
         <button
