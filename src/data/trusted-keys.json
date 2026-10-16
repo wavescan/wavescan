@@ -1,0 +1,6 @@
+{
+ "about": "Public keys that may sign scanner-data.json (ADR 0034). Key id → SPKI DER, base64. Made by `npm run scanner:keygen` in Wuthering Tools. To rotate: add the new key, release, switch WT to it, then remove the old one.",
+ "keys": {
+  "4465e4c3be6d190d": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEI4InNekcpg/TvxJVlv5aFgrD0BdSo+5jGD6jlVJyCUI+48B65771fzinb4C2e09yHqYNApM9jRRI1Q44hXmx7Q=="
+ }
+}

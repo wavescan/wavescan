@@ -164,18 +164,18 @@ Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `sr
 | Abort | Cursor-drift check between our clicks, F8 global hotkey, focus-loss event |
 | User ID never read | `crop_outside_user_id` refuses OCR crops (and the Tesseract reader's crops) that overlap it. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
 | Tauri capabilities | `src-tauri/capabilities/default.json`: our commands, `core:default`, three window permissions for the mini window, and `opener:allow-open-url` scoped to our GitHub repository and the Fair Play Policy page ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)) |
-| CSP | `default-src 'self'`. No remote scripts or styles. `script-src 'self' 'wasm-unsafe-eval'` lets the bundled Tesseract compile its WebAssembly (not JavaScript `eval`); `worker-src 'self'` and `connect-src 'self'` let its workers start and load the bundled core and model ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)) |
+| CSP | `default-src 'self'`. No remote scripts or styles. `script-src 'self' 'wasm-unsafe-eval'` lets the bundled Tesseract compile its WebAssembly (not JavaScript `eval`); `worker-src 'self'` and `connect-src 'self'` let its workers start and load the bundled core and model ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)). `connect-src` also allows `https://www.wutheringtools.com`, for the game-data download only ([ADR 0034](adr/0034-download-signed-game-data-on-launch.md)) |
 | Least privilege | Admin (Windows, the user runs Wavescan as administrator: [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md)) / Accessibility (macOS) needed only for auto mode |
 | Supply chain | `cargo deny`, `npm audit`, lockfiles committed, signed + attested release builds ([ADR 0011](adr/0011-signing-provenance-and-updater.md)) |
 
 ### Network {#network}
 
-Only these outbound connections exist. Each can be turned off in Settings ([ADR 0010](adr/0010-no-telemetry-network-allowlist.md)):
+Only these outbound connections exist ([ADR 0010](adr/0010-no-telemetry-network-allowlist.md)):
 
 | Host | Purpose | Verified how |
 |---|---|---|
 | `github.com` / `objects.githubusercontent.com` | Updater manifest + signed update bundles | Tauri updater signature (minisign public key compiled in) |
-| `www.wutheringtools.com` | `scanner-data.json` (game data refresh, *planned*) | Detached signature checked against a compiled-in public key. Falls back to the bundled snapshot ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)) |
+| `www.wutheringtools.com` | `scanner-data.json` on every launch, and `scanner-assets.json` (pictures) when it names new ones. No off switch; counted in "What Wavescan did this session" | ECDSA P-256 signature (inside the file) checked with WebCrypto against `src/data/trusted-keys.json`, plus both hashes. Anything else is ignored and the saved or bundled copy stays in use ([ADR 0034](adr/0034-download-signed-game-data-on-launch.md)) |
 
 Adding a host means: ADR → this table → the README table → CSP `connect-src`.
 
@@ -187,9 +187,10 @@ The Tesseract reader makes no connections: its worker script, WebAssembly core a
 
 Game data (echo names, sets, costs, stat tables, characters, weapons) comes from Wuthering Tools, which publishes it as `https://www.wutheringtools.com/scanner-data.json` on every deploy ([ADR 0020](adr/0020-game-data-snapshot-and-source.md)).
 
-- **Bundled snapshot:** `src/data/scanner-data.json` (committed; refresh with `npm run data:update`, which checks the format, version and hash). The same command refreshes `src/data/set-icons.json`, 32×32 copies of each set's icon for set matching ([ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md)), and `src/data/echo-icons.json`, 80×80 pictures of each echo shown on echo cards and lists ([ADR 0029](adr/0029-bundled-echo-pictures.md)). That download happens on the developer's machine or in CI, never in the app. `src/data/scannerData.ts` validates it and calls scanner-core's `setScannerGameData` in `main.ts`, before anything else runs. The hash is shown on the home screen and in Diagnostics reports.
-- **Automated sync:** `game-data-sync.yml` runs `data:update` daily (or on demand) and opens a PR when Wuthering Tools published different data, listing the changed entries for review. Tester builds run `npm run data:check` and flag stale data in their notes ([ADR 0033](adr/0033-automated-game-data-sync.md)).
-- **Runtime refresh** *(planned)*: opt-in, signed, and fails safe to the bundled snapshot, so new echoes are recognised without an app update.
+- **Bundled snapshot:** `src/data/scanner-data.json`, plus `src/data/scanner-assets.json` (WT's 32×32 set-icon references for set matching, [ADR 0022](adr/0022-set-icon-matching-with-bundled-references.md), and 80×80 echo pictures, [ADR 0029](adr/0029-bundled-echo-pictures.md)). Both are committed; refresh them with `npm run data:update`, which checks the format, version, hashes and signature. `scannerData.ts` / `scannerAssets.ts` validate them, and `main.ts` loads them before anything else runs.
+- **Download on every launch** ([ADR 0034](adr/0034-download-signed-game-data-on-launch.md)): `gameData.ts` starts with the bundled copy, or the copy saved by an earlier launch when that's newer. Then it downloads `scanner-data.json` in the background, and `scanner-assets.json` too when it names a different pictures hash. `gameDataDownload.ts` checks everything: format, version, both hashes, and the signature (`signature.ts`, WebCrypto, keys in `trusted-keys.json`). A download that passes is saved to localStorage (`savedGameData.ts`) and applied once no scan is running (`whenNotScanning`). Anything that fails keeps the data in use, and the reason is shown. A newer data format shows "update Wavescan" on the home screen.
+- **What the user sees:** Help → About this copy shows the echo count, hash and status (up to date, saved or built in, and why). Bug reports and Diagnostics include the hash, source, publish date and the last problem (`describeGameData`).
+- **Automated sync:** `game-data-sync.yml` runs `data:update` daily (or on demand) and opens a PR when Wuthering Tools published different data or pictures, listing the changed entries for review. It keeps the offline fallback current. Tester builds run `npm run data:check` and flag stale data in their notes ([ADR 0033](adr/0033-automated-game-data-sync.md)).
 
 ## 9. Output & handoff
 

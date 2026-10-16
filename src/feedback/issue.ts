@@ -1,5 +1,5 @@
 import type { AppInfo } from "@/ipc/types";
-import type { GameDataInfo } from "@/data/scannerData";
+import { describeGameData, type GameDataInfo } from "@/data/scannerData";
 import type { EchoCandidate } from "@/session/echoSession";
 import { displayName, fieldLabel, rawReading, type FieldId } from "@/review/fields";
 import { redactPlayerName } from "@/session/equippedBy";
@@ -77,7 +77,7 @@ function setupSection(context: ReportContext): string[] {
     "### Setup",
     `Wavescan ${app?.version ?? "?"}${app?.build ? ` (build ${app.build})` : " (local build)"} · ${app?.platform ?? "?"}`,
     `Game size: ${size} · reader: ${context.reader} · mode: ${context.mode}`,
-    `Game data: ${context.gameData ? `${context.gameData.hash.slice(0, 8)} (${context.gameData.echoes} echoes)` : "?"}`,
+    `Game data: ${describeGameData(context.gameData)}`,
   ];
 }
 

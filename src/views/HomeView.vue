@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { errorKind, errorMessage, findGameWindow } from "@/ipc/commands";
 import type { AppInfo } from "@/ipc/types";
+import type { GameDataInfo } from "@/data/scannerData";
 import { readinessItems, readinessSummary, SETUP_REMINDERS, type WindowOutcome } from "@/setup/readiness";
 import { useScanStore } from "@/review/scanStore";
 import { summarize } from "@/review/list";
@@ -10,7 +11,7 @@ import AppIcon from "@/components/AppIcon.vue";
 
 // Home: is the game ready, which mode to use, and a scan left over from last time.
 
-const props = defineProps<{ info: AppInfo | null; error: string | null }>();
+const props = defineProps<{ info: AppInfo | null; error: string | null; gameData: GameDataInfo | null }>();
 
 const store = useScanStore();
 const windowOutcome = ref<WindowOutcome | null>(null);
@@ -79,6 +80,14 @@ const STATUS = {
         class="alert alert-error mt-2 text-sm"
       >
         {{ error }}
+      </div>
+      <div
+        v-if="gameData?.appUpdateNeeded"
+        role="alert"
+        class="alert alert-warning mt-2 text-sm"
+      >
+        Wuthering Tools has newer game data that this version of Wavescan can't read. Update Wavescan
+        so new echoes and fixes are recognised. Scans still work with the data this version has.
       </div>
     </header>
 

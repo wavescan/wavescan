@@ -25,6 +25,7 @@ Wavescan supplies scanner-core with game data ([ADR 0019](./0019-consume-scanner
   - fail-safe: keep the bundled data if anything is off
 
   It gets its own ADR when built.
+  - **Superseded 2026-10-15:** see ADR 0034. It downloads on every launch, with no opt-in, and the signature sits inside the file.
 
 ## Consequences
 

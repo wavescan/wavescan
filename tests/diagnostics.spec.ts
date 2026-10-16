@@ -18,7 +18,17 @@ const window: GameWindow = {
 function healthy(): DiagnosticsInput {
   return {
     app: { name: "Wavescan", version: "0.0.1", platform: "windows", build: "abc1234", elevated: false },
-    gameData: { hash: "f".repeat(64), version: 1, echoes: 230, characters: 63 },
+    gameData: {
+      hash: "f".repeat(64),
+      version: 1,
+      echoes: 230,
+      characters: 63,
+      source: "downloaded",
+      publishedAt: "2026-10-15T12:00:00.000Z",
+      checkedAt: "2026-10-15T12:05:00.000Z",
+      problem: null,
+      appUpdateNeeded: false,
+    },
     userAgent: "test",
     window: { ok: true, value: window },
     candidates: [{ title: "Wuthering Waves  ", class: "UnrealWindow", matched: true }],

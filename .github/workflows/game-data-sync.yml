@@ -2,7 +2,8 @@ name: Game data sync
 
 # Keeps the bundled game data (src/data/) in step with Wuthering Tools, so data fixes made
 # there reach Wavescan builds without anyone having to remember `npm run data:update`
-# (ADR 0033). When the published scanner-data.json differs from the snapshot, this opens a
+# (ADR 0033). Installed copies download the newest data themselves at launch (ADR 0034);
+# the bundled copy is what they use offline or before their first download. When the published scanner-data.json differs from the snapshot, this opens a
 # pull request with the update (or refreshes the open one). A person still reviews and
 # merges it, and CI runs on it like on any other PR.
 #
@@ -40,25 +41,17 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
 
-      # Only scanner-data.json first: the icon scripts download ~250 pictures, so they run
-      # only when the data actually changed.
-      - name: Fetch scanner-data.json
+      # scanner-data.json, and scanner-assets.json (the pictures) when the data names new ones.
+      - name: Fetch the game data
         id: fetch
         shell: bash
         run: |
           node scripts/update-scanner-data.mjs | tee "$RUNNER_TEMP/summary.txt"
-          if git diff --quiet -- src/data/scanner-data.json; then
+          if git diff --quiet -- src/data; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Refresh the set and echo icons
-        if: steps.fetch.outputs.changed == 'true'
-        shell: bash
-        run: |
-          node scripts/update-set-icons.mjs 2>&1 | tee -a "$RUNNER_TEMP/summary.txt"
-          node scripts/update-echo-icons.mjs 2>&1 | tee -a "$RUNNER_TEMP/summary.txt"
 
       - name: Open or update the pull request
         if: steps.fetch.outputs.changed == 'true'

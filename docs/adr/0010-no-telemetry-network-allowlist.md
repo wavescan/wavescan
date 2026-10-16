@@ -19,6 +19,7 @@ superseded_by: [20]
   2. `ryanbenson.github.io`: signed `scanner-data.json` + icon templates.
      **Superseded 2026-10-06:** the game-data host is `www.wutheringtools.com`; see [ADR 0020](./0020-game-data-snapshot-and-source.md).
 - Each is **toggleable** in Settings → Network. With both off, the app is fully offline.
+  - **Superseded 2026-10-15:** see ADR 0034. The signed game-data download from `www.wutheringtools.com` has no off switch: it sends nothing about the user, and stale data means misread echoes.
 - The README and `architecture.md#network` list these hosts and show users how to verify with a firewall.
 
 ## Consequences

@@ -47,7 +47,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src-tauri/src/testing.rs` | Fakes for the four traits (test-only) |
 | `src-tauri/examples/fixtures.rs` | Dev tool: mask fixture captures, OCR them for the fixture replay |
 | `src-tauri/capabilities/` | Tauri permission allow-list (keep minimal) |
-| `src/data/` | Bundled `scanner-data.json` + loader/validator (ADR 0020). Refresh with `npm run data:update`; never hand-edit |
+| `src/data/` | Game data: bundled `scanner-data.json` + `scanner-assets.json` (ADR 0020), and the signed download on every launch (`gameData.ts`, ADR 0034). Refresh the bundle with `npm run data:update`; never hand-edit. `trusted-keys.json` holds the public keys WT signs with |
 | `src/diagnostics/` | Diagnostics checks + report builder (no images; ADR 0016) |
 | `src/ipc/` | Typed wrappers for every Rust command + mirrored types |
 | `src/ocr/` | Which engine reads echo text: Tesseract on Windows (`tesseract.ts` holds every setting; the page starts its tesseract.js workers, never from inside another worker), Vision on macOS ([ADR 0027](docs/adr/0027-tesseract-reads-echo-text-on-windows.md)) |

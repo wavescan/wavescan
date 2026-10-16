@@ -3869,5 +3869,12 @@
     "rarity": 5
    }
   ]
- }
+ },
+ "publishedAt": "2026-10-16T13:48:40.627Z",
+ "assets": {
+  "file": "scanner-assets.json",
+  "hash": "b87ecccb588b017e361263bd0388abc411bf84cea4dd313b5dafd26daccdb912"
+ },
+ "keyId": "4465e4c3be6d190d",
+ "signature": "DpduvaS1xPsK7Avj5Ry+OksZsMTZG7bTYAmAGSQRaXqtkwupHgXgZ9DV9AFCpQPoXd1hvpuOugWj1D8bdIKNhw=="
 }
