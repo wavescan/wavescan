@@ -27,6 +27,10 @@
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-size",
     "core:window:allow-set-min-size",
+    "updater:allow-check",
+    "updater:allow-download",
+    "updater:allow-install",
+    "process:allow-restart",
     {
       "identifier": "opener:allow-open-url",
       "allow": [

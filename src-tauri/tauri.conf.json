@@ -28,7 +28,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi", "app", "dmg"],
+    "targets": ["nsis", "app", "dmg"],
     "category": "Utility",
     "copyright": "GPL-3.0-or-later",
     "shortDescription": "Wuthering Waves echo scanner for Wuthering Tools",
@@ -45,6 +45,13 @@
     },
     "windows": {
       "webviewInstallMode": { "type": "downloadBootstrapper" }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJENzdDRTg0QjM2RkJFRDkKUldUWnZtK3poTTUzdlgvOWxwSjFtOXBlSzBrMFFKa1RRb2dWTmxWVUlVNXhGQzVDeUJZUkUxZzYK",
+      "endpoints": ["https://github.com/wavescan/wavescan/releases/latest/download/latest.json"],
+      "windows": { "installMode": "passive" }
     }
   }
 }

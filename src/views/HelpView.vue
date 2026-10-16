@@ -9,12 +9,13 @@ import { LICENSE_URL, RELEASES_URL, SECURITY_URL, sourceUrl } from "@/feedback/l
 import { searchTopics } from "@/help/troubleshooting";
 import { useScanStore } from "@/review/scanStore";
 import { goReport } from "@/ui/navigation";
+import { updateStatusText, type Updater } from "@/update/updater";
 import AppIcon from "@/components/AppIcon.vue";
 
 // Help & feedback: report a problem, suggest an idea, the offline troubleshooting guide,
 // the source code this copy was built from, and what Wavescan did this session.
 
-const props = defineProps<{ info: AppInfo | null; gameData: GameDataInfo | null }>();
+const props = defineProps<{ info: AppInfo | null; gameData: GameDataInfo | null; updater: Updater | null }>();
 
 const store = useScanStore();
 const query = ref("");
@@ -23,6 +24,15 @@ const message = ref<string | null>(null);
 const detailsCopied = ref(false);
 
 const topics = computed(() => searchTopics(query.value, props.info?.platform ?? null));
+/** Every internet connection Wavescan made itself this session, by host. */
+const connections = computed(() => {
+  const parts: string[] = [];
+  if (activity.downloads) parts.push(`${activity.downloads} to www.wutheringtools.com (game data)`);
+  const updates = activity.updateChecks + activity.updateDownloads;
+  if (updates) parts.push(`${updates} to github.com (updates)`);
+  return parts.length ? parts.join(", ") : "None yet";
+});
+const canCheck = computed(() => ["idle", "current", "failed"].includes(props.updater?.state.status ?? "off"));
 const since = computed(() =>
   new Date(activity.since).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
 );
@@ -46,6 +56,7 @@ const appDetails = computed(() =>
     `Platform: ${props.info?.platform ?? "?"}`,
     `Text reader: ${reader.value}`,
     `Game data: ${describeGameData(props.gameData)}`,
+    `Updates: ${props.updater ? updateStatusText(props.updater.state) : "?"}`,
   ].join("\n"),
 );
 
@@ -176,8 +187,8 @@ async function copyDetails() {
           </div>
           <div class="flex justify-between gap-3 py-2">
             <dt>Internet connections made by Wavescan</dt>
-            <dd>
-              {{ activity.downloads ? `${activity.downloads} to www.wutheringtools.com (game data)` : "None yet" }}
+            <dd class="text-right">
+              {{ connections }}
             </dd>
           </div>
           <div class="flex justify-between gap-3 py-2">
@@ -228,6 +239,20 @@ async function copyDetails() {
               v-if="gameData"
               class="block text-xs opacity-70"
             >{{ gameDataStatus(gameData) }}</span>
+          </dd>
+          <dt class="opacity-70">
+            Updates
+          </dt>
+          <dd>
+            {{ updater ? updateStatusText(updater.state) : "…" }}
+            <button
+              v-if="updater && canCheck"
+              type="button"
+              class="link block text-xs"
+              @click="updater.check()"
+            >
+              Check for updates
+            </button>
           </dd>
           <dt class="opacity-70">
             Text reader

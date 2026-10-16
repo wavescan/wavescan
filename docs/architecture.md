@@ -163,7 +163,7 @@ Errors cross IPC as `{ kind, message }` (`error.rs` → `src/ipc/types.ts`). `sr
 | Input gating | `safety::AutoMode`: armed (typed phrase) → window exists, focused, not minimised → cursor where we left it (else the user took over) → target inside the client rect → under the action cap. **Any failure aborts** until the user re-arms |
 | Abort | Cursor-drift check between our clicks, F8 global hotkey, focus-loss event |
 | User ID never read | `crop_outside_user_id` refuses OCR crops (and the Tesseract reader's crops) that overlap it. `mask_user_id` blacks it out before anything is written to disk ([ADR 0013](adr/0013-user-id-masking.md)) |
-| Tauri capabilities | `src-tauri/capabilities/default.json`: our commands, `core:default`, three window permissions for the mini window, and `opener:allow-open-url` scoped to our GitHub repository, the Fair Play Policy page and Wuthering Tools' Settings page ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)) |
+| Tauri capabilities | `src-tauri/capabilities/default.json`: our commands, `core:default`, three window permissions for the mini window, and `opener:allow-open-url` scoped to our GitHub repository, the Fair Play Policy page and Wuthering Tools' Settings page ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)), and `updater:allow-check` / `allow-download` / `allow-install` + `process:allow-restart` for app updates ([ADR 0035](adr/0035-in-app-updates.md)) |
 | CSP | `default-src 'self'`. No remote scripts or styles. `script-src 'self' 'wasm-unsafe-eval'` lets the bundled Tesseract compile its WebAssembly (not JavaScript `eval`); `worker-src 'self'` and `connect-src 'self'` let its workers start and load the bundled core and model ([ADR 0027](adr/0027-tesseract-reads-echo-text-on-windows.md)). `connect-src` also allows `https://www.wutheringtools.com`, for the game-data download only ([ADR 0034](adr/0034-download-signed-game-data-on-launch.md)) |
 | Least privilege | Admin (Windows, the user runs Wavescan as administrator: [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md)) / Accessibility (macOS) needed only for auto mode |
 | Supply chain | `cargo deny`, `npm audit`, lockfiles committed, signed + attested release builds ([ADR 0011](adr/0011-signing-provenance-and-updater.md)) |
@@ -174,10 +174,10 @@ Only these outbound connections exist ([ADR 0010](adr/0010-no-telemetry-network-
 
 | Host | Purpose | Verified how |
 |---|---|---|
-| `github.com` / `objects.githubusercontent.com` | Updater manifest + signed update bundles | Tauri updater signature (minisign public key compiled in) |
+| `github.com` + GitHub's download host (`release-assets.githubusercontent.com` / `objects.githubusercontent.com`) | Once per launch, the channel's `latest.json` (releases or tester builds); the installer (~6 MB) when it names a newer version. Made by Rust (`tauri-plugin-updater`), so outside the CSP; no off switch; counted in "What Wavescan did this session". Local builds never check | minisign signature on the installer, checked in Rust against `plugins.updater.pubkey` in `tauri.conf.json`. A bad signature is refused and nothing installs ([ADR 0035](adr/0035-in-app-updates.md)) |
 | `www.wutheringtools.com` | `scanner-data.json` on every launch, and `scanner-assets.json` (pictures) when it names new ones. No off switch; counted in "What Wavescan did this session" | ECDSA P-256 signature (inside the file) checked with WebCrypto against `src/data/trusted-keys.json`, plus both hashes. Anything else is ignored and the saved or bundled copy stays in use ([ADR 0034](adr/0034-download-signed-game-data-on-launch.md)) |
 
-Adding a host means: ADR → this table → the README table → CSP `connect-src`.
+Adding a host means: ADR → this table → the README table → CSP `connect-src` (for the webview; Rust plugins like the updater only reach their configured endpoint).
 
 **Pages opened in the browser aren't Wavescan connections.** Help & feedback, Report a problem, the auto-mode risk step and Review's "Copy and open Wuthering Tools" can ask the OS to open a page in the user's default browser, limited by the opener scope to `https://github.com/wavescan/wavescan/*`, Kuro's Fair Play Policy page and `https://www.wutheringtools.com/settings` ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). The browser makes that request; Wavescan sends nothing, and a bug report is only posted when the user presses Submit on GitHub.
 
@@ -200,9 +200,11 @@ Game data (echo names, sets, costs, stat tables, characters, weapons) comes from
 ## 10. Build & release
 
 - CI (`.github/workflows/ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc, and the fixture replay (Tesseract on both, Vision on macOS) on `windows-latest` + `macos-14`.
-- Tester builds (`tester-build.yml`, on merge to `main`): unsigned (macOS ad-hoc signed) `.dmg` + NSIS `.exe` → rolling `tester-build` pre-release with SHA-256 sums. The commit id is compiled in as `WAVESCAN_BUILD`. A warning is added when the bundled game data is older than wutheringtools.com.
+- Shared build (`build-app.yml`, called by the two below): sets the version (`scripts/set-version.mjs`), builds NSIS `.exe` (Windows) and `.app` + `.dmg` (macOS, ad-hoc signed), and with the updater key signs the update files (`tauri.updates.conf.json`; tester builds add `tauri.tester.conf.json` for their channel). The commit id is compiled in as `WAVESCAN_BUILD`.
+- Tester builds (`tester-build.yml`, on merge to `main`): version `<patch after the latest release>-tester.<run number>` → rolling `tester-build` pre-release with `latest.json` (`scripts/updater-manifest.mjs`) and SHA-256 sums. Installed tester builds update to it. A warning is added when the bundled game data is older than wutheringtools.com.
 - Game-data sync (`game-data-sync.yml`, daily): opens a PR updating `src/data/` when Wuthering Tools' data changed, then starts CI on it ([ADR 0033](adr/0033-automated-game-data-sync.md)).
-- Release (`release.yml`, on tag): `tauri build` → sign (Azure Trusted Signing for Windows / Developer ID + notarization for macOS) → SHA-256 checksums + `actions/attest-build-provenance` → GitHub Release + updater manifest ([ADR 0011](adr/0011-signing-provenance-and-updater.md)).
+- Release (`release.yml`, Actions → Release with a version, on main): checks the version is new → shared build, update signing required → tag `vX.Y.Z`, GitHub Release marked latest with `latest.json`, fixed-name installers, SHA-256 sums and `actions/attest-build-provenance` attestations. Every installed release copy updates to it ([ADR 0035](adr/0035-in-app-updates.md)). OS code signing (Azure Trusted Signing, Developer ID + notarization, [ADR 0011](adr/0011-signing-provenance-and-updater.md)) is still to do.
+- In the app (`src/update/`): one check per launch; a newer version downloads in the background and shows "Restart to update" (`UpdateBanner.vue`); if it's still not installed at the next launch, it installs then (`UpdateLaunchScreen.vue`, "Not now" for that session); a `minimumVersion` above this version installs at once. Never during a scan (`navigation.busy`).
 
 ## 11. Screens and UI state {#ui}
 

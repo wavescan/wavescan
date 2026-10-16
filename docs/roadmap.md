@@ -79,6 +79,9 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 ## Phase 6: Release pipeline & trust
 
 - [ ] `release.yml`: Azure Trusted Signing, Developer ID + notarization, checksums, provenance attestation, updater manifest
+  - [x] In-app updates: stable and tester channels, "Restart to update", installed at the next launch at the latest, signed with the updater key; `release.yml` with checksums, attestations and `latest.json` ([ADR 0035](adr/0035-in-app-updates.md)). Verified on Windows: an installed copy updated itself, and refused a tampered installer
+  - [ ] Azure Trusted Signing (Windows) and Developer ID + notarization (macOS)
+  - [ ] macOS update checked by a tester
 - [ ] The "What this app does" page, masked bug-report export
   - [x] Help & feedback: what the app did this session, offline troubleshooting, source at the build's commit, and Report a problem (prefilled GitHub issue, text only) ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). The masked picture export is still to do
   - The game-data download has no off switch (ADR 0034). Any new connection still needs its own ADR, and a switch unless that ADR says why not
@@ -131,7 +134,6 @@ Not planned into a phase yet. Pick from here when a phase has room, and move an 
 
 **Trust and support**
 
-- **In-app update prompt.** The signed updater is decided (ADR 0011, Phase 6), but not how it's shown: an "update available" banner, what's in it, and never updating without asking.
 - **About screen.** Help → About this copy has the version, game data (source and date) and licence. Still to add: third-party licences, and a link to the README's "Is it safe?" section.
 - **Keep an eye on Kuro's Fair Play guidance.** ADR 0006 says to revisit auto mode if Kuro publishes anything. Decide who checks, and where the decision gets recorded.
 

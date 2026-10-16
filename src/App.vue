@@ -11,10 +11,14 @@ import ScanView from "@/views/ScanView.vue";
 import ReviewView from "@/views/ReviewView.vue";
 import HelpView from "@/views/HelpView.vue";
 import ReportView from "@/views/ReportView.vue";
+import UpdateBanner from "@/components/UpdateBanner.vue";
+import UpdateLaunchScreen from "@/components/UpdateLaunchScreen.vue";
+import { UPDATER_KEY } from "@/update/updater";
 
 const info = ref<AppInfo | null>(null);
 const error = ref<string | null>(null);
 const gameData = inject(GAME_DATA_KEY, null);
+const updater = inject(UPDATER_KEY, null);
 /** The mini window hides the sidebar and shows only the scan counter (ScanView). */
 const mini = ref(false);
 
@@ -37,6 +41,10 @@ onMounted(async () => {
       class="min-w-0 flex-1 overflow-y-auto"
       :class="mini ? 'p-3' : 'p-6 lg:p-8'"
     >
+      <UpdateBanner
+        v-if="updater && !mini"
+        :updater="updater"
+      />
       <!-- Scan stays mounted while other screens show, so a running scan keeps going. -->
       <ScanView
         v-show="navigation.view === 'scan'"
@@ -62,6 +70,7 @@ onMounted(async () => {
         v-else-if="navigation.view === 'help'"
         :info="info"
         :game-data="gameData"
+        :updater="updater"
       />
       <ReportView
         v-else-if="navigation.view === 'report'"
@@ -69,5 +78,9 @@ onMounted(async () => {
         :game-data="gameData"
       />
     </main>
+    <UpdateLaunchScreen
+      v-if="updater"
+      :updater="updater"
+    />
   </div>
 </template>

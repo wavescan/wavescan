@@ -41,8 +41,8 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0007](./0007-shared-scanner-core-package.md) | Share scanning logic with the web app via `@wuthering-tools/scanner-core` | accepted | 0019 (name, data injection) | architecture, reuse |
 | [0008](./0008-scan-json-schema-v1.md) | `WutheringToolsScan` JSON schema v1 | accepted | | schema, interop |
 | [0009](./0009-handoff-via-file-and-clipboard-no-server.md) | Hand off via file or clipboard, never a server | accepted | | interop, privacy |
-| [0010](./0010-no-telemetry-network-allowlist.md) | No telemetry, explicit network allow-list | accepted | 0020 (game-data host), 0034 (no off switch for game data) | privacy, network |
-| [0011](./0011-signing-provenance-and-updater.md) | Signed builds, provenance attestations, signed updater | accepted | | distribution, supply-chain |
+| [0010](./0010-no-telemetry-network-allowlist.md) | No telemetry, explicit network allow-list | accepted | 0020 (game-data host), 0034 (no off switch for game data), 0035 (no off switch for updates) | privacy, network |
+| [0011](./0011-signing-provenance-and-updater.md) | Signed builds, provenance attestations, signed updater | accepted | 0035 (how updates work, no off switch) | distribution, supply-chain |
 | [0012](./0012-echoes-first-release-strategy.md) | Ship echoes first, then characters and weapons | accepted | | product, roadmap |
 | [0013](./0013-user-id-masking.md) | Never read the User ID, and mask it in any saved frame | accepted | | privacy |
 | [0014](./0014-gpl-3-license.md) | License under GPL-3.0-or-later | accepted | | legal |
@@ -66,3 +66,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0032](./0032-no-virtual-controller-for-auto-mode.md) | No virtual game controller for auto mode (tried, and deliberately dropped) | accepted | | input, security, product, windows |
 | [0033](./0033-automated-game-data-sync.md) | Sync the game-data snapshot with a scheduled PR, not at build time | accepted | 0034 (pictures from WT) | data, ci, network |
 | [0034](./0034-download-signed-game-data-on-launch.md) | Download signed game data and pictures on every launch, with no off switch | accepted | | data, network, security, privacy |
+| [0035](./0035-in-app-updates.md) | In-app updates: two channels, installed at the next launch at the latest | accepted | | distribution, network, security, supply-chain, ui |
