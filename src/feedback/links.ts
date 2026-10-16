@@ -5,11 +5,8 @@
 
 export const REPO_URL = "https://github.com/wavescan/wavescan";
 export const FAIR_PLAY_URL = "https://wutheringwaves.kurogames.com/en/main/news/detail/742";
-/**
- * Wuthering Tools' Wavescan import, where the user pastes the copied scan. A path WT keeps
- * for Wavescan, so installed copies keep working wherever WT moves the import itself.
- */
-export const WT_IMPORT_URL = "https://www.wutheringtools.com/import/wavescan";
+/** Wuthering Tools' Settings, where its Wavescan section imports the copied scan. */
+export const WT_IMPORT_URL = "https://www.wutheringtools.com/settings";
 
 /** The URL prefixes the app may open (mirrors the capability scope). */
 export const ALLOWED_URL_PREFIXES = [`${REPO_URL}/`, FAIR_PLAY_URL, WT_IMPORT_URL] as const;

@@ -482,7 +482,7 @@ const queuePosition = computed(() => {
         v-if="opened"
         class="text-xs leading-relaxed"
       >
-        Wuthering Tools opened in your browser. Paste the scan into its Wavescan import.
+        Wuthering Tools opened in your browser. Paste the scan in Settings → Wavescan.
       </p>
       <p
         v-if="message"

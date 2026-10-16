@@ -98,7 +98,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 - It reads text from those pictures **on your computer**. On Windows it uses Tesseract, a free text reader that comes inside the app, because it reads echoes far more accurately than the one built into Windows. On macOS it uses the reader built into macOS. Nothing is downloaded or uploaded for this.
 - It works out each echo's set by comparing the small set icon with reference copies of the set icons. The copies come with the app, and newer ones arrive with the game-data download below. Your pictures are never uploaded for this.
 - Each time it opens, it downloads the newest list of echoes, sets and their pictures from Wuthering Tools, so new echoes and fixes are recognised without updating the app. See the table below.
-- It opens a web page only when you click a link in **Help & feedback**, **Report a problem**, the auto mode warning or **Copy and open Wuthering Tools**, and only pages on this GitHub repository, Kuro's Fair Play Policy or Wuthering Tools' Wavescan import. Your browser opens them; the scanner itself doesn't connect to anything.
+- It opens a web page only when you click a link in **Help & feedback**, **Report a problem**, the auto mode warning or **Copy and open Wuthering Tools**, and only pages on this GitHub repository, Kuro's Fair Play Policy or Wuthering Tools' Settings page. Your browser opens them; the scanner itself doesn't connect to anything.
 - It keeps a copy of your current scan on your computer (echo stats only, no pictures) so you don't lose it if you close the app. **Clear this scan** on the Review screen deletes it.
 - It keeps your in-game name on your computer, if you enter it, to recognise echoes on your main character. It's never put in the scan or in a report.
 - In auto mode only, it sends mouse clicks and wheel scrolls to the game window. While auto mode is on, it also listens for **F8** so you can stop it; F8 goes back to normal as soon as auto mode stops.
@@ -136,8 +136,8 @@ The result should match the checksum on the Releases page. With the [GitHub CLI]
 
 ## Importing into Wuthering Tools
 
-1. On the **Review** screen, press **Copy and open Wuthering Tools**. The scanner copies your scan and opens Wuthering Tools' Wavescan import in your browser.
-2. Paste the scan there and choose whether to add to your echoes or replace them.
+1. On the **Review** screen, press **Copy and open Wuthering Tools**. The scanner copies your scan and opens Wuthering Tools' Settings in your browser.
+2. Open **Wavescan**, paste the scan and choose whether to add to your echoes or replace them.
 
 Wuthering Tools checks every echo first and lists any it skipped, with the reason. Echoes you already have aren't added twice, and locked echoes are never removed. **Copy scan only** copies without opening the browser.
 
