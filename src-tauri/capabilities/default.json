@@ -31,7 +31,8 @@
       "identifier": "opener:allow-open-url",
       "allow": [
         { "url": "https://github.com/wavescan/wavescan/*" },
-        { "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/742" }
+        { "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/742" },
+        { "url": "https://www.wutheringtools.com/import/wavescan" }
       ]
     }
   ]

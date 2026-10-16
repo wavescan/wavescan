@@ -13,7 +13,7 @@ export interface Activity {
   clicks: number;
   /** Mouse-wheel scrolls sent to the game (auto mode only). */
   scrolls: number;
-  /** Pages opened in the user's browser (GitHub links). */
+  /** Pages opened in the user's browser (GitHub, Fair Play policy, Wuthering Tools' import). */
   pagesOpened: number;
   /**
    * Downloads from www.wutheringtools.com (game data, ADR 0034), counted where the request is
