@@ -56,25 +56,32 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - [x] Auto mode UI: Scan echoes → Auto mode tab (`src/views/AutoModePanel.vue`, run by `src/auto/autoScan.ts`)
   - [x] 16:9 grid measurements (1920×1080)
 - [ ] Fixture tests ≥ 99% field accuracy at every captured resolution, on both OCR engines
+  - [x] Community testers, October 2026: scans of 200–500 echoes per account, usually 95–99% accurate. Most misreads were wrong echo sets, from wrong set references in Wuthering Tools' data. Those are fixed in WT and reach installed copies on their next launch (ADR 0034)
   - [x] Masked fixtures + goldens committed, replayed through the real OCR on CI's Windows and macOS runners (`npm run test:fixtures`, docs/fixtures.md)
   - [x] Windows reads echoes with Tesseract (ADR 0027): 100% of 278 fixture fields (28 fixtures). Live check on Windows, 2026-10-09: every echo right in the scans below
 
 **Exit:** a full auto scan + a watch scan on real accounts on Windows and Mac, spot-checking 50 echoes.
 
 - [x] Windows, 2026-10-09: auto scan of a whole bag (30 echoes) and a watch scan of 37 echoes (all +25, 5 substats), every field correct. The one false flag found (an untuned substat slot on a +5 echo marked "please check") is fixed, with the `spearback-plus5` fixture
+- [x] Windows, community testers (October 2026): scans of 200–500 echoes, few issues besides the echo sets above
 - [ ] macOS: waiting for a community tester
 
 ## Phase 4: Handoff + web import (optimizer repo)
 
-- [ ] Export (save file + clipboard → open `https://wutheringtools.com/import/scan`)
-- [ ] `ImportScan.vue` + `src/import/scanImport.ts`: validate, review (reuse `useEchoDuplicateReview`), "+25 only" filter, apply to inventory + equip map. **Additive only:** never route through the full-backup restore (see ADR 0009)
-- [ ] Mapper unit tests + a Cypress drop-file test
+- [ ] Export: copy to the clipboard, then open Wuthering Tools' import
+  - [x] Copy scan for Wuthering Tools (Review screen)
+  - [ ] A button that opens Wuthering Tools' Wavescan import
+  - [ ] Save to a file (needs a new Tauri permission, so an ADR)
+- [x] Import in Wuthering Tools: Settings → Wavescan (WT ADR 0038). Validates every row and skips bad ones with a reason, add or replace (locked echoes kept), no duplicates. Doesn't go through the full-backup restore (ADR 0009)
+  - [x] Equips characters from `equippedBy` after a review step, with the main echo chosen by the user (WT ADR 0040)
+  - [ ] Out of Labs: the import is behind WT's `wavescanImport` Labs flag
 
 ## Phase 6: Release pipeline & trust
 
 - [ ] `release.yml`: Azure Trusted Signing, Developer ID + notarization, checksums, provenance attestation, updater manifest
-- [ ] Settings → Network toggles, the "What this app does" page, masked bug-report export
-  - [x] Help & feedback: what the app did this session, offline troubleshooting, source at the build's commit, and Report a problem (prefilled GitHub issue, text only) ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). Network toggles and the masked picture export are still to do
+- [ ] The "What this app does" page, masked bug-report export
+  - [x] Help & feedback: what the app did this session, offline troubleshooting, source at the build's commit, and Report a problem (prefilled GitHub issue, text only) ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). The masked picture export is still to do
+  - The game-data download has no off switch (ADR 0034). Any new connection still needs its own ADR, and a switch unless that ADR says why not
 - [ ] Network audit (Little Snitch / Wireshark) recorded in the release notes
 
 ## Phase 7: Closed beta → **v0.1 public**
@@ -96,8 +103,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
   - a character with a skin
 - **v0.3 Weapons (Phase 5):** weapon grid + detail.
 - More languages (native OCR already supports them, but name tables need localisation), ultrawide.
-- ~~**Keeping game data current between releases**~~ Done: a daily sync PR keeps the bundled copy current (ADR 0033), and installed apps download signed data and pictures on every launch (ADR 0034).
-  - Any runtime fetch adds an outbound connection, so it needs an ADR (ADR 0010). It also needs a signature check against a key built into the app, a fallback to the bundled data if anything is off, a Settings → Network toggle, and the README connections table. The set icons are images from the assets site, so they need the same treatment.
+- ~~**Keeping game data current between releases**~~ Done: a daily sync PR keeps the bundled copy current (ADR 0033), and installed apps download signed data and pictures on every launch, with no off switch (ADR 0034). Wuthering Tools' CI makes the pictures for new echoes and sets (WT ADR 0042), so a WT data change needs no step here.
 
 ## Ideas (unscheduled)
 
@@ -126,7 +132,7 @@ Not planned into a phase yet. Pick from here when a phase has room, and move an 
 **Trust and support**
 
 - **In-app update prompt.** The signed updater is decided (ADR 0011, Phase 6), but not how it's shown: an "update available" banner, what's in it, and never updating without asking.
-- **About screen.** Version, data version, licence (GPL-3.0), third-party licences, and links to the source and the README's "Is it safe?" section.
+- **About screen.** Help → About this copy has the version, game data (source and date) and licence. Still to add: third-party licences, and a link to the README's "Is it safe?" section.
 - **Keep an eye on Kuro's Fair Play guidance.** ADR 0006 says to revisit auto mode if Kuro publishes anything. Decide who checks, and where the decision gets recorded.
 
 **Project**
