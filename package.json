@@ -24,32 +24,32 @@
     "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.12.2",
+    "@tauri-apps/api": "^2.12.4",
     "@tauri-apps/plugin-process": "2.4.0",
-    "@tauri-apps/plugin-updater": "2.13.1",
+    "@tauri-apps/plugin-updater": "2.14.0",
     "@wutheringtools/scanner-core": "0.2.0",
     "tesseract.js": "7.0.0",
-    "vue": "^3.5.43"
+    "vue": "^3.5.44"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.3",
-    "@tauri-apps/cli": "^2.12.1",
+    "@tauri-apps/cli": "^2.12.3",
     "@types/node": "^24.19.2",
     "@vitejs/plugin-vue": "^6.0.10",
     "@vue/tsconfig": "^0.9.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
-    "daisyui": "^5.7.47",
+    "daisyui": "^5.7.50",
     "eslint": "^10.12.0",
     "eslint-plugin-vue": "^10.11.1",
     "globals": "^17.13.0",
     "sharp": "0.35.5",
     "tailwindcss": "^4.3.3",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.71.1",
+    "typescript-eslint": "^8.71.2",
     "vite": "^8.3.4",
-    "vitest": "^5.0.3",
-    "vue-tsc": "^3.3.12"
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.13"
   }
 }
