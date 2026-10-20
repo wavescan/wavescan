@@ -25,7 +25,7 @@ share the same path data: if the mark changes, change it everywhere.
 
 ## What the UI borrows from it
 
-The look of the app (`src/style.css`) follows the mark:
+The look of the app (`src/style.css`) follows the mark. Its colours come from Wuthering Waves itself, as three schemes the person picks between ([ADR 0036](../adr/0036-colour-schemes-and-bundled-title-fonts.md)):
 
 - **Flat pieces, sharp corners.** Boxes round by 4 px, chips by 2 px. The mark has no curves.
 - **Two slants.** The floating pieces lean 24°, which is the slant on badges, the main action
@@ -38,5 +38,8 @@ The look of the app (`src/style.css`) follows the mark:
   out and back with each echo read during a scan. Both stay still when the system asks for reduced
   motion.
 - **One colour.** The mark is drawn in a single colour (white, or the text colour in the app).
-  Colour in the app is kept for meaning: cyan for the main action, amber for "please check",
-  violet for "checked by you".
+  Colour in the app is kept for meaning: the scheme's main colour for the main action, gold for
+  echo names and levels, amber for "please check", and violet or pink for "checked by you".
+- **Section titles like the official site:** tracked capitals followed by a hairline, and an
+  underline under the current tab.
+- **Stat rows like the game's echo panel:** alternating bands, gold roll meters.

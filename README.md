@@ -20,6 +20,7 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 - [Your first scan](#your-first-scan)
 - [Is it safe?](#is-it-safe)
 - [Importing into Wuthering Tools](#importing-into-wuthering-tools)
+- [Change how it looks](#change-how-it-looks)
 - [Troubleshooting](#troubleshooting)
 - [Check your setup (Diagnostics)](#check-your-setup-diagnostics)
 - [Reporting a bug](#reporting-a-bug)
@@ -150,6 +151,10 @@ The result should match the checksum on the Releases page. With the [GitHub CLI]
 2. Open **Wavescan**, paste the scan and choose whether to add to your echoes or replace them.
 
 Wuthering Tools checks every echo first and lists any it skipped, with the reason. Echoes you already have aren't added twice, and locked echoes are never removed. **Copy scan only** copies without opening the browser.
+
+## Change how it looks
+
+The scanner has three colour schemes, each taken from Wuthering Waves itself: **Echo Glass** (like the game's echo screen, the default), **Solaris Gold** (like the official website) and **Jade & Blossom** (like Jinzhou). Pick one in **Help & feedback → Appearance**, and choose dark, light, or match your computer. The choice stays on your PC.
 
 ## Troubleshooting
 

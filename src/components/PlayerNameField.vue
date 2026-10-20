@@ -26,7 +26,7 @@ function save() {
   >
     <label
       for="player-name"
-      class="text-sm font-semibold"
+      class="text-[11px] font-bold tracking-[.12em] uppercase opacity-75"
     >Your in-game name</label>
     <div class="flex flex-wrap items-center gap-2">
       <input

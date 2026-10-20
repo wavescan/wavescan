@@ -127,7 +127,7 @@ const choiceClass = (selected: boolean) =>
   <div
     role="group"
     :aria-label="`Fix ${label}`"
-    class="flex flex-col gap-3 rounded-box border border-base-300 bg-base-200 p-4 shadow-lg"
+    class="flex flex-col gap-3 rounded-box border-t-2 border-warning bg-base-100 p-4 ring-1 ring-base-300"
   >
     <div class="text-sm font-semibold">
       <template v-if="field === 'substats'">
@@ -266,7 +266,7 @@ const choiceClass = (selected: boolean) =>
       </p>
       <div
         v-if="!playerName()"
-        class="rounded-box bg-base-100 p-3"
+        class="rounded-box bg-base-200 p-3"
       >
         <PlayerNameField compact />
         <p class="mt-1 text-xs opacity-75">

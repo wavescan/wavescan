@@ -11,9 +11,10 @@ import { useScanStore } from "@/review/scanStore";
 import { goReport } from "@/ui/navigation";
 import { updateStatusText, type Updater } from "@/update/updater";
 import AppIcon from "@/components/AppIcon.vue";
+import ThemePicker from "@/components/ThemePicker.vue";
 
 // Help & feedback: report a problem, suggest an idea, the offline troubleshooting guide,
-// the source code this copy was built from, and what Wavescan did this session.
+// the source code this copy was built from, what Wavescan did this session, and how it looks.
 
 const props = defineProps<{ info: AppInfo | null; gameData: GameDataInfo | null; updater: Updater | null }>();
 
@@ -73,14 +74,14 @@ async function copyDetails() {
 
 <template>
   <div class="mx-auto flex max-w-5xl flex-col gap-7">
-    <h1 class="text-2xl font-bold">
+    <h1 class="font-title text-3xl">
       Help &amp; feedback
     </h1>
 
     <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <button
         type="button"
-        class="flex flex-col gap-1.5 rounded-box border border-primary/50 bg-base-100 p-4 text-left hover:ring-1 hover:ring-primary/50"
+        class="feature-line flex flex-col gap-1.5 rounded-box bg-base-100 p-4 text-left hover:ring-1 hover:ring-primary/50"
         @click="goReport({ kind: store.state.candidates.length ? 'misread' : 'game' })"
       >
         <AppIcon
@@ -88,7 +89,7 @@ async function copyDetails() {
           :size="22"
           class="text-primary"
         />
-        <span class="font-bold">Report a problem</span>
+        <span class="font-title text-lg leading-tight">Report a problem</span>
         <span class="text-sm opacity-75">A misread value, auto mode stuck, game not found. Wavescan writes the report; you send it.</span>
       </button>
       <button
@@ -101,7 +102,7 @@ async function copyDetails() {
           :size="22"
           class="text-primary"
         />
-        <span class="font-bold">Suggest an idea</span>
+        <span class="font-title text-lg leading-tight">Suggest an idea</span>
         <span class="text-sm opacity-75">Something that would make scanning easier? Open an issue on GitHub.</span>
       </button>
       <a
@@ -113,7 +114,7 @@ async function copyDetails() {
           :size="22"
           class="text-primary"
         />
-        <span class="font-bold">Troubleshooting</span>
+        <span class="font-title text-lg leading-tight">Troubleshooting</span>
         <span class="text-sm opacity-75">Built in and works offline: HDR, administrator, black window and more.</span>
       </a>
       <button
@@ -126,7 +127,7 @@ async function copyDetails() {
           :size="22"
           class="text-primary"
         />
-        <span class="flex items-center gap-1 font-bold">Read the source <AppIcon
+        <span class="font-title flex items-center gap-1 text-lg leading-tight">Read the source <AppIcon
           name="external"
           :size="12"
         /></span>
@@ -150,19 +151,20 @@ async function copyDetails() {
         aria-labelledby="ledger-h"
         class="flex flex-col gap-3 rounded-box bg-base-100 p-5"
       >
-        <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-3">
           <h2
             id="ledger-h"
-            class="flex items-center gap-2 font-bold"
+            class="section-title flex-1"
           >
             <AppIcon
               name="shield"
+              :size="14"
               class="text-success"
-            /> What Wavescan did this session
+            /><strong>What Wavescan did this session</strong>
           </h2>
           <span class="text-xs opacity-70">since {{ since }}</span>
         </div>
-        <dl class="divide-y divide-base-300 text-sm">
+        <dl class="bands text-sm [&>div]:rounded-[1px] [&>div]:px-2">
           <div class="flex justify-between gap-3 py-2">
             <dt>Windows it took pictures of</dt>
             <dd>{{ activity.capturesStarted ? "Wuthering Waves only" : "None yet" }}</dd>
@@ -215,9 +217,9 @@ async function copyDetails() {
       >
         <h2
           id="about-h"
-          class="font-bold"
+          class="section-title"
         >
-          About this copy
+          <strong>About this copy</strong>
         </h2>
         <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
           <dt class="opacity-70">
@@ -305,6 +307,22 @@ async function copyDetails() {
     </div>
 
     <section
+      aria-labelledby="look-h"
+      class="flex flex-col gap-3"
+    >
+      <h2
+        id="look-h"
+        class="section-title"
+      >
+        <strong>Appearance</strong>
+      </h2>
+      <p class="text-sm opacity-75">
+        Three colour schemes taken from Wuthering Waves itself. Your choice stays on this PC.
+      </p>
+      <ThemePicker />
+    </section>
+
+    <section
       id="troubleshooting"
       aria-labelledby="trouble-h"
       class="flex flex-col gap-3"
@@ -312,9 +330,9 @@ async function copyDetails() {
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2
           id="trouble-h"
-          class="text-lg font-bold"
+          class="section-title flex-1"
         >
-          Troubleshooting
+          <strong>Troubleshooting</strong>
         </h2>
         <label class="input input-sm w-64">
           <AppIcon
@@ -330,11 +348,11 @@ async function copyDetails() {
           >
         </label>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col">
         <details
           v-for="topic in topics"
           :key="topic.id"
-          class="collapse collapse-arrow rounded-box bg-base-100"
+          class="collapse collapse-arrow rounded-none border-b border-base-300"
         >
           <summary class="collapse-title text-sm font-semibold">
             {{ topic.question }}

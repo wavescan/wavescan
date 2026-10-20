@@ -23,10 +23,10 @@ const percent = computed(() => (state.value.progress === null ? null : Math.roun
     aria-labelledby="update-h"
     class="fixed inset-0 z-50 flex items-center justify-center bg-base-200/95 p-6"
   >
-    <div class="flex w-full max-w-md flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 shadow-lg">
+    <div class="feature-line flex w-full max-w-md flex-col gap-4 rounded-box bg-base-100 p-6 shadow-lg">
       <h2
         id="update-h"
-        class="text-xl font-bold"
+        class="font-title text-2xl"
       >
         Updating Wavescan to {{ state.version }}
       </h2>

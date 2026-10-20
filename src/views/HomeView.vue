@@ -57,17 +57,18 @@ function continueSaved() {
   go("review");
 }
 
+/** Each readiness item: a quiet tile with a slanted status mark; amber edge when it needs you. */
 const STATUS = {
-  ok: { box: "border-success/40 bg-success/10", icon: "check", text: "text-success" },
-  todo: { box: "border-warning/50 bg-warning/10", icon: "alert", text: "text-warning" },
-  unknown: { box: "border-transparent bg-base-200", icon: "help", text: "opacity-70" },
+  ok: { box: "bg-base-200", mark: "status-mark" },
+  todo: { box: "edge-warning", mark: "status-mark status-mark-warning" },
+  unknown: { box: "bg-base-200", mark: "status-mark bg-base-content/25" },
 } as const;
 </script>
 
 <template>
   <div class="mx-auto flex max-w-5xl flex-col gap-7">
     <header class="flex flex-col gap-1">
-      <h1 class="text-3xl font-bold">
+      <h1 class="font-title text-3xl">
         {{ summary.ready === summary.total && summary.total > 0 ? "Ready when you are" : "Let's get the game ready" }}
       </h1>
       <p class="max-w-2xl opacity-80">
@@ -98,10 +99,9 @@ const STATUS = {
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h2
           id="setup-h"
-          class="font-semibold"
+          class="section-title flex-1"
         >
-          Game setup
-          <span class="font-normal opacity-70">· {{ summary.ready }} of {{ summary.total }} ready</span>
+          <span><strong>Game setup</strong> · {{ summary.ready }} of {{ summary.total }} ready</span>
         </h2>
         <button
           type="button"
@@ -116,17 +116,13 @@ const STATUS = {
         <li
           v-for="item in items"
           :key="item.id"
-          class="flex flex-col gap-1 rounded-sm border p-3"
+          class="flex flex-col gap-1 rounded-sm p-3"
           :class="STATUS[item.status].box"
         >
-          <span
-            class="flex items-center gap-2 text-sm font-semibold"
-            :class="item.status === 'todo' ? 'text-warning' : ''"
-          >
-            <AppIcon
-              :name="STATUS[item.status].icon"
-              :size="16"
-              :class="STATUS[item.status].text"
+          <span class="flex items-center gap-2.5 text-sm font-semibold">
+            <span
+              :class="STATUS[item.status].mark"
+              aria-hidden="true"
             />
             {{ item.label }}
             <span class="sr-only">: {{ item.status === "ok" ? "ready" : item.status === "todo" ? "needs attention" : "unknown" }}</span>
@@ -152,17 +148,17 @@ const STATUS = {
     >
       <h2
         id="mode-h"
-        class="font-semibold"
+        class="section-title"
       >
-        How do you want to scan?
+        <strong>How do you want to scan?</strong>
       </h2>
       <div class="grid grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-4">
-        <div class="flex flex-col gap-3 rounded-box border-2 border-primary/70 bg-base-100 p-5">
+        <div class="feature-line flex flex-col gap-3 rounded-box bg-base-100 p-5">
           <div class="flex items-center justify-between gap-2">
-            <h3 class="text-xl font-bold">
+            <h3 class="font-title text-xl">
               Watch mode
             </h3>
-            <span class="badge badge-primary badge-soft">Recommended</span>
+            <span class="badge badge-primary badge-outline">Recommended</span>
           </div>
           <p class="text-sm opacity-80">
             You click through your echoes in the game. Wavescan reads each one as it appears. It never touches your mouse or keyboard.
@@ -182,10 +178,10 @@ const STATUS = {
         </div>
         <div class="flex flex-col gap-3 rounded-box bg-base-100 p-5">
           <div class="flex items-center justify-between gap-2">
-            <h3 class="text-xl font-bold">
+            <h3 class="font-title text-xl">
               Auto mode
             </h3>
-            <span class="badge badge-warning badge-soft">Some account risk</span>
+            <span class="badge badge-warning badge-outline">Some account risk</span>
           </div>
           <p class="text-sm opacity-80">
             Wavescan clicks through your bag for you, about 8 minutes for 3,000 echoes. Hands off the mouse while it runs.
@@ -216,8 +212,8 @@ const STATUS = {
         v-if="saved && savedSummary"
         class="flex flex-col gap-2 rounded-box bg-base-100 p-5"
       >
-        <h2 class="text-sm font-semibold opacity-80">
-          Scan from earlier, not exported
+        <h2 class="section-title">
+          <strong>Scan from earlier, not exported</strong>
         </h2>
         <p>
           {{ savedSummary.total }} echoes<template v-if="savedSummary.toCheck">
@@ -248,8 +244,8 @@ const STATUS = {
         v-else-if="current.total > 0"
         class="flex flex-col gap-2 rounded-box bg-base-100 p-5"
       >
-        <h2 class="text-sm font-semibold opacity-80">
-          This scan
+        <h2 class="section-title">
+          <strong>This scan</strong>
         </h2>
         <p>
           {{ current.total }} echoes<template v-if="current.toCheck">
@@ -265,11 +261,12 @@ const STATUS = {
         </button>
       </div>
       <div class="flex flex-col gap-2 rounded-box bg-base-100 p-5">
-        <h2 class="flex items-center gap-2 text-sm font-semibold opacity-80">
+        <h2 class="section-title">
           <AppIcon
             name="shield"
-            :size="16"
-          /> What Wavescan touches
+            :size="14"
+            class="text-success"
+          /><strong>What Wavescan touches</strong>
         </h2>
         <p class="text-sm opacity-90">
           Pictures of the game window only, read on this computer. Your User ID is never read. No accounts, no tracking.

@@ -38,7 +38,7 @@ const isCurrent = (view: View) => navigation.view === view || (view === "help" &
         :size="24"
         :beat="markBeat"
       />
-      <span class="text-lg font-bold text-base-content">Wavescan</span>
+      <span class="font-title text-lg text-base-content">Wavescan</span>
     </div>
     <button
       v-for="item in ITEMS"
@@ -68,9 +68,8 @@ const isCurrent = (view: View) => navigation.view === view || (view === "help" &
       >{{ summary.total }}</span>
       <span
         v-if="item.view === 'scan' && navigation.busy"
-        class="status status-primary animate-pulse"
-        aria-label="scanning"
-      />
+        class="badge badge-primary badge-outline badge-sm"
+      >live</span>
     </button>
     <div class="flex-1" />
     <div class="px-2 text-xs opacity-70">

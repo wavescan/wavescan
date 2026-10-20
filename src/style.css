@@ -1,39 +1,83 @@
 @import "tailwindcss";
+/* Title faces, bundled with the app (the CSP allows no web fonts). One per colour scheme. */
+@import "@fontsource/chakra-petch/latin-600.css";
+@import "@fontsource/cormorant-garamond/latin-700.css";
+@import "@fontsource/saira-semi-condensed/latin-700.css";
 @plugin "daisyui" {
   themes: false;
 }
 
 /*
- * Wavescan's two themes: dark follows the system's dark mode, light is the default.
- * Amber means "please check", violet means "checked by you", cyan is the main action.
+ * Wavescan's colour schemes (ADR 0036), each in dark and light. The person picks one under
+ * Help & feedback → Appearance (src/settings/theme.ts); Echo Glass dark is the default.
+ *   - Echo Glass: the game's echo screen. Slate panels, a white main action, gold names.
+ *   - Solaris Gold: the official website. Warm black, a gold main action, serif titles.
+ *   - Jade & Blossom: the Jinzhou artwork. Deep jade, a jade main action, blossom pink.
+ *
+ * What each colour means is the same in every scheme:
+ *   primary    the one main action on a screen, and what's selected
+ *   accent     gold: echo names and levels, roll meters (like the game's rarity gold)
+ *   warning    "please check" (a value Wavescan wasn't sure about)
+ *   secondary  "checked by you"
  * Colours that must be told apart also differ in lightness, and every status also has a
  * text label, so nothing relies on colour alone.
  *
- * The look follows the Wavescan mark (docs/brand/): flat pieces, sharp corners, and panels set
- * apart by the gap between them instead of an outline. Outlines are kept for things that need
- * your attention (a field to check) and for showing which option is selected.
+ * The look follows the Wavescan mark (docs/brand/): flat pieces, sharp corners, 24° slants,
+ * and panels set apart by the gap between them instead of an outline. Outlines are kept for
+ * things that need your attention and for showing which option is selected.
  */
 @plugin "daisyui/theme" {
-  name: "wavescan-light";
+  name: "wavescan-glass-dark";
   default: true;
+  color-scheme: dark;
+  --color-base-100: #17202a;
+  --color-base-200: #0f141b;
+  --color-base-300: #2d3946;
+  --color-base-content: #eef2f6;
+  --color-primary: #f1f3f6;
+  --color-primary-content: #0f141b;
+  --color-secondary: #b4a9ff;
+  --color-secondary-content: #16122b;
+  --color-accent: #e5c76e;
+  --color-accent-content: #1a1406;
+  --color-neutral: #202b37;
+  --color-neutral-content: #eef2f6;
+  --color-info: #8fc3e8;
+  --color-info-content: #0b1418;
+  --color-success: #7fd3a0;
+  --color-success-content: #0b1a12;
+  --color-warning: #f2955c;
+  --color-warning-content: #1f0e04;
+  --color-error: #f07a6a;
+  --color-error-content: #1f0d0a;
+  --radius-selector: 0.125rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "wavescan-glass-light";
   color-scheme: light;
-  --color-base-100: #ffffff;
-  --color-base-200: #e9eef3;
-  --color-base-300: #d9e0e7;
-  --color-base-content: #141a21;
-  --color-primary: #0f7482;
-  --color-primary-content: #ffffff;
-  --color-secondary: #5b4bc4;
+  --color-base-100: #f8fafc;
+  --color-base-200: #e3e8ee;
+  --color-base-300: #ccd5df;
+  --color-base-content: #111821;
+  --color-primary: #111821;
+  --color-primary-content: #f8fafc;
+  --color-secondary: #5a4bc2;
   --color-secondary-content: #ffffff;
-  --color-accent: #0f7482;
+  --color-accent: #8f6f12;
   --color-accent-content: #ffffff;
-  --color-neutral: #1f2933;
-  --color-neutral-content: #e6ebf0;
+  --color-neutral: #1b2430;
+  --color-neutral-content: #eef2f6;
   --color-info: #1d6fa8;
   --color-info-content: #ffffff;
-  --color-success: #17784a;
+  --color-success: #21764a;
   --color-success-content: #ffffff;
-  --color-warning: #9a6200;
+  --color-warning: #b4511c;
   --color-warning-content: #ffffff;
   --color-error: #b3261e;
   --color-error-content: #ffffff;
@@ -46,27 +90,26 @@
 }
 
 @plugin "daisyui/theme" {
-  name: "wavescan-dark";
-  prefersdark: true;
+  name: "wavescan-solaris-dark";
   color-scheme: dark;
-  --color-base-100: #161c24;
-  --color-base-200: #0e1217;
-  --color-base-300: #26303b;
-  --color-base-content: #e6ebf0;
-  --color-primary: #5cc8d6;
-  --color-primary-content: #0b1418;
-  --color-secondary: #b9aef7;
-  --color-secondary-content: #16122b;
-  --color-accent: #5cc8d6;
-  --color-accent-content: #0b1418;
-  --color-neutral: #1f2933;
-  --color-neutral-content: #e6ebf0;
-  --color-info: #7fd6e2;
+  --color-base-100: #181613;
+  --color-base-200: #0e0d0b;
+  --color-base-300: #38322b;
+  --color-base-content: #efe8dc;
+  --color-primary: #cdb07a;
+  --color-primary-content: #17120a;
+  --color-secondary: #aaa4e6;
+  --color-secondary-content: #15132b;
+  --color-accent: #d8bb7d;
+  --color-accent-content: #17120a;
+  --color-neutral: #221f1b;
+  --color-neutral-content: #efe8dc;
+  --color-info: #9cc2d6;
   --color-info-content: #0b1418;
-  --color-success: #5fd39a;
+  --color-success: #93c79d;
   --color-success-content: #0b1a12;
-  --color-warning: #f2b544;
-  --color-warning-content: #1c1508;
+  --color-warning: #ec8a5d;
+  --color-warning-content: #1f0e04;
   --color-error: #f07a6a;
   --color-error-content: #1f0d0a;
   --radius-selector: 0.125rem;
@@ -77,9 +120,128 @@
   --noise: 0;
 }
 
+@plugin "daisyui/theme" {
+  name: "wavescan-solaris-light";
+  color-scheme: light;
+  --color-base-100: #fbfaf8;
+  --color-base-200: #e8e6e2;
+  --color-base-300: #d6d0c6;
+  --color-base-content: #1b1813;
+  --color-primary: #7d6127;
+  --color-primary-content: #fffdf8;
+  --color-secondary: #5549ad;
+  --color-secondary-content: #ffffff;
+  --color-accent: #7d6127;
+  --color-accent-content: #fffdf8;
+  --color-neutral: #2a2620;
+  --color-neutral-content: #efe8dc;
+  --color-info: #2f6a8a;
+  --color-info-content: #ffffff;
+  --color-success: #2e7646;
+  --color-success-content: #ffffff;
+  --color-warning: #b04f22;
+  --color-warning-content: #ffffff;
+  --color-error: #b3261e;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.125rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "wavescan-jade-dark";
+  color-scheme: dark;
+  --color-base-100: #111c1a;
+  --color-base-200: #0a1211;
+  --color-base-300: #263a36;
+  --color-base-content: #e7f1ed;
+  --color-primary: #56cf9f;
+  --color-primary-content: #062019;
+  --color-secondary: #f2a6c4;
+  --color-secondary-content: #2a0e1a;
+  --color-accent: #e2c780;
+  --color-accent-content: #1a1406;
+  --color-neutral: #192724;
+  --color-neutral-content: #e7f1ed;
+  --color-info: #8fd3e0;
+  --color-info-content: #0b1418;
+  --color-success: #b9dc7a;
+  --color-success-content: #141c06;
+  --color-warning: #f0a557;
+  --color-warning-content: #1f1204;
+  --color-error: #f07a6a;
+  --color-error-content: #1f0d0a;
+  --radius-selector: 0.125rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "wavescan-jade-light";
+  color-scheme: light;
+  --color-base-100: #f8fbfa;
+  --color-base-200: #e1eae7;
+  --color-base-300: #c8d8d3;
+  --color-base-content: #0f1c19;
+  --color-primary: #0e7458;
+  --color-primary-content: #ffffff;
+  --color-secondary: #a8406f;
+  --color-secondary-content: #ffffff;
+  --color-accent: #8a6a17;
+  --color-accent-content: #ffffff;
+  --color-neutral: #17302a;
+  --color-neutral-content: #e7f1ed;
+  --color-info: #1d6fa8;
+  --color-info-content: #ffffff;
+  --color-success: #4a7a17;
+  --color-success-content: #ffffff;
+  --color-warning: #a6540d;
+  --color-warning-content: #ffffff;
+  --color-error: #b3261e;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.125rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* Each scheme's title face (daisyUI themes only carry colours and sizes). */
+:root,
+[data-theme^="wavescan-glass"] {
+  --title-font: "Chakra Petch", var(--font-sans);
+  --title-weight: 600;
+}
+[data-theme^="wavescan-solaris"] {
+  --title-font: "Cormorant Garamond", Georgia, serif;
+  --title-weight: 700;
+}
+[data-theme^="wavescan-jade"] {
+  --title-font: "Saira Semi Condensed", var(--font-sans);
+  --title-weight: 700;
+}
+
 @theme {
   --font-sans: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   --font-mono: "Cascadia Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* Page and panel titles, echo names: the scheme's title face. */
+@utility font-title {
+  font-family: var(--title-font);
+  font-weight: var(--title-weight);
+  letter-spacing: 0.01em;
+  /* The three faces have very different letter heights (the serif's is small): size them by
+     their lowercase height so a title looks the same size in every scheme. */
+  font-size-adjust: 0.53;
+  font-variant-numeric: lining-nums;
 }
 
 /* Numbers line up in columns everywhere (stat values, counters). */
@@ -88,12 +250,168 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------------------------------------------------------------------------------------
+ * Wavescan's own parts. In a layer, so Tailwind utilities on the element still win.
+ * ------------------------------------------------------------------------------------- */
+@layer components {
+  /* A section title like the official site's: tracked capitals, then a hairline to the edge. */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+  }
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-base-300);
+  }
+  .section-title strong {
+    color: var(--color-base-content);
+  }
+
+  /* Rows on alternating bands, like the stat list in the game's echo panel. */
+  .bands > :nth-child(odd) {
+    background-color: color-mix(in oklab, var(--color-base-content) 5%, transparent);
+  }
+
+  /* A number tile (Scan screen). The small slanted mark turns amber with .stat-tile-warning. */
+  .stat-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow: hidden;
+    border-radius: var(--radius-box);
+    background: var(--color-base-100);
+    padding: 0.875rem 1rem;
+  }
+  .stat-tile::after {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 0.625rem;
+    height: 0.375rem;
+    transform: skewX(24deg);
+    background: var(--color-base-300);
+  }
+  .stat-tile-warning::after {
+    background: var(--color-warning);
+  }
+  .stat-tile-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+  }
+
+  /* Something that needs attention: an amber edge on a tinted strip. */
+  .edge-warning {
+    border-left: 3px solid var(--color-warning);
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--color-warning) 12%, var(--color-base-100));
+  }
+
+  /* A list row with something to check: just the amber edge. */
+  .edge-flag {
+    box-shadow: inset 3px 0 0 var(--color-warning);
+  }
+
+  /* The recommended / featured option: a short line in the main colour along the top. */
+  .feature-line {
+    position: relative;
+  }
+  .feature-line::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2.875rem;
+    height: 2px;
+    background: var(--color-primary);
+  }
+
+  /* A status mark: a small slanted block, green when fine and amber when worth a look. */
+  .status-mark {
+    display: inline-block;
+    width: 0.875rem;
+    height: 0.5625rem;
+    flex: none;
+    transform: skewX(24deg);
+    background: var(--color-success);
+  }
+  .status-mark-warning {
+    background: var(--color-warning);
+  }
+
+  /* Tabs drawn like the official site: an underline under the current one. */
+  .tabs-line {
+    display: inline-flex;
+    gap: 1.375rem;
+    border-bottom: 1px solid var(--color-base-300);
+  }
+  .tabs-line > :is([role="tab"], [role="radio"]) {
+    position: relative;
+    padding: 0.375rem 0 0.5625rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--color-base-content) 65%, transparent);
+    cursor: pointer;
+  }
+  .tabs-line > :is([role="tab"], [role="radio"]):disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  .tabs-line > :is([aria-selected="true"], [aria-checked="true"]) {
+    color: var(--color-base-content);
+  }
+  .tabs-line > :is([aria-selected="true"], [aria-checked="true"])::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: var(--color-primary);
+  }
+  .tabs-line > :is([role="tab"], [role="radio"]):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* The roll meter on a substat: slanted blocks in gold. */
+  .pips {
+    display: flex;
+    gap: 2px;
+    padding-inline: 2px;
+  }
+  .pips > span {
+    height: 0.375rem;
+    flex: 1;
+    transform: skewX(24deg);
+    background: color-mix(in oklab, var(--color-base-content) 14%, transparent);
+  }
+  .pips > span.on {
+    background: var(--color-accent);
+  }
+}
+
+/* ---------------------------------------------------------------------------------------
+ * Changes to daisyUI's own parts. Outside any @layer so they win over daisyUI; colours still
+ * come from daisyUI's variables, so hover, pressed and colour variants keep working.
+ * ------------------------------------------------------------------------------------- */
+
 /*
  * Slanted shapes: badges and the main action button lean like the floating pieces of the
  * mark (24°). The slant is drawn by a skewed layer behind the text (::before), so the text
- * stays upright and the focus outline isn't cut off. These rules sit outside any @layer so
- * they win over daisyUI's own badge and button colours; the colours still come from
- * daisyUI's variables (--badge-bg, --btn-bg), so hover, pressed and colour variants work.
+ * stays upright and the focus outline isn't cut off.
  * --facet is how far the top edge shifts against the bottom one: tan(24°) ≈ 0.445 × height.
  */
 .badge,
@@ -154,4 +472,51 @@
 
 .btn-primary:is(.btn-disabled, :disabled, [disabled], [aria-disabled="true"])::before {
   background-color: color-mix(in oklab, var(--color-base-content) 10%, transparent);
+}
+
+/* Every other button is a hairline outline; only the main action is filled. */
+.btn:not(.btn-primary, .btn-secondary, .btn-accent, .btn-neutral, .btn-info, .btn-success, .btn-warning, .btn-error, .btn-ghost, .btn-link, .btn-outline):not(:hover, :active, .btn-active, :disabled) {
+  --btn-bg: transparent;
+}
+.btn:not(.btn-primary, .btn-ghost, .btn-link, .btn-outline, :disabled) {
+  --btn-border: var(--color-base-300);
+}
+
+/* Text fields: a hairline underneath instead of a box. */
+.input,
+.select {
+  border-width: 0 0 var(--border);
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Radio buttons are diamonds, like the mark's facets. */
+.radio {
+  border-radius: 1px;
+  rotate: 45deg;
+}
+.radio::before {
+  border-radius: 0;
+}
+
+/* Alerts: an edge in the alert's colour on a tinted strip, not a solid block. */
+.alert {
+  border-width: 0 0 0 3px;
+  border-style: solid;
+  border-color: var(--alert-color, var(--color-base-300));
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--alert-color, var(--color-base-content)) 12%, var(--color-base-100));
+  background-image: none;
+  color: var(--color-base-content);
+  box-shadow: none;
+}
+
+/* Table headings: tracked capitals, like section titles. */
+.table thead th {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
 }

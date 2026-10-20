@@ -56,7 +56,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src/session/` | Watch-mode echo session: `echoRegions` (regions + `LEVEL_ROW`, `HEADER_ROW`), `classifyScreen` (which screen, ADR 0031), `echoExtract` (scanner-core parsing), `echoSession` (stability loop, dedupe), `equippedByWatch` (an "Equipped by" line drawn late), `exportScan` (scan v1 JSON) |
 | `src/auto/` | Auto-mode navigator state machine, grid walking |
 | `src/update/` | App updates (ADR 0035): `updater.ts` decides offer / install at launch / required, never during a scan; `version.ts` orders versions; `tauriUpdater.ts` is the only file calling the updater plugin. Releases: Actions → Release |
-| `src/settings/` | User settings kept on this PC (the in-game name for "Equipped by", [ADR 0030](docs/adr/0030-equipped-by-and-the-in-game-name.md)). Never exported or reported |
+| `src/settings/` | User settings kept on this PC: the in-game name for "Equipped by" ([ADR 0030](docs/adr/0030-equipped-by-and-the-in-game-name.md)) and the colour scheme (`theme.ts`, [ADR 0036](docs/adr/0036-colour-schemes-and-bundled-title-fonts.md)). Never exported or reported |
 | `src/views/` | Vue UI |
 | `docs/brand/` | The Wavescan mark, and the rules the UI borrows from it (sharp corners, 24° slants, gaps instead of outlines) |
 | `schema/scan.v1.json` | Output contract with the web app ([ADR 0008](docs/adr/0008-scan-json-schema-v1.md)) |

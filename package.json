@@ -25,6 +25,9 @@
     "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask"
   },
   "dependencies": {
+    "@fontsource/chakra-petch": "5.3.0",
+    "@fontsource/cormorant-garamond": "5.3.0",
+    "@fontsource/saira-semi-condensed": "5.3.0",
     "@tauri-apps/api": "^2.12.2",
     "@tauri-apps/plugin-process": "2.4.0",
     "@tauri-apps/plugin-updater": "2.13.1",
