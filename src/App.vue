@@ -37,8 +37,10 @@ onMounted(async () => {
       v-if="!mini"
       :info="info"
     />
+    <!-- `relative` keeps absolutely positioned bits (screen-reader-only labels) inside the
+         scrolling area, so they can't make the whole window scroll as well. -->
     <main
-      class="min-w-0 flex-1 overflow-y-auto"
+      class="relative min-w-0 flex-1 overflow-y-auto"
       :class="mini ? 'p-3' : 'p-6 lg:p-8'"
     >
       <UpdateBanner
