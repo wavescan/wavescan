@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // Small line icons drawn inline (no icon font or image files, so nothing extra to load).
+// The main screens' icons use the mark's geometry (30° edges, a cube for Scan, a hexagon for
+// Help). The app's own mark is WavescanMark.vue.
 // Decorative: they're hidden from screen readers, so put the meaning in nearby text or an
 // aria-label on the button.
 
@@ -22,17 +24,16 @@ export type IconName =
   | "mini"
   | "undo"
   | "trash"
-  | "copy"
-  | "logo";
+  | "copy";
 
 const props = withDefaults(defineProps<{ name: IconName; size?: number }>(), { size: 18 });
 
 const PATHS: Record<IconName, string[]> = {
-  home: ["M3 11l9-7 9 7", "M5 10v10h14V10"],
-  scan: ["M4 8V5a1 1 0 0 1 1-1h3", "M16 4h3a1 1 0 0 1 1 1v3", "M20 16v3a1 1 0 0 1-1 1h-3", "M8 20H5a1 1 0 0 1-1-1v-3", "M8 12h8"],
+  home: ["M3 11.2L12 6l9 5.2", "M5.5 10.2V20h13v-9.8"],
+  scan: ["M12 3.5l7.4 4.25v8.5L12 20.5l-7.4-4.25v-8.5z", "M4.6 7.75L12 12l7.4-4.25", "M12 12v8.5"],
   review: ["M9 6h11", "M9 12h11", "M9 18h11", "M4 6l1 1 2-2", "M4 12l1 1 2-2", "M4 18l1 1 2-2"],
   diagnostics: ["M3 12h4l3-7 4 14 3-7h4"],
-  help: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6", "M12 17h.01"],
+  help: ["M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z", "M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6", "M12 17h.01"],
   check: ["M5 12l5 5 9-10"],
   alert: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "M12 7v6", "M12 16.5v.5"],
   x: ["M6 6l12 12", "M18 6L6 18"],
@@ -47,7 +48,6 @@ const PATHS: Record<IconName, string[]> = {
   undo: ["M9 14L4 9l5-5", "M4 9h10a6 6 0 0 1 0 12h-3"],
   trash: ["M4 7h16", "M10 11v6", "M14 11v6", "M6 7l1 13h10l1-13", "M9 7V4h6v3"],
   copy: ["M9 9h11v11H9z", "M5 15H4V4h11v1"],
-  logo: ["M2 12c2.5-4 5-4 7.5 0s5 4 7.5 0 3.5-3 5-2", "M2 17c2.5-4 5-4 7.5 0s5 4 7.5 0", "M2 7c2.5-4 5-4 7.5 0"],
 };
 </script>
 

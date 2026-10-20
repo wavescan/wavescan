@@ -21,6 +21,7 @@
     "check": "docker compose run --rm check",
     "data:update": "node scripts/update-scanner-data.mjs",
     "data:check": "node scripts/update-scanner-data.mjs --check",
+    "icons:update": "node scripts/update-app-icon.mjs",
     "fixtures:mask": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example fixtures -- mask"
   },
   "dependencies": {

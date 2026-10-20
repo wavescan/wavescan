@@ -345,7 +345,7 @@ const queuePosition = computed(() => {
 
       <div
         v-else
-        class="overflow-x-auto rounded-box border border-base-300 bg-base-100"
+        class="overflow-x-auto rounded-box bg-base-100"
       >
         <table class="table table-sm">
           <thead>
@@ -411,7 +411,7 @@ const queuePosition = computed(() => {
 
     <aside
       aria-labelledby="export-h"
-      class="flex w-full flex-[1_1_16rem] flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-5 md:sticky md:top-0 md:max-w-xs"
+      class="flex w-full flex-[1_1_16rem] flex-col gap-4 rounded-box bg-base-100 p-5 md:sticky md:top-0 md:max-w-xs"
     >
       <h2
         id="export-h"

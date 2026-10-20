@@ -60,7 +60,7 @@ function continueSaved() {
 const STATUS = {
   ok: { box: "border-success/40 bg-success/10", icon: "check", text: "text-success" },
   todo: { box: "border-warning/50 bg-warning/10", icon: "alert", text: "text-warning" },
-  unknown: { box: "border-base-300 bg-base-100", icon: "help", text: "opacity-70" },
+  unknown: { box: "border-transparent bg-base-200", icon: "help", text: "opacity-70" },
 } as const;
 </script>
 
@@ -93,7 +93,7 @@ const STATUS = {
 
     <section
       aria-labelledby="setup-h"
-      class="flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-5"
+      class="flex flex-col gap-3 rounded-box bg-base-100 p-5"
     >
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h2
@@ -116,7 +116,7 @@ const STATUS = {
         <li
           v-for="item in items"
           :key="item.id"
-          class="flex flex-col gap-1 rounded-lg border p-3"
+          class="flex flex-col gap-1 rounded-sm border p-3"
           :class="STATUS[item.status].box"
         >
           <span
@@ -180,7 +180,7 @@ const STATUS = {
             Start watching
           </button>
         </div>
-        <div class="flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-5">
+        <div class="flex flex-col gap-3 rounded-box bg-base-100 p-5">
           <div class="flex items-center justify-between gap-2">
             <h3 class="text-xl font-bold">
               Auto mode
@@ -214,7 +214,7 @@ const STATUS = {
     <section class="grid grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-4">
       <div
         v-if="saved && savedSummary"
-        class="flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-5"
+        class="flex flex-col gap-2 rounded-box bg-base-100 p-5"
       >
         <h2 class="text-sm font-semibold opacity-80">
           Scan from earlier, not exported
@@ -246,7 +246,7 @@ const STATUS = {
       </div>
       <div
         v-else-if="current.total > 0"
-        class="flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-5"
+        class="flex flex-col gap-2 rounded-box bg-base-100 p-5"
       >
         <h2 class="text-sm font-semibold opacity-80">
           This scan
@@ -264,7 +264,7 @@ const STATUS = {
           Review and export
         </button>
       </div>
-      <div class="flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-5">
+      <div class="flex flex-col gap-2 rounded-box bg-base-100 p-5">
         <h2 class="flex items-center gap-2 text-sm font-semibold opacity-80">
           <AppIcon
             name="shield"

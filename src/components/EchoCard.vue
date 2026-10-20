@@ -74,14 +74,14 @@ const equippedBy = computed(() => resolveEquippedBy(props.candidate));
 const stars = computed(() => (props.candidate.rank ? "★".repeat(props.candidate.rank) : null));
 const large = computed(() => props.size === "large");
 
-const flagClass = "rounded-md bg-warning/15 text-base-content ring-1 ring-warning/60 hover:bg-warning/25";
+const flagClass = "rounded-sm bg-warning/15 text-base-content ring-1 ring-warning/60 hover:bg-warning/25";
 const activeClass = "outline-2 outline-offset-2 outline-primary";
 </script>
 
 <template>
   <article
     class="flex flex-col gap-3 rounded-box border bg-base-100 p-4"
-    :class="flagged.size ? 'border-warning/70' : 'border-base-300'"
+    :class="flagged.size ? 'border-warning/70' : 'border-transparent'"
     :aria-label="`${displayName(candidate)}, scan number ${candidate.index}`"
   >
     <header class="flex items-center gap-3">
@@ -129,11 +129,11 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
     </header>
 
     <div class="flex flex-wrap gap-1.5 text-xs">
-      <span class="rounded-md bg-base-200 px-2 py-0.5">Cost {{ cost ?? "?" }}</span>
+      <span class="rounded-sm bg-base-200 px-2 py-0.5">Cost {{ cost ?? "?" }}</span>
       <component
         :is="readonly || !isFlagged('rank') ? 'span' : 'button'"
         type="button"
-        class="rounded-md bg-base-200 px-2 py-0.5"
+        class="rounded-sm bg-base-200 px-2 py-0.5"
         :class="[isFlagged('rank') ? flagClass : 'text-warning', active === 'rank' ? activeClass : '']"
         :aria-label="candidate.rank ? `${candidate.rank} star` : 'rarity unknown'"
         @click="!readonly && isFlagged('rank') && emit('fix', 'rank')"
@@ -143,7 +143,7 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
       <component
         :is="readonly || !isFlagged('set') ? 'span' : 'button'"
         type="button"
-        class="inline-flex items-center gap-1 rounded-md bg-base-200 px-2 py-0.5"
+        class="inline-flex items-center gap-1 rounded-sm bg-base-200 px-2 py-0.5"
         :class="[isFlagged('set') ? flagClass : '', active === 'set' ? activeClass : '']"
         @click="!readonly && isFlagged('set') && emit('fix', 'set')"
       >

@@ -224,7 +224,7 @@ const badge: Record<Check["status"], string> = {
 </script>
 
 <template>
-  <div class="card mx-auto w-full max-w-3xl border border-base-300 bg-base-100">
+  <div class="card mx-auto w-full max-w-3xl bg-base-100">
     <div class="card-body gap-4">
       <h1 class="card-title text-2xl">
         Diagnostics

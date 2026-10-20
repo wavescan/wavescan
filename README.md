@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/wavescan-mark-white.svg">
+  <img src="docs/brand/wavescan-mark-ink.svg" width="72" alt="">
+</picture>
+
 # Wavescan
 
 > 🌐 [wavescan.app](https://wavescan.app) · **Status: in development, not released yet.** This page describes how the scanner will work at v0.1. Download links appear here once the first signed build ships.

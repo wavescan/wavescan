@@ -29,7 +29,7 @@ const initials = computed(() =>
 
 <template>
   <div
-    class="flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-base-300 text-xs font-bold text-base-content/60"
+    class="flex shrink-0 items-center justify-center overflow-hidden rounded-sm bg-base-300 text-xs font-bold text-base-content/60"
     :class="sizeClass"
     aria-hidden="true"
   >

@@ -80,7 +80,7 @@ async function copyDetails() {
     <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <button
         type="button"
-        class="flex flex-col gap-1.5 rounded-box border border-primary/50 bg-base-100 p-4 text-left hover:bg-base-200"
+        class="flex flex-col gap-1.5 rounded-box border border-primary/50 bg-base-100 p-4 text-left hover:ring-1 hover:ring-primary/50"
         @click="goReport({ kind: store.state.candidates.length ? 'misread' : 'game' })"
       >
         <AppIcon
@@ -93,7 +93,7 @@ async function copyDetails() {
       </button>
       <button
         type="button"
-        class="flex flex-col gap-1.5 rounded-box border border-base-300 bg-base-100 p-4 text-left hover:bg-base-200"
+        class="flex flex-col gap-1.5 rounded-box bg-base-100 p-4 text-left hover:ring-1 hover:ring-primary/50"
         @click="goReport({ kind: 'idea' })"
       >
         <AppIcon
@@ -106,7 +106,7 @@ async function copyDetails() {
       </button>
       <a
         href="#troubleshooting"
-        class="flex flex-col gap-1.5 rounded-box border border-base-300 bg-base-100 p-4 text-left hover:bg-base-200"
+        class="flex flex-col gap-1.5 rounded-box bg-base-100 p-4 text-left hover:ring-1 hover:ring-primary/50"
       >
         <AppIcon
           name="book"
@@ -118,7 +118,7 @@ async function copyDetails() {
       </a>
       <button
         type="button"
-        class="flex flex-col gap-1.5 rounded-box border border-base-300 bg-base-100 p-4 text-left hover:bg-base-200"
+        class="flex flex-col gap-1.5 rounded-box bg-base-100 p-4 text-left hover:ring-1 hover:ring-primary/50"
         @click="open(sourceUrl(info?.build ?? null))"
       >
         <AppIcon
@@ -148,7 +148,7 @@ async function copyDetails() {
     <div class="grid gap-5 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <section
         aria-labelledby="ledger-h"
-        class="flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-5"
+        class="flex flex-col gap-3 rounded-box bg-base-100 p-5"
       >
         <div class="flex flex-wrap items-baseline justify-between gap-2">
           <h2
@@ -211,7 +211,7 @@ async function copyDetails() {
 
       <section
         aria-labelledby="about-h"
-        class="flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-5"
+        class="flex flex-col gap-3 rounded-box bg-base-100 p-5"
       >
         <h2
           id="about-h"
@@ -334,7 +334,7 @@ async function copyDetails() {
         <details
           v-for="topic in topics"
           :key="topic.id"
-          class="collapse collapse-arrow rounded-box border border-base-300 bg-base-100"
+          class="collapse collapse-arrow rounded-box bg-base-100"
         >
           <summary class="collapse-title text-sm font-semibold">
             {{ topic.question }}

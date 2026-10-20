@@ -5,8 +5,10 @@ import { useScanStore } from "@/review/scanStore";
 import { summarize } from "@/review/list";
 import { go, navigation, type View } from "@/ui/navigation";
 import AppIcon, { type IconName } from "@/components/AppIcon.vue";
+import WavescanMark from "@/components/WavescanMark.vue";
 
 // The sidebar: every screen, how many echoes still need a look, and which build this is.
+// While a scan runs, the mark at the top reacts to each echo read (WavescanMark's `beat`).
 
 defineProps<{ info: AppInfo | null }>();
 
@@ -21,18 +23,20 @@ const ITEMS: { view: View; label: string; icon: IconName }[] = [
   { view: "help", label: "Help & feedback", icon: "help" },
 ];
 
+const markBeat = computed(() => (navigation.busy ? summary.value.total : 0));
+
 const isCurrent = (view: View) => navigation.view === view || (view === "help" && navigation.view === "report");
 </script>
 
 <template>
   <nav
     aria-label="Main"
-    class="flex w-52 shrink-0 flex-col gap-1 border-r border-base-300 bg-base-100 px-3 py-4"
+    class="flex w-60 shrink-0 flex-col gap-1 bg-base-100 px-3 py-4"
   >
-    <div class="flex items-center gap-2 px-2 pb-4 text-primary">
-      <AppIcon
-        name="logo"
+    <div class="flex items-center gap-2.5 px-2 pb-4">
+      <WavescanMark
         :size="24"
+        :beat="markBeat"
       />
       <span class="text-lg font-bold text-base-content">Wavescan</span>
     </div>
@@ -40,12 +44,17 @@ const isCurrent = (view: View) => navigation.view === view || (view === "help" &
       v-for="item in ITEMS"
       :key="item.view"
       type="button"
-      class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-left text-sm transition-colors"
+      class="relative flex min-h-11 items-center gap-3 rounded-sm px-3 text-left text-sm transition-colors"
       :class="isCurrent(item.view) ? 'bg-base-200 font-semibold' : 'opacity-80 hover:bg-base-200 hover:opacity-100'"
       :aria-current="isCurrent(item.view) ? 'page' : undefined"
       :disabled="navigation.busy && item.view !== 'scan'"
       @click="go(item.view)"
     >
+      <span
+        v-if="isCurrent(item.view)"
+        class="absolute inset-y-3 left-1.5 w-1 skew-x-24 bg-primary"
+        aria-hidden="true"
+      />
       <AppIcon :name="item.icon" />
       <span class="flex-1">{{ item.label }}</span>
       <span

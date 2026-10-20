@@ -126,7 +126,7 @@ async function searchIssues() {
           v-for="option in REPORT_KINDS"
           :key="option.kind"
           class="flex cursor-pointer flex-col gap-1 rounded-box border p-3"
-          :class="kind === option.kind ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-100'"
+          :class="kind === option.kind ? 'border-primary bg-primary/10' : 'border-transparent bg-base-100'"
         >
           <span class="flex items-center gap-2 text-sm font-semibold">
             <input
@@ -200,7 +200,7 @@ async function searchIssues() {
 
         <div
           v-if="kind === 'game'"
-          class="flex flex-wrap items-center gap-2 rounded-box border border-base-300 bg-base-100 p-3 text-sm"
+          class="flex flex-wrap items-center gap-2 rounded-box bg-base-100 p-3 text-sm"
         >
           Run Diagnostics and paste its report into the issue: it says exactly what Wavescan can see.
           <button
@@ -219,7 +219,7 @@ async function searchIssues() {
           No auto scan has run since Wavescan opened, so describe what happened below.
         </p>
 
-        <label class="flex items-start gap-2 rounded-box border border-base-300 bg-base-100 p-3 text-sm">
+        <label class="flex items-start gap-2 rounded-box bg-base-100 p-3 text-sm">
           <input
             v-model="includeSetup"
             type="checkbox"
@@ -238,7 +238,7 @@ async function searchIssues() {
           />
         </label>
 
-        <p class="flex items-start gap-2 rounded-box border border-base-300 bg-base-100 p-3 text-xs opacity-90">
+        <p class="flex items-start gap-2 rounded-box bg-base-100 p-3 text-xs opacity-90">
           <AppIcon
             name="shield"
             :size="16"
@@ -262,10 +262,10 @@ async function searchIssues() {
           </h2>
           <span class="text-xs opacity-70">{{ body.length.toLocaleString() }} characters</span>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-3 py-2 text-sm">
+        <div class="rounded-box bg-base-100 px-3 py-2 text-sm">
           <span class="opacity-70">Title: </span>{{ title }}
         </div>
-        <pre class="max-h-80 overflow-auto rounded-box border border-base-300 bg-neutral p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap text-neutral-content">{{ body }}</pre>
+        <pre class="max-h-80 overflow-auto rounded-box bg-neutral p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap text-neutral-content">{{ body }}</pre>
         <div class="flex flex-wrap gap-2">
           <button
             type="button"

@@ -255,7 +255,7 @@ onBeforeUnmount(() => void stop());
       </div>
     </div>
 
-    <div class="rounded-box border border-base-300 bg-base-100 p-4">
+    <div class="rounded-box bg-base-100 p-4">
       <PlayerNameField />
     </div>
 
@@ -269,7 +269,7 @@ onBeforeUnmount(() => void stop());
     />
 
     <template v-else>
-      <header class="flex flex-wrap items-center justify-between gap-4 rounded-box border border-base-300 bg-base-100 p-4">
+      <header class="flex flex-wrap items-center justify-between gap-4 rounded-box bg-base-100 p-4">
         <div class="flex flex-col gap-1">
           <div class="flex items-center gap-2">
             <span
@@ -356,7 +356,7 @@ onBeforeUnmount(() => void stop());
       />
 
       <div class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3">
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+        <div class="rounded-box bg-base-100 px-4 py-3">
           <div class="text-xs opacity-70">
             Read this time
           </div>
@@ -364,7 +364,7 @@ onBeforeUnmount(() => void stop());
             {{ stats.scanned }}
           </div>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+        <div class="rounded-box bg-base-100 px-4 py-3">
           <div class="text-xs opacity-70">
             Need a look
           </div>
@@ -375,7 +375,7 @@ onBeforeUnmount(() => void stop());
             {{ toCheck }}
           </div>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+        <div class="rounded-box bg-base-100 px-4 py-3">
           <div class="text-xs opacity-70">
             Already read (skipped)
           </div>
@@ -383,7 +383,7 @@ onBeforeUnmount(() => void stop());
             {{ stats.duplicates }}
           </div>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
+        <div class="rounded-box bg-base-100 px-4 py-3">
           <div class="text-xs opacity-70">
             Pace
           </div>
@@ -445,8 +445,8 @@ onBeforeUnmount(() => void stop());
             <li
               v-for="c in recentCandidates.slice(1, 9)"
               :key="c.id"
-              class="flex items-center gap-3 rounded-lg border px-3 py-2 text-sm"
-              :class="flaggedFields(c).length ? 'border-warning/60 bg-warning/10' : 'border-base-300 bg-base-100'"
+              class="flex items-center gap-3 rounded-sm border px-3 py-2 text-sm"
+              :class="flaggedFields(c).length ? 'border-warning/60 bg-warning/10' : 'border-transparent bg-base-100'"
             >
               <span class="w-8 font-mono opacity-60">{{ c.index }}</span>
               <EchoAvatar

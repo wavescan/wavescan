@@ -8,13 +8,17 @@
  * Amber means "please check", violet means "checked by you", cyan is the main action.
  * Colours that must be told apart also differ in lightness, and every status also has a
  * text label, so nothing relies on colour alone.
+ *
+ * The look follows the Wavescan mark (docs/brand/): flat pieces, sharp corners, and panels set
+ * apart by the gap between them instead of an outline. Outlines are kept for things that need
+ * your attention (a field to check) and for showing which option is selected.
  */
 @plugin "daisyui/theme" {
   name: "wavescan-light";
   default: true;
   color-scheme: light;
   --color-base-100: #ffffff;
-  --color-base-200: #f1f4f7;
+  --color-base-200: #e9eef3;
   --color-base-300: #d9e0e7;
   --color-base-content: #141a21;
   --color-primary: #0f7482;
@@ -33,9 +37,9 @@
   --color-warning-content: #ffffff;
   --color-error: #b3261e;
   --color-error-content: #ffffff;
-  --radius-selector: 0.5rem;
-  --radius-field: 0.625rem;
-  --radius-box: 0.875rem;
+  --radius-selector: 0.125rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
   --border: 1px;
   --depth: 0;
   --noise: 0;
@@ -65,9 +69,9 @@
   --color-warning-content: #1c1508;
   --color-error: #f07a6a;
   --color-error-content: #1f0d0a;
-  --radius-selector: 0.5rem;
-  --radius-field: 0.625rem;
-  --radius-box: 0.875rem;
+  --radius-selector: 0.125rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
   --border: 1px;
   --depth: 0;
   --noise: 0;
@@ -82,4 +86,72 @@
 .font-mono,
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Slanted shapes: badges and the main action button lean like the floating pieces of the
+ * mark (24°). The slant is drawn by a skewed layer behind the text (::before), so the text
+ * stays upright and the focus outline isn't cut off. These rules sit outside any @layer so
+ * they win over daisyUI's own badge and button colours; the colours still come from
+ * daisyUI's variables (--badge-bg, --btn-bg), so hover, pressed and colour variants work.
+ * --facet is how far the top edge shifts against the bottom one: tan(24°) ≈ 0.445 × height.
+ */
+.badge,
+.btn-primary {
+  position: relative;
+  isolation: isolate;
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.badge {
+  --facet: calc(var(--size) * 0.445);
+  border-radius: 0;
+  padding-inline: calc(var(--size) * 0.55);
+}
+
+.btn-primary {
+  --facet: calc(var(--size) * 0.445);
+  padding-inline: calc(var(--btn-p) + var(--facet) / 4);
+}
+
+.badge::before,
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(var(--facet) / 2);
+  transform: skewX(24deg);
+  border-radius: var(--radius-selector);
+  border: var(--border) solid transparent;
+}
+
+.badge::before {
+  background-color: var(--badge-bg);
+  border-color: var(--badge-color, var(--color-base-200));
+}
+
+.badge-soft::before {
+  background-color: color-mix(in oklab, var(--badge-color, var(--color-base-content)) 8%, var(--color-base-100));
+  border-color: color-mix(in oklab, var(--badge-color, var(--color-base-content)) 10%, var(--color-base-100));
+}
+
+.badge-ghost::before {
+  background-color: var(--color-base-300);
+  border-color: var(--color-base-300);
+}
+
+.badge-outline::before {
+  background-color: transparent;
+  border-color: currentColor;
+}
+
+.btn-primary::before {
+  background-color: var(--btn-bg);
+  border-color: var(--btn-border);
+}
+
+.btn-primary:is(.btn-disabled, :disabled, [disabled], [aria-disabled="true"])::before {
+  background-color: color-mix(in oklab, var(--color-base-content) 10%, transparent);
 }

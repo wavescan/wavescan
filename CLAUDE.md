@@ -22,6 +22,7 @@ npm run test:fixtures      # replay fixtures/ through Tesseract (any OS) and Vis
 npm run test:fixtures:tesseract   # just the Tesseract replay (no Rust needed; part of npm run check)
 npm run fixtures:mask -- <in.png> <out.png>   # mask the User ID before committing a capture
 npm run lint               # eslint + vue-tsc -b
+npm run icons:update       # rebuild every app icon from src-tauri/icons/source*.svg (docs/brand/)
 npm run tauri build        # release bundle for the current OS
 
 cd src-tauri
@@ -57,6 +58,7 @@ CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
 | `src/update/` | App updates (ADR 0035): `updater.ts` decides offer / install at launch / required, never during a scan; `version.ts` orders versions; `tauriUpdater.ts` is the only file calling the updater plugin. Releases: Actions → Release |
 | `src/settings/` | User settings kept on this PC (the in-game name for "Equipped by", [ADR 0030](docs/adr/0030-equipped-by-and-the-in-game-name.md)). Never exported or reported |
 | `src/views/` | Vue UI |
+| `docs/brand/` | The Wavescan mark, and the rules the UI borrows from it (sharp corners, 24° slants, gaps instead of outlines) |
 | `schema/scan.v1.json` | Output contract with the web app ([ADR 0008](docs/adr/0008-scan-json-schema-v1.md)) |
 | `fixtures/` | Real captures + golden JSON ([docs/fixtures.md](docs/fixtures.md)) |
 | `docs/screens/` | Measured layout notes per game screen |

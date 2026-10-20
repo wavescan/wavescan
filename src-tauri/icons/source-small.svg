@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Wavescan app icon for 16-32 px: the smallest pixel is dropped and the mark drawn larger, so it stays crisp. The mark is docs/brand/wavescan-mark.svg, scaled to 66% of the tile
+       and nudged up so it looks centred (its solid faces sit low). Regenerate every size with
+       npm run icons:update. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#232e3a"/>
+      <stop offset="1" stop-color="#0e1217"/>
+    </linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#bg)"/>
+  <path transform="translate(512 485.9) scale(3.76)" fill="#ffffff" d="M12.9 -60.5 L35.4 -60.5 L43.4 -42.5 L20.9 -42.5 Z M-39.1 -64.5 L-1.6 -64.5 L12.4 -35.5 L-25.1 -35.5 Z M17.4 -32.5 L62.9 -32.5 L78.4 2.5 L32.9 2.5 Z M-0.6 13.5 L72.9 13.5 L39.4 73.5 L-36.1 73.5 Z M-47.2 -54.5 L-14.2 6.7 L-47.2 65.5 L-78.4 6.7 Z"/>
+</svg>
