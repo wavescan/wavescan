@@ -11,18 +11,19 @@ defineEmits<{ report: [] }>();
 
 const open = ref(false);
 
+/** An edge in the tone's colour on a lightly tinted strip (the same look as alerts). */
 const TONE = {
-  warn: { box: "border-warning/50 bg-warning/10", icon: "text-warning" },
-  error: { box: "border-error/50 bg-error/10", icon: "text-error" },
-  info: { box: "border-info/40 bg-info/10", icon: "text-info" },
-  success: { box: "border-success/40 bg-success/10", icon: "text-success" },
+  warn: { box: "border-warning bg-warning/10", icon: "text-warning" },
+  error: { box: "border-error bg-error/10", icon: "text-error" },
+  info: { box: "border-info bg-info/10", icon: "text-info" },
+  success: { box: "border-success bg-success/10", icon: "text-success" },
 } as const;
 </script>
 
 <template>
   <section
     role="alert"
-    class="flex flex-col gap-3 rounded-box border p-4"
+    class="flex flex-col gap-3 rounded-[2px] border-l-[3px] p-4"
     :class="TONE[problem.tone].box"
   >
     <div class="flex items-center gap-2">

@@ -22,6 +22,7 @@ import AppIcon from "@/components/AppIcon.vue";
 import AutoModePanel from "@/views/AutoModePanel.vue";
 import EchoAvatar from "@/components/EchoAvatar.vue";
 import EchoCard from "@/components/EchoCard.vue";
+import PixelProgress from "@/components/PixelProgress.vue";
 import PlayerNameField from "@/components/PlayerNameField.vue";
 import ProblemCard from "@/components/ProblemCard.vue";
 
@@ -182,15 +183,17 @@ onBeforeUnmount(() => void stop());
     v-if="mini"
     class="flex h-full flex-col gap-2"
   >
-    <div class="flex items-center gap-2 text-sm font-semibold">
-      <span
-        class="status status-primary"
-        :class="paused ? '' : 'animate-pulse'"
+    <div class="flex items-center gap-2.5 text-sm font-semibold">
+      <PixelProgress
+        class="w-16 shrink-0"
+        label="Watching"
+        :cells="6"
+        :count="paused ? 0 : stats.scanned"
       />
       {{ paused ? "Paused" : "Watching" }}
     </div>
     <div class="flex items-baseline gap-4">
-      <span><span class="font-mono text-3xl font-bold">{{ stats.scanned }}</span> read</span>
+      <span><span class="font-mono text-3xl font-semibold">{{ stats.scanned }}</span> read</span>
       <span
         v-if="toCheck"
         class="text-warning"
@@ -209,7 +212,7 @@ onBeforeUnmount(() => void stop());
       </button>
       <button
         type="button"
-        class="btn btn-sm btn-neutral"
+        class="btn btn-sm btn-outline"
         @click="stop"
       >
         Stop
@@ -222,19 +225,17 @@ onBeforeUnmount(() => void stop());
     class="mx-auto flex max-w-6xl flex-col gap-5"
   >
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-2xl font-bold">
+      <h1 class="font-title text-3xl">
         Scan echoes
       </h1>
       <div
         role="tablist"
         aria-label="Scan mode"
-        class="tabs tabs-box"
+        class="tabs-line"
       >
         <button
           role="tab"
           type="button"
-          class="tab"
-          :class="{ 'tab-active': navigation.scanMode === 'watch' }"
           :aria-selected="navigation.scanMode === 'watch'"
           :disabled="busy"
           @click="setMode('watch')"
@@ -244,8 +245,6 @@ onBeforeUnmount(() => void stop());
         <button
           role="tab"
           type="button"
-          class="tab"
-          :class="{ 'tab-active': navigation.scanMode === 'auto' }"
           :aria-selected="navigation.scanMode === 'auto'"
           :disabled="busy"
           @click="setMode('auto')"
@@ -255,7 +254,7 @@ onBeforeUnmount(() => void stop());
       </div>
     </div>
 
-    <div class="rounded-box border border-base-300 bg-base-100 p-4">
+    <div class="rounded-box bg-base-100 p-4">
       <PlayerNameField />
     </div>
 
@@ -269,13 +268,15 @@ onBeforeUnmount(() => void stop());
     />
 
     <template v-else>
-      <header class="flex flex-wrap items-center justify-between gap-4 rounded-box border border-base-300 bg-base-100 p-4">
+      <header class="flex flex-wrap items-center justify-between gap-4 rounded-box bg-base-100 p-4">
         <div class="flex flex-col gap-1">
           <div class="flex items-center gap-2">
-            <span
+            <PixelProgress
               v-if="watching"
-              class="status status-primary"
-              :class="paused ? '' : 'animate-pulse'"
+              class="w-24 shrink-0"
+              label="Watching"
+              :cells="8"
+              :count="paused ? 0 : stats.scanned"
             />
             <h2 class="text-lg font-semibold">
               <template v-if="!watching">
@@ -322,7 +323,7 @@ onBeforeUnmount(() => void stop());
             </button>
             <button
               type="button"
-              class="btn btn-neutral"
+              class="btn btn-outline"
               @click="stopAndReview"
             >
               Stop and review
@@ -355,39 +356,42 @@ onBeforeUnmount(() => void stop());
         @report="goReport({ kind: 'game' })"
       />
 
-      <div class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3">
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
-          <div class="text-xs opacity-70">
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-1.5">
+        <div class="stat-tile">
+          <div class="stat-tile-label">
             Read this time
           </div>
-          <div class="font-mono text-2xl font-bold">
+          <div class="font-mono text-2xl font-semibold">
             {{ stats.scanned }}
           </div>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
-          <div class="text-xs opacity-70">
+        <div
+          class="stat-tile"
+          :class="{ 'stat-tile-warning': toCheck }"
+        >
+          <div class="stat-tile-label">
             Need a look
           </div>
           <div
-            class="font-mono text-2xl font-bold"
+            class="font-mono text-2xl font-semibold"
             :class="toCheck ? 'text-warning' : ''"
           >
             {{ toCheck }}
           </div>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
-          <div class="text-xs opacity-70">
-            Already read (skipped)
+        <div class="stat-tile">
+          <div class="stat-tile-label">
+            Already read · skipped
           </div>
-          <div class="font-mono text-2xl font-bold">
+          <div class="font-mono text-2xl font-semibold">
             {{ stats.duplicates }}
           </div>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-4 py-3">
-          <div class="text-xs opacity-70">
+        <div class="stat-tile">
+          <div class="stat-tile-label">
             Pace
           </div>
-          <div class="font-mono text-2xl font-bold">
+          <div class="font-mono text-2xl font-semibold">
             {{ pace === null ? "–" : pace.toFixed(1) }}<span class="text-sm font-normal opacity-70"> s / echo</span>
           </div>
         </div>
@@ -403,9 +407,9 @@ onBeforeUnmount(() => void stop());
         >
           <h2
             id="just-h"
-            class="text-xs font-semibold tracking-widest uppercase opacity-70"
+            class="section-title"
           >
-            Just read · #{{ justRead.index }}
+            <span><strong>Just read</strong> · #{{ justRead.index }}</span>
           </h2>
           <EchoCard
             :candidate="justRead"
@@ -435,18 +439,18 @@ onBeforeUnmount(() => void stop());
           <div class="flex items-center justify-between">
             <h2
               id="session-h"
-              class="text-xs font-semibold tracking-widest uppercase opacity-70"
+              class="section-title flex-1"
             >
-              This session
+              <strong>This session</strong>
             </h2>
             <span class="text-xs opacity-70">{{ total }} in the scan</span>
           </div>
-          <ol class="flex flex-col gap-1.5">
+          <ol class="flex flex-col gap-[3px]">
             <li
               v-for="c in recentCandidates.slice(1, 9)"
               :key="c.id"
-              class="flex items-center gap-3 rounded-lg border px-3 py-2 text-sm"
-              :class="flaggedFields(c).length ? 'border-warning/60 bg-warning/10' : 'border-base-300 bg-base-100'"
+              class="flex items-center gap-3 rounded-[2px] bg-base-100 px-3 py-2 text-sm"
+              :class="{ 'edge-flag': flaggedFields(c).length }"
             >
               <span class="w-8 font-mono opacity-60">{{ c.index }}</span>
               <EchoAvatar
@@ -462,7 +466,7 @@ onBeforeUnmount(() => void stop());
                   class="text-warning"
                 > · {{ flaggedFields(c).length }} to check</span>
               </span>
-              <span class="font-mono text-primary">+{{ c.level ?? "?" }}</span>
+              <span class="font-mono font-semibold text-accent">+{{ c.level ?? "?" }}</span>
             </li>
           </ol>
         </section>

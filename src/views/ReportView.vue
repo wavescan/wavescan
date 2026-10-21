@@ -109,7 +109,7 @@ async function searchIssues() {
       >
         ← Help &amp; feedback
       </button>
-      <h1 class="text-2xl font-bold">
+      <h1 class="font-title text-3xl">
         Report a problem
       </h1>
       <p class="opacity-80">
@@ -118,15 +118,15 @@ async function searchIssues() {
     </header>
 
     <fieldset>
-      <legend class="mb-2 font-semibold">
-        What's it about?
+      <legend class="section-title mb-3 w-full">
+        <strong>What's it about?</strong>
       </legend>
       <div class="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-2">
         <label
           v-for="option in REPORT_KINDS"
           :key="option.kind"
-          class="flex cursor-pointer flex-col gap-1 rounded-box border p-3"
-          :class="kind === option.kind ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-100'"
+          class="flex cursor-pointer flex-col gap-1 rounded-box border bg-base-100 p-3"
+          :class="kind === option.kind ? 'border-primary' : 'border-transparent'"
         >
           <span class="flex items-center gap-2 text-sm font-semibold">
             <input
@@ -150,9 +150,9 @@ async function searchIssues() {
       >
         <h2
           id="include-h"
-          class="font-semibold"
+          class="section-title"
         >
-          What to include
+          <strong>What to include</strong>
         </h2>
 
         <template v-if="kind === 'misread'">
@@ -200,7 +200,7 @@ async function searchIssues() {
 
         <div
           v-if="kind === 'game'"
-          class="flex flex-wrap items-center gap-2 rounded-box border border-base-300 bg-base-100 p-3 text-sm"
+          class="flex flex-wrap items-center gap-2 rounded-box bg-base-100 p-3 text-sm"
         >
           Run Diagnostics and paste its report into the issue: it says exactly what Wavescan can see.
           <button
@@ -219,7 +219,7 @@ async function searchIssues() {
           No auto scan has run since Wavescan opened, so describe what happened below.
         </p>
 
-        <label class="flex items-start gap-2 rounded-box border border-base-300 bg-base-100 p-3 text-sm">
+        <label class="flex items-start gap-2 rounded-box bg-base-100 p-3 text-sm">
           <input
             v-model="includeSetup"
             type="checkbox"
@@ -238,7 +238,7 @@ async function searchIssues() {
           />
         </label>
 
-        <p class="flex items-start gap-2 rounded-box border border-base-300 bg-base-100 p-3 text-xs opacity-90">
+        <p class="flex items-start gap-2 rounded-box bg-base-100 p-3 text-xs opacity-90">
           <AppIcon
             name="shield"
             :size="16"
@@ -253,19 +253,19 @@ async function searchIssues() {
         aria-labelledby="preview-h"
         class="flex flex-col gap-3"
       >
-        <div class="flex items-baseline justify-between">
+        <div class="flex items-center justify-between gap-3">
           <h2
             id="preview-h"
-            class="font-semibold"
+            class="section-title flex-1"
           >
-            Exactly what will be sent
+            <strong>Exactly what will be sent</strong>
           </h2>
           <span class="text-xs opacity-70">{{ body.length.toLocaleString() }} characters</span>
         </div>
-        <div class="rounded-box border border-base-300 bg-base-100 px-3 py-2 text-sm">
+        <div class="rounded-box bg-base-100 px-3 py-2 text-sm">
           <span class="opacity-70">Title: </span>{{ title }}
         </div>
-        <pre class="max-h-80 overflow-auto rounded-box border border-base-300 bg-neutral p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap text-neutral-content">{{ body }}</pre>
+        <pre class="max-h-80 overflow-auto rounded-[2px] bg-base-100 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap opacity-90">{{ body }}</pre>
         <div class="flex flex-wrap gap-2">
           <button
             type="button"

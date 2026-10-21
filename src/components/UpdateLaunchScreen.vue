@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Updater } from "@/update/updater";
+import PixelProgress from "@/components/PixelProgress.vue";
 
 // Covers the app while an update installs at launch (ADR 0035): one that was offered last
 // time and not installed, or one this version must have (the update file's
@@ -22,10 +23,10 @@ const percent = computed(() => (state.value.progress === null ? null : Math.roun
     aria-labelledby="update-h"
     class="fixed inset-0 z-50 flex items-center justify-center bg-base-200/95 p-6"
   >
-    <div class="flex w-full max-w-md flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 shadow-lg">
+    <div class="feature-line flex w-full max-w-md flex-col gap-4 rounded-box bg-base-100 p-6 shadow-lg">
       <h2
         id="update-h"
-        class="text-xl font-bold"
+        class="font-title text-2xl"
       >
         Updating Wavescan to {{ state.version }}
       </h2>
@@ -42,10 +43,9 @@ const percent = computed(() => (state.value.progress === null ? null : Math.roun
         This update was ready last time. It takes a few seconds, then Wavescan opens again.
       </p>
       <template v-if="!failed">
-        <progress
-          class="progress progress-primary w-full"
-          :value="percent ?? undefined"
-          max="100"
+        <PixelProgress
+          label="Update progress"
+          :fraction="state.progress"
         />
         <p class="text-xs opacity-70">
           {{ state.status === "installing" ? "Installing…" : percent === null ? "Downloading…" : `Downloading… ${percent}%` }}
