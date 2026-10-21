@@ -20,6 +20,7 @@ const ITEMS: { view: View; label: string; icon: IconName }[] = [
   { view: "scan", label: "Scan", icon: "scan" },
   { view: "review", label: "Review & export", icon: "review" },
   { view: "diagnostics", label: "Diagnostics", icon: "diagnostics" },
+  { view: "settings", label: "Settings", icon: "settings" },
   { view: "help", label: "Help & feedback", icon: "help" },
 ];
 

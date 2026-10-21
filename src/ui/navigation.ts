@@ -6,7 +6,7 @@ import type { FieldId } from "@/review/fields";
 // sends the user there ("Report this misread" on echo #35). A plain reactive object instead
 // of a router: the app has a handful of screens and no URLs.
 
-export type View = "home" | "scan" | "review" | "diagnostics" | "help" | "report";
+export type View = "home" | "scan" | "review" | "diagnostics" | "settings" | "help" | "report";
 
 export interface ReportTarget {
   kind: ReportKind;

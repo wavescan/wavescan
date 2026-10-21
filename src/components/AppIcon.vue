@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Small line icons drawn inline (no icon font or image files, so nothing extra to load).
 // The main screens' icons use the mark's geometry (30° edges, a cube for Scan, a hexagon for
-// Help). The app's own mark is WavescanMark.vue.
+// Help, a hexagon nut for Settings). The app's own mark is WavescanMark.vue.
 // Decorative: they're hidden from screen readers, so put the meaning in nearby text or an
 // aria-label on the button.
 
@@ -11,6 +11,7 @@ export type IconName =
   | "review"
   | "diagnostics"
   | "help"
+  | "settings"
   | "check"
   | "alert"
   | "x"
@@ -34,6 +35,7 @@ const PATHS: Record<IconName, string[]> = {
   review: ["M9 6h11", "M9 12h11", "M9 18h11", "M4 6l1 1 2-2", "M4 12l1 1 2-2", "M4 18l1 1 2-2"],
   diagnostics: ["M3 12h4l3-7 4 14 3-7h4"],
   help: ["M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z", "M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6", "M12 17h.01"],
+  settings: ["M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z", "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"],
   check: ["M5 12l5 5 9-10"],
   alert: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z", "M12 7v6", "M12 16.5v.5"],
   x: ["M6 6l12 12", "M18 6L6 18"],

@@ -77,7 +77,7 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
 
 If you close the scanner before exporting, it offers to carry on with that scan next time.
 
-**Who has each echo equipped.** The scanner reads the "Equipped by" line too. For your main character (Rover), the game shows the name *you* chose instead of "Rover", so the scanner asks for it: **Your in-game name** on the Scan screen. Without it, echoes on your main character are marked **check**. Your name stays on your computer: the scan says "Rover", and bug reports and Diagnostics reports hide it. Sometimes the game shows the "Equipped by" line a moment after the rest of the echo (more often on a PC that's short of memory). Watch mode notices, reads the line then, and marks it **check** so you can confirm it's the right character.
+**Who has each echo equipped.** The scanner reads the "Equipped by" line too. For your main character (Rover), the game shows the name *you* chose instead of "Rover", so the scanner asks for it: **Your in-game name** on the Scan screen (it's in **Settings** too). Without it, echoes on your main character are marked **check**. Your name stays on your computer: the scan says "Rover", and bug reports and Diagnostics reports hide it. Sometimes the game shows the "Equipped by" line a moment after the rest of the echo (more often on a PC that's short of memory). Watch mode notices, reads the line then, and marks it **check** so you can confirm it's the right character.
 
 ### Auto mode: the scanner clicks for you (optional)
 
@@ -154,7 +154,7 @@ Wuthering Tools checks every echo first and lists any it skipped, with the reaso
 
 ## Change how it looks
 
-The scanner has three colour schemes, each taken from Wuthering Waves itself: **Echo Glass** (like the game's echo screen, the default), **Solaris Gold** (like the official website) and **Jade & Blossom** (like Jinzhou). Pick one in **Help & feedback → Appearance**, and choose dark, light, or match your computer. The choice stays on your PC.
+The scanner has three colour schemes, each taken from Wuthering Waves itself: **Echo Glass** (like the game's echo screen, the default), **Solaris Gold** (like the official website) and **Jade & Blossom** (like Jinzhou). Pick one in **Settings → Appearance**, and choose dark, light, or match your computer. The choice stays on your PC.
 
 ## Troubleshooting
 

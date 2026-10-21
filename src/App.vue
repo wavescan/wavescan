@@ -9,6 +9,7 @@ import HomeView from "@/views/HomeView.vue";
 import DiagnosticsView from "@/views/DiagnosticsView.vue";
 import ScanView from "@/views/ScanView.vue";
 import ReviewView from "@/views/ReviewView.vue";
+import SettingsView from "@/views/SettingsView.vue";
 import HelpView from "@/views/HelpView.vue";
 import ReportView from "@/views/ReportView.vue";
 import UpdateBanner from "@/components/UpdateBanner.vue";
@@ -68,6 +69,7 @@ onMounted(async () => {
         :info="info"
         :game-data="gameData"
       />
+      <SettingsView v-else-if="navigation.view === 'settings'" />
       <HelpView
         v-else-if="navigation.view === 'help'"
         :info="info"

@@ -11,10 +11,10 @@ import { useScanStore } from "@/review/scanStore";
 import { goReport } from "@/ui/navigation";
 import { updateStatusText, type Updater } from "@/update/updater";
 import AppIcon from "@/components/AppIcon.vue";
-import ThemePicker from "@/components/ThemePicker.vue";
 
 // Help & feedback: report a problem, suggest an idea, the offline troubleshooting guide,
-// the source code this copy was built from, what Wavescan did this session, and how it looks.
+// the source code this copy was built from, and what Wavescan did this session. The colour
+// scheme is on Settings.
 
 const props = defineProps<{ info: AppInfo | null; gameData: GameDataInfo | null; updater: Updater | null }>();
 
@@ -305,22 +305,6 @@ async function copyDetails() {
         </p>
       </section>
     </div>
-
-    <section
-      aria-labelledby="look-h"
-      class="flex flex-col gap-3"
-    >
-      <h2
-        id="look-h"
-        class="section-title"
-      >
-        <strong>Appearance</strong>
-      </h2>
-      <p class="text-sm opacity-75">
-        Three colour schemes taken from Wuthering Waves itself. Your choice stays on this PC.
-      </p>
-      <ThemePicker />
-    </section>
 
     <section
       id="troubleshooting"
