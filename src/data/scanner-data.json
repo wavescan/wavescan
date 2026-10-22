@@ -1,7 +1,7 @@
 {
  "format": "WutheringToolsScannerData",
  "version": 1,
- "hash": "029a196f0571d9c2efa4c76c519c2108c5eb15ff684cb17ed18cb708bbdc32df",
+ "hash": "8564c62fd6f19b2505a4dd9176d9607bd03d32fcb9f04614c082926e70e50a21",
  "data": {
   "echoes": {
    "AbyssalGladius": {
@@ -3069,6 +3069,12 @@
     "weapon": "Rectifier"
    },
    {
+    "key": "Suoming",
+    "name": "Suoming",
+    "rarity": 5,
+    "weapon": "Sword"
+   },
+   {
     "key": "Taoqi",
     "name": "Taoqi",
     "rarity": 4,
@@ -3821,6 +3827,12 @@
     "rarity": 5
    },
    {
+    "key": "UnspokenRue",
+    "name": "Unspoken Rue",
+    "type": "Sword",
+    "rarity": 5
+   },
+   {
     "key": "Variation",
     "name": "Variation",
     "type": "Rectifier",
@@ -3870,11 +3882,11 @@
    }
   ]
  },
- "publishedAt": "2026-10-16T13:48:40.627Z",
+ "publishedAt": "2026-10-22T03:17:12.968Z",
  "assets": {
   "file": "scanner-assets.json",
   "hash": "b87ecccb588b017e361263bd0388abc411bf84cea4dd313b5dafd26daccdb912"
  },
  "keyId": "4465e4c3be6d190d",
- "signature": "DpduvaS1xPsK7Avj5Ry+OksZsMTZG7bTYAmAGSQRaXqtkwupHgXgZ9DV9AFCpQPoXd1hvpuOugWj1D8bdIKNhw=="
+ "signature": "EK+ucqqPFyU1UZXaISuxKG2OB812xNOWq+9G/aLV6iEnNBxyvDr/WQA/jch+wsk8rXO8T8/htZkX7r7FPn366g=="
 }
