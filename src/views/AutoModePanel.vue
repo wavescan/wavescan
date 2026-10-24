@@ -28,6 +28,7 @@ import { problemForAutoStop, problemForError, type Problem } from "@/feedback/pr
 import { go, goReport, navigation } from "@/ui/navigation";
 import AppIcon from "@/components/AppIcon.vue";
 import ProblemCard from "@/components/ProblemCard.vue";
+import PixelProgress from "@/components/PixelProgress.vue";
 
 // Auto mode (ADR 0006, 0023, 0024) as four steps: understand the risk, permissions, prepare
 // the game, then type the confirmation and start. The scan itself is `createAutoScan`.
@@ -159,10 +160,10 @@ onBeforeUnmount(stop);
   <section
     v-if="running"
     aria-live="polite"
-    class="flex flex-wrap items-center gap-6 rounded-box border-2 border-warning bg-warning/10 p-6"
+    class="edge-warning flex flex-wrap items-center gap-6 p-6"
   >
     <div class="flex min-w-64 flex-1 flex-col gap-1">
-      <h2 class="text-2xl font-bold">
+      <h2 class="font-title text-3xl leading-tight">
         Hands off the mouse
       </h2>
       <p
@@ -187,9 +188,10 @@ onBeforeUnmount(stop);
           class="text-warning"
         >{{ progress.errors }} couldn't be read</span>
       </div>
-      <progress
-        class="progress progress-warning w-full"
-        aria-label="Scanning"
+      <PixelProgress
+        label="Scanning"
+        tone="warning"
+        :count="progress?.echoes ?? 0"
       />
       <span class="opacity-80">
         <template v-if="lastEcho">Last: {{ lastEcho }} · </template>
@@ -198,7 +200,7 @@ onBeforeUnmount(stop);
     </div>
     <button
       type="button"
-      class="btn btn-neutral btn-lg"
+      class="btn btn-outline btn-lg"
       @click="stop"
     >
       Stop now
@@ -236,14 +238,14 @@ onBeforeUnmount(stop);
         >
           <button
             type="button"
-            class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-sm"
+            class="flex min-h-11 w-full items-center gap-3 rounded-sm px-3 text-left text-sm"
             :class="i === step ? 'bg-base-100 font-semibold' : 'opacity-75 hover:bg-base-100'"
             :aria-current="i === step ? 'step' : undefined"
             :disabled="i > step"
             @click="goStep(i)"
           >
             <span
-              class="flex size-6 items-center justify-center rounded-full text-xs font-bold"
+              class="flex size-6 items-center justify-center rounded-sm text-xs font-bold"
               :class="i < step ? 'bg-success/20 text-success' : i === step ? 'bg-primary text-primary-content' : 'border border-base-300'"
             >
               <AppIcon
@@ -259,15 +261,15 @@ onBeforeUnmount(stop);
       </ol>
 
       <section
-        class="flex min-w-72 flex-1 flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6"
+        class="flex min-w-72 flex-1 flex-col gap-4 rounded-box bg-base-100 p-6"
         aria-live="polite"
       >
-        <h2 class="text-xl font-bold">
+        <h2 class="font-title text-2xl">
           {{ STEPS[step] }}
         </h2>
 
         <template v-if="step === 0">
-          <div class="flex flex-col gap-3 rounded-box border border-warning/50 bg-warning/10 p-4 text-sm">
+          <div class="edge-warning flex flex-col gap-3 p-4 text-sm">
             <p>
               Kuro Games' Fair Play Policy prohibits third-party tools and macros. Auto mode sends mouse clicks to the
               game, which some people consider a macro. We don't know of anyone being banned for scanning, and Wavescan
@@ -403,8 +405,8 @@ onBeforeUnmount(stop);
               <label
                 v-for="option in MIN_LEVELS"
                 :key="option.value"
-                class="flex cursor-pointer flex-col gap-0.5 rounded-lg border p-3 text-sm"
-                :class="minLevel === option.value ? 'border-primary bg-primary/10' : 'border-base-300'"
+                class="flex cursor-pointer flex-col gap-0.5 rounded-sm border p-3 text-sm"
+                :class="minLevel === option.value ? 'border-primary bg-primary/10' : 'border-transparent bg-base-200'"
               >
                 <span class="flex items-center gap-2 font-medium">
                   <input

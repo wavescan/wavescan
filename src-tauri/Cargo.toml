@@ -29,7 +29,10 @@ tauri-plugin-global-shortcut = "2"
 tauri-plugin-opener = "2"
 # App updates (ADR 0035): fetches the update file and installer from GitHub Releases and
 # checks the installer's minisign signature against the public key in tauri.conf.json.
-tauri-plugin-updater = "2.13.1"
+# Default features minus "zip": releases ship the bare -setup.exe on Windows (macOS's
+# .app.tar.gz doesn't need it), and leaving it out drops the `zip` crate and its advisories
+# (RUSTSEC-2026-0367/0368/0369, unfixed in every updater release so far).
+tauri-plugin-updater = { version = "2.13.1", default-features = false, features = ["rustls-tls", "system-proxy"] }
 # Restarts the app after an update (process:allow-restart only).
 tauri-plugin-process = "2.4.0"
 

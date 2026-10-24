@@ -114,7 +114,7 @@ Not planned into a phase yet. Pick from here when a phase has room, and move an 
 
 **Look and feel**
 
-- **App icon.** `src-tauri/icons/source.svg` is the placeholder from the scaffold (gold scan brackets on navy). Design a real one, then regenerate every size with `npm run tauri icon` (Windows `.ico`, macOS `.icns`, PNGs).
+- ~~**App icon.**~~ Done: the cube mark ([docs/brand](brand/README.md)), with every size built by `npm run icons:update`. The app's look follows the mark (sharp corners, slanted badges, gaps instead of outlines, pixel progress).
 - **Installer look.** Research what Tauri allows: NSIS installer images and language (Windows), the DMG background and icon layout (macOS). Keep it honest and plain: no bundled extras, and no "run as administrator" by default (only auto mode needs it, ADR 0023).
 - **App UI research.** The screens are functional DaisyUI cards today. Ideas to explore:
   - a home screen that walks a first-time user through Diagnostics → scan → import

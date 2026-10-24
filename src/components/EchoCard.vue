@@ -18,8 +18,9 @@ import { setIconUrl } from "@/ui/setIconUrl";
 import AppIcon from "@/components/AppIcon.vue";
 import EchoAvatar from "@/components/EchoAvatar.vue";
 
-// One echo, laid out like the in-game details panel: picture, name and level, cost/rarity/set,
-// main stat, then substats with a roll meter. A field Wavescan wasn't sure about is
+// One echo, laid out like the in-game details panel: picture with a gold rarity bar, the name
+// in gold and the level, cost/rarity/set, main stat, then substats on alternating bands with a
+// roll meter. A field Wavescan wasn't sure about is
 // highlighted with a "check" label and is a button that opens the fixer.
 
 const props = withDefaults(
@@ -74,29 +75,32 @@ const equippedBy = computed(() => resolveEquippedBy(props.candidate));
 const stars = computed(() => (props.candidate.rank ? "★".repeat(props.candidate.rank) : null));
 const large = computed(() => props.size === "large");
 
-const flagClass = "rounded-md bg-warning/15 text-base-content ring-1 ring-warning/60 hover:bg-warning/25";
+const flagClass = "rounded-[1px] bg-warning/15 text-base-content ring-1 ring-warning/70 hover:bg-warning/25";
 const activeClass = "outline-2 outline-offset-2 outline-primary";
 </script>
 
 <template>
   <article
     class="flex flex-col gap-3 rounded-box border bg-base-100 p-4"
-    :class="flagged.size ? 'border-warning/70' : 'border-base-300'"
+    :class="flagged.size ? 'border-warning/65' : 'border-transparent'"
     :aria-label="`${displayName(candidate)}, scan number ${candidate.index}`"
   >
     <header class="flex items-center gap-3">
-      <EchoAvatar
-        :echo="candidate.slot.echo"
-        :name="displayName(candidate)"
-        :size-class="large ? 'size-14' : 'size-12'"
-      />
+      <!-- The gold bar under the picture is the game's rarity frame. -->
+      <span class="relative shrink-0 overflow-hidden rounded-sm after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:bg-accent">
+        <EchoAvatar
+          :echo="candidate.slot.echo"
+          :name="displayName(candidate)"
+          :size-class="large ? 'size-16' : 'size-12'"
+        />
+      </span>
       <div class="min-w-0 flex-1">
         <div class="flex items-baseline justify-between gap-2">
           <component
             :is="readonly || !isFlagged('name') ? 'span' : 'button'"
             type="button"
-            class="min-w-0 text-left leading-tight font-bold"
-            :class="[large ? 'text-xl' : 'text-base', isFlagged('name') ? flagClass + ' px-1' : '', active === 'name' ? activeClass : '']"
+            class="font-title min-w-0 text-left leading-tight text-accent"
+            :class="[large ? 'text-2xl' : 'text-lg', isFlagged('name') ? flagClass + ' px-1' : '', active === 'name' ? activeClass : '']"
             @click="!readonly && isFlagged('name') && emit('fix', 'name')"
           >
             {{ displayName(candidate) }}
@@ -108,8 +112,8 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
           <component
             :is="readonly || !isFlagged('level') ? 'span' : 'button'"
             type="button"
-            class="shrink-0 font-mono text-primary"
-            :class="[large ? 'text-lg' : '', isFlagged('level') ? flagClass + ' px-1' : '', active === 'level' ? activeClass : '']"
+            class="font-title shrink-0"
+            :class="[large ? 'text-2xl' : 'text-xl', isFlagged('level') ? flagClass + ' px-1' : '', active === 'level' ? activeClass : '']"
             :aria-label="isFlagged('level') ? `Level, read as ${candidate.raw.level || 'nothing'}: check` : undefined"
             @click="!readonly && isFlagged('level') && emit('fix', 'level')"
           >
@@ -117,24 +121,24 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
           </component>
         </div>
         <div
-          class="mt-1.5 h-1 overflow-hidden rounded bg-base-300"
+          class="mt-1.5 h-0.5 overflow-hidden bg-base-300"
           aria-hidden="true"
         >
           <div
-            class="h-1 bg-primary"
+            class="h-0.5 bg-accent"
             :style="{ width: `${levelPercent}%` }"
           />
         </div>
       </div>
     </header>
 
-    <div class="flex flex-wrap gap-1.5 text-xs">
-      <span class="rounded-md bg-base-200 px-2 py-0.5">Cost {{ cost ?? "?" }}</span>
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs opacity-90">
+      <span>Cost {{ cost ?? "?" }}</span>
       <component
         :is="readonly || !isFlagged('rank') ? 'span' : 'button'"
         type="button"
-        class="rounded-md bg-base-200 px-2 py-0.5"
-        :class="[isFlagged('rank') ? flagClass : 'text-warning', active === 'rank' ? activeClass : '']"
+        class="tracking-[1px]"
+        :class="[isFlagged('rank') ? flagClass + ' px-1' : 'text-accent', active === 'rank' ? activeClass : '']"
         :aria-label="candidate.rank ? `${candidate.rank} star` : 'rarity unknown'"
         @click="!readonly && isFlagged('rank') && emit('fix', 'rank')"
       >
@@ -143,8 +147,8 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
       <component
         :is="readonly || !isFlagged('set') ? 'span' : 'button'"
         type="button"
-        class="inline-flex items-center gap-1 rounded-md bg-base-200 px-2 py-0.5"
-        :class="[isFlagged('set') ? flagClass : '', active === 'set' ? activeClass : '']"
+        class="inline-flex items-center gap-1"
+        :class="[isFlagged('set') ? flagClass + ' px-1' : '', active === 'set' ? activeClass : '']"
         @click="!readonly && isFlagged('set') && emit('fix', 'set')"
       >
         <img
@@ -171,7 +175,7 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
       >
         <span
           class="font-semibold"
-          :class="large ? 'text-lg' : ''"
+          :class="large ? 'text-lg' : 'text-base'"
         >
           {{ candidate.slot.mainStatLabel || "Main stat ?" }}
           <span
@@ -184,8 +188,8 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
           >checked</span>
         </span>
         <span
-          class="font-mono"
-          :class="large ? 'text-xl' : 'text-base'"
+          class="font-mono font-semibold"
+          :class="large ? 'text-xl' : 'text-lg'"
         >{{ mainValue === null ? "" : `${mainValue.toFixed(1)}%` }}</span>
       </component>
       <div
@@ -196,16 +200,17 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
       </div>
     </div>
 
-    <ul class="flex flex-col gap-1.5 border-t border-base-300 pt-3 text-sm">
+    <ul class="bands -mx-2 flex flex-col text-sm">
       <li
         v-for="row in rows"
         :key="row.index"
+        class="rounded-[1px]"
       >
         <component
           :is="readonly || !isFlagged(row.field) ? 'div' : 'button'"
           type="button"
-          class="grid w-full grid-cols-[1fr_3rem_3.5rem] items-center gap-2 text-left"
-          :class="[isFlagged(row.field) ? flagClass + ' -mx-1 px-1 py-0.5' : '', active === row.field ? activeClass : '']"
+          class="grid w-full grid-cols-[1fr_3rem_3.5rem] items-center gap-2 px-2 py-1 text-left"
+          :class="[isFlagged(row.field) ? flagClass : '', active === row.field ? activeClass : '']"
           @click="!readonly && isFlagged(row.field) && emit('fix', row.field)"
         >
           <!-- Full stat names wrap rather than being cut off: "Basic Attack DMG Bonus" matters. -->
@@ -221,7 +226,7 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
             >checked</span>
           </span>
           <span
-            class="flex gap-px"
+            class="pips"
             :title="row.tier ? `Roll ${row.tier.tier} of ${row.tier.of}` : 'Not a value the game rolls'"
             :aria-label="row.tier ? `roll ${row.tier.tier} of ${row.tier.of}` : undefined"
           >
@@ -229,22 +234,27 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
               <span
                 v-for="n in row.tier.of"
                 :key="n"
-                class="h-1.5 flex-1 rounded-sm"
-                :class="n <= row.tier.tier ? 'bg-primary' : 'bg-base-300'"
+                :class="{ on: n <= row.tier.tier }"
               />
             </template>
           </span>
-          <span class="text-right font-mono">{{ row.value }}</span>
+          <span
+            class="text-right font-mono font-semibold"
+            :class="isFlagged(row.field) ? 'text-warning' : ''"
+          >{{ row.value }}</span>
         </component>
       </li>
       <li
         v-for="n in untuned"
         :key="`untuned-${n}`"
-        class="flex justify-between opacity-60"
+        class="flex justify-between px-2 py-1 opacity-60"
       >
         <span>Not tuned yet</span><span>—</span>
       </li>
-      <li v-if="isFlagged('substats')">
+      <li
+        v-if="isFlagged('substats')"
+        class="px-2 py-1"
+      >
         <component
           :is="readonly ? 'div' : 'button'"
           type="button"
@@ -257,7 +267,7 @@ const activeClass = "outline-2 outline-offset-2 outline-primary";
       </li>
       <li
         v-if="rows.length === 0 && untuned === 0 && !isFlagged('substats')"
-        class="opacity-60"
+        class="px-2 py-1 opacity-60"
       >
         No substats yet
       </li>

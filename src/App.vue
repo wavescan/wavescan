@@ -9,6 +9,7 @@ import HomeView from "@/views/HomeView.vue";
 import DiagnosticsView from "@/views/DiagnosticsView.vue";
 import ScanView from "@/views/ScanView.vue";
 import ReviewView from "@/views/ReviewView.vue";
+import SettingsView from "@/views/SettingsView.vue";
 import HelpView from "@/views/HelpView.vue";
 import ReportView from "@/views/ReportView.vue";
 import UpdateBanner from "@/components/UpdateBanner.vue";
@@ -37,8 +38,10 @@ onMounted(async () => {
       v-if="!mini"
       :info="info"
     />
+    <!-- `relative` keeps absolutely positioned bits (screen-reader-only labels) inside the
+         scrolling area, so they can't make the whole window scroll as well. -->
     <main
-      class="min-w-0 flex-1 overflow-y-auto"
+      class="relative min-w-0 flex-1 overflow-y-auto"
       :class="mini ? 'p-3' : 'p-6 lg:p-8'"
     >
       <UpdateBanner
@@ -66,6 +69,7 @@ onMounted(async () => {
         :info="info"
         :game-data="gameData"
       />
+      <SettingsView v-else-if="navigation.view === 'settings'" />
       <HelpView
         v-else-if="navigation.view === 'help'"
         :info="info"

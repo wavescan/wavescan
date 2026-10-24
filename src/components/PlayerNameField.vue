@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, useId, watch } from "vue";
 import { MAX_PLAYER_NAME_LENGTH, playerName, setPlayerName } from "@/settings/playerName";
 
 // "Your in-game name": the echo panel shows it instead of "Rover" ("Equipped by Clover"), so
@@ -8,6 +8,8 @@ import { MAX_PLAYER_NAME_LENGTH, playerName, setPlayerName } from "@/settings/pl
 
 withDefaults(defineProps<{ compact?: boolean }>(), { compact: false });
 
+// The Scan screen stays mounted behind Settings, so this field can be on the page twice.
+const inputId = useId();
 const draft = ref(playerName() ?? "");
 watch(playerName, (name) => (draft.value = name ?? ""));
 const saved = ref(false);
@@ -25,12 +27,12 @@ function save() {
     @submit.prevent="save"
   >
     <label
-      for="player-name"
-      class="text-sm font-semibold"
+      :for="inputId"
+      class="text-[11px] font-bold tracking-[.12em] uppercase opacity-75"
     >Your in-game name</label>
     <div class="flex flex-wrap items-center gap-2">
       <input
-        id="player-name"
+        :id="inputId"
         v-model="draft"
         type="text"
         class="input input-sm w-48"

@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/wavescan-mark-white.svg">
+  <img src="docs/brand/wavescan-mark-ink.svg" width="72" alt="">
+</picture>
+
 # Wavescan
 
 > 🌐 [wavescan.app](https://wavescan.app) · **Status: in development, not released yet.** This page describes how the scanner will work at v0.1. Download links appear here once the first signed build ships.
@@ -15,6 +20,7 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 - [Your first scan](#your-first-scan)
 - [Is it safe?](#is-it-safe)
 - [Importing into Wuthering Tools](#importing-into-wuthering-tools)
+- [Change how it looks](#change-how-it-looks)
 - [Troubleshooting](#troubleshooting)
 - [Check your setup (Diagnostics)](#check-your-setup-diagnostics)
 - [Reporting a bug](#reporting-a-bug)
@@ -71,7 +77,7 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
 
 If you close the scanner before exporting, it offers to carry on with that scan next time.
 
-**Who has each echo equipped.** The scanner reads the "Equipped by" line too. For your main character (Rover), the game shows the name *you* chose instead of "Rover", so the scanner asks for it: **Your in-game name** on the Scan screen. Without it, echoes on your main character are marked **check**. Your name stays on your computer: the scan says "Rover", and bug reports and Diagnostics reports hide it. Sometimes the game shows the "Equipped by" line a moment after the rest of the echo (more often on a PC that's short of memory). Watch mode notices, reads the line then, and marks it **check** so you can confirm it's the right character.
+**Who has each echo equipped.** The scanner reads the "Equipped by" line too. For your main character (Rover), the game shows the name *you* chose instead of "Rover", so the scanner asks for it: **Your in-game name** on the Scan screen (it's in **Settings** too). Without it, echoes on your main character are marked **check**. Your name stays on your computer: the scan says "Rover", and bug reports and Diagnostics reports hide it. Sometimes the game shows the "Equipped by" line a moment after the rest of the echo (more often on a PC that's short of memory). Watch mode notices, reads the line then, and marks it **check** so you can confirm it's the right character.
 
 ### Auto mode: the scanner clicks for you (optional)
 
@@ -145,6 +151,10 @@ The result should match the checksum on the Releases page. With the [GitHub CLI]
 2. Open **Wavescan**, paste the scan and choose whether to add to your echoes or replace them.
 
 Wuthering Tools checks every echo first and lists any it skipped, with the reason. Echoes you already have aren't added twice, and locked echoes are never removed. **Copy scan only** copies without opening the browser.
+
+## Change how it looks
+
+The scanner has three colour schemes, each taken from Wuthering Waves itself: **Echo Glass** (like the game's echo screen, the default), **Solaris Gold** (like the official website) and **Jade & Blossom** (like Jinzhou). Pick one in **Settings → Appearance**, and choose dark, light, or match your computer. The choice stays on your PC.
 
 ## Troubleshooting
 

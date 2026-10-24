@@ -215,18 +215,25 @@ onBeforeUnmount(() => {
   void attempt(stopCapture);
 });
 
+/** Each check's result tag and its slanted status mark. */
 const badge: Record<Check["status"], string> = {
   pass: "badge-success",
   warn: "badge-warning",
   fail: "badge-error",
   skipped: "badge-ghost",
 };
+const mark: Record<Check["status"], string> = {
+  pass: "status-mark",
+  warn: "status-mark status-mark-warning",
+  fail: "status-mark bg-error",
+  skipped: "status-mark bg-base-content/25",
+};
 </script>
 
 <template>
-  <div class="card mx-auto w-full max-w-3xl border border-base-300 bg-base-100">
-    <div class="card-body gap-4">
-      <h1 class="card-title text-2xl">
+  <div class="mx-auto w-full max-w-3xl rounded-box bg-base-100">
+    <div class="flex flex-col gap-4 p-6">
+      <h1 class="font-title text-3xl">
         Diagnostics
       </h1>
 
@@ -256,18 +263,25 @@ const badge: Record<Check["status"], string> = {
 
       <ul
         v-if="checks.length"
-        class="space-y-2"
+        class="flex flex-col"
       >
         <li
           v-for="check in checks"
           :key="check.id"
-          class="flex items-start gap-3 text-sm"
+          class="grid grid-cols-[1.25rem_1fr_auto] items-center gap-3 border-b border-base-300 py-2.5 text-sm"
         >
           <span
-            class="badge badge-sm mt-0.5 w-16 justify-center"
+            :class="mark[check.status]"
+            aria-hidden="true"
+          />
+          <span class="flex flex-col">
+            <strong>{{ check.label }}</strong>
+            <span class="text-xs opacity-75">{{ check.detail }}</span>
+          </span>
+          <span
+            class="badge badge-outline badge-sm"
             :class="badge[check.status]"
           >{{ check.status }}</span>
-          <span><strong>{{ check.label }}:</strong> {{ check.detail }}</span>
         </li>
       </ul>
 
@@ -301,15 +315,15 @@ const badge: Record<Check["status"], string> = {
       </div>
       <canvas
         ref="canvas"
-        class="w-full rounded border border-base-300 bg-base-200"
+        class="w-full rounded-[2px] bg-base-200"
         :class="{ hidden: !checks.length }"
       />
 
       <div
         v-if="checks.length"
-        class="rounded-box border border-warning/40 bg-warning/10 p-4 space-y-3"
+        class="edge-warning space-y-3 p-4"
       >
-        <h2 class="font-semibold">
+        <h2 class="font-title text-lg">
           Optional: click test (for auto mode)
         </h2>
         <p class="text-sm">
@@ -336,7 +350,7 @@ const badge: Record<Check["status"], string> = {
           Don't touch the mouse during the test: moving it stops Wavescan immediately.
         </p>
         <button
-          class="btn btn-warning btn-sm"
+          class="btn btn-outline btn-warning btn-sm"
           :disabled="inputRunning || running || confirmation.trim().toLowerCase() !== CONFIRMATION_PHRASE.toLowerCase()"
           @click="runClickTest"
         >
@@ -348,9 +362,9 @@ const badge: Record<Check["status"], string> = {
         v-if="reportText"
         class="space-y-2"
       >
-        <div class="flex items-center justify-between">
-          <h2 class="font-semibold">
-            Report
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="section-title flex-1">
+            <strong>Report</strong>
           </h2>
           <button
             class="btn btn-sm"

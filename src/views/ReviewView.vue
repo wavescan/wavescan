@@ -144,7 +144,7 @@ const queuePosition = computed(() => {
     v-if="candidates.length === 0"
     class="mx-auto flex max-w-xl flex-col items-center gap-4 py-16 text-center"
   >
-    <h1 class="text-2xl font-bold">
+    <h1 class="font-title text-3xl">
       Nothing to review yet
     </h1>
     <p class="opacity-80">
@@ -166,7 +166,7 @@ const queuePosition = computed(() => {
   >
     <div class="flex min-w-0 flex-[999_1_32rem] flex-col gap-4">
       <header class="flex flex-col gap-1">
-        <h1 class="text-2xl font-bold">
+        <h1 class="font-title text-3xl">
           Review {{ summary.total }} {{ summary.total === 1 ? "echo" : "echoes" }}
         </h1>
         <p class="text-sm opacity-80">
@@ -181,12 +181,12 @@ const queuePosition = computed(() => {
 
       <div
         v-if="summary.toCheck && !walkthrough"
-        class="flex flex-wrap items-center justify-between gap-3 rounded-box border border-warning/50 bg-warning/10 px-4 py-3"
+        class="edge-warning flex flex-wrap items-center justify-between gap-3 px-4 py-3"
       >
         <span class="text-sm"><strong>{{ queue.length }} {{ queue.length === 1 ? "value" : "values" }} to check.</strong> Step through them one at a time.</span>
         <button
           type="button"
-          class="btn btn-warning btn-sm"
+          class="btn btn-outline btn-warning btn-sm"
           @click="startWalkthrough"
         >
           Check them now
@@ -197,7 +197,7 @@ const queuePosition = computed(() => {
         v-if="walkthrough && fixing && fixingCandidate"
         id="fixer"
         aria-label="Checking values"
-        class="grid gap-4 rounded-box border border-primary/50 bg-base-100 p-4 md:grid-cols-2"
+        class="feature-line grid gap-4 rounded-box bg-base-100 p-4 md:grid-cols-2"
       >
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between text-sm">
@@ -283,24 +283,22 @@ const queuePosition = computed(() => {
           </select>
         </label>
         <div
-          role="group"
+          role="radiogroup"
           aria-label="Layout"
-          class="join"
+          class="tabs-line ml-auto"
         >
           <button
             type="button"
-            class="btn join-item btn-sm"
-            :class="layout === 'cards' ? 'btn-active' : ''"
-            :aria-pressed="layout === 'cards'"
+            role="radio"
+            :aria-checked="layout === 'cards'"
             @click="layout = 'cards'"
           >
             Cards
           </button>
           <button
             type="button"
-            class="btn join-item btn-sm"
-            :class="layout === 'table' ? 'btn-active' : ''"
-            :aria-pressed="layout === 'table'"
+            role="radio"
+            :aria-checked="layout === 'table'"
             @click="layout = 'table'"
           >
             Table
@@ -345,7 +343,7 @@ const queuePosition = computed(() => {
 
       <div
         v-else
-        class="overflow-x-auto rounded-box border border-base-300 bg-base-100"
+        class="overflow-x-auto rounded-box bg-base-100"
       >
         <table class="table table-sm">
           <thead>
@@ -364,7 +362,10 @@ const queuePosition = computed(() => {
               v-for="c in shown"
               :key="c.id"
             >
-              <td class="font-mono opacity-70">
+              <td
+                class="font-mono opacity-70"
+                :class="{ 'edge-flag': flaggedFields(c).length }"
+              >
                 {{ c.index }}
               </td>
               <td class="font-medium">
@@ -377,12 +378,12 @@ const queuePosition = computed(() => {
                   {{ displayName(c) }}
                 </span>
               </td>
-              <td class="font-mono">
+              <td class="font-mono font-semibold text-accent">
                 +{{ c.level ?? "?" }}
               </td>
               <td>{{ c.slot.set ? setName(c.slot.set) : "?" }}</td>
               <td>{{ c.slot.mainStatLabel || "?" }}</td>
-              <td class="text-xs">
+              <td class="text-xs opacity-75">
                 <span
                   v-for="(s, i) in c.slot.substats.filter((row) => row.subStat)"
                   :key="i"
@@ -393,7 +394,7 @@ const queuePosition = computed(() => {
                 <button
                   v-if="flaggedFields(c).length"
                   type="button"
-                  class="badge badge-warning badge-sm"
+                  class="badge badge-warning badge-outline badge-sm"
                   @click="layout = 'cards'; startFix(c, flaggedFields(c)[0]!)"
                 >
                   {{ flaggedFields(c).length }} to check
@@ -411,60 +412,64 @@ const queuePosition = computed(() => {
 
     <aside
       aria-labelledby="export-h"
-      class="flex w-full flex-[1_1_16rem] flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-5 md:sticky md:top-0 md:max-w-xs"
+      class="flex w-full flex-[1_1_16rem] flex-col gap-4 rounded-box bg-base-100 p-5 md:sticky md:top-0 md:max-w-xs"
     >
       <h2
         id="export-h"
-        class="text-lg font-bold"
+        class="font-title text-xl"
       >
         Export
       </h2>
-      <dl class="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1.5 text-sm">
-        <dt class="opacity-75">
-          Echoes in the file
-        </dt>
-        <dd class="font-mono">
-          {{ built.scan.echoes.length }}
-        </dd>
-        <dt :class="summary.toCheck ? 'text-warning' : 'opacity-75'">
-          Still to check
-        </dt>
-        <dd
-          class="font-mono"
-          :class="summary.toCheck ? 'text-warning' : ''"
-        >
-          {{ summary.toCheck }}
-        </dd>
-        <dt class="opacity-75">
-          Checked by you
-        </dt>
-        <dd class="font-mono">
-          {{ summary.checkedByUser }}
-        </dd>
-        <dt class="opacity-75">
-          Unknown echo (left out)
-        </dt>
-        <dd class="font-mono">
-          {{ built.skippedUnknown }}
-        </dd>
+      <!-- Banded rows, like the stat list in the game's echo panel. -->
+      <dl class="bands text-sm [&>div]:flex [&>div]:justify-between [&>div]:gap-3 [&>div]:rounded-[1px] [&>div]:px-2 [&>div]:py-1">
+        <div>
+          <dt>Echoes in the file</dt>
+          <dd class="font-mono font-semibold">
+            {{ built.scan.echoes.length }}
+          </dd>
+        </div>
+        <div :class="summary.toCheck ? 'text-warning' : ''">
+          <dt>Still to check</dt>
+          <dd class="font-mono font-semibold">
+            {{ summary.toCheck }}
+          </dd>
+        </div>
+        <div>
+          <dt>Checked by you</dt>
+          <dd class="font-mono font-semibold">
+            {{ summary.checkedByUser }}
+          </dd>
+        </div>
+        <div>
+          <dt>Unknown echo (left out)</dt>
+          <dd class="font-mono font-semibold">
+            {{ built.skippedUnknown }}
+          </dd>
+        </div>
       </dl>
-      <dl class="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 border-t border-base-300 pt-3 text-sm opacity-90">
-        <dt>+25</dt>
-        <dd class="font-mono">
-          {{ summary.levels.max }}
-        </dd>
-        <dt>+20 to +24</dt>
-        <dd class="font-mono">
-          {{ summary.levels.high }}
-        </dd>
-        <dt>Below +20</dt>
-        <dd class="font-mono">
-          {{ summary.levels.low }}
-        </dd>
+      <dl class="bands text-sm [&>div]:flex [&>div]:justify-between [&>div]:gap-3 [&>div]:rounded-[1px] [&>div]:px-2 [&>div]:py-1">
+        <div>
+          <dt>+25</dt>
+          <dd class="font-mono font-semibold">
+            {{ summary.levels.max }}
+          </dd>
+        </div>
+        <div>
+          <dt>+20 to +24</dt>
+          <dd class="font-mono font-semibold">
+            {{ summary.levels.high }}
+          </dd>
+        </div>
+        <div>
+          <dt>Below +20</dt>
+          <dd class="font-mono font-semibold">
+            {{ summary.levels.low }}
+          </dd>
+        </div>
       </dl>
       <button
         type="button"
-        class="btn btn-primary"
+        class="btn btn-primary h-auto min-h-10 py-2 leading-tight"
         :disabled="built.scan.echoes.length === 0"
         @click="copyAndOpen"
       >
@@ -472,7 +477,7 @@ const queuePosition = computed(() => {
       </button>
       <button
         type="button"
-        class="btn btn-outline btn-sm"
+        class="btn btn-sm"
         :disabled="built.scan.echoes.length === 0"
         @click="copyScan"
       >

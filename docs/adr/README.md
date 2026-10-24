@@ -67,3 +67,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0033](./0033-automated-game-data-sync.md) | Sync the game-data snapshot with a scheduled PR, not at build time | accepted | 0034 (pictures from WT) | data, ci, network |
 | [0034](./0034-download-signed-game-data-on-launch.md) | Download signed game data and pictures on every launch, with no off switch | accepted | | data, network, security, privacy |
 | [0035](./0035-in-app-updates.md) | In-app updates: two channels, installed at the next launch at the latest | accepted | | distribution, network, security, supply-chain, ui |
+| [0036](./0036-colour-schemes-and-bundled-title-fonts.md) | Three colour schemes from Wuthering Waves, a theme picker, and bundled title fonts | accepted | | ui, dependencies, privacy |
