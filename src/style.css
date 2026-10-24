@@ -491,6 +491,17 @@
   box-shadow: none;
 }
 
+/*
+ * The open list of a dropdown. Where the browser lets pages style it (Windows' WebView2),
+ * daisyUI gives the list the field's background, which is transparent above, so the
+ * options were drawn straight over the page. Give it a solid panel of its own.
+ */
+:is(.select, .select select)::picker(select) {
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
+  border-color: var(--color-base-300);
+}
+
 /* Radio buttons are diamonds, like the mark's facets. */
 .radio {
   border-radius: 1px;
