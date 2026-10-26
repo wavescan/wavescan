@@ -40,7 +40,7 @@ jobs:
       matrix:
         include:
           - name: macOS Apple Silicon
-            os: macos-14
+            os: macos-15
             bundles: app,dmg
             files: |
               src-tauri/target/release/bundle/dmg/*.dmg

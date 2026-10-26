@@ -32,7 +32,7 @@ cargo nextest run          # Rust tests (or: cargo test)
 cargo deny check           # licences, advisories, banned crates
 ```
 
-CI runs all of the above on `windows-latest` and `macos-14`. Nothing merges red.
+CI runs all of the above on `windows-latest` and `macos-15`. Nothing merges red.
 
 ## Layout (where to look)
 
