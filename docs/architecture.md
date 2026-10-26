@@ -199,7 +199,7 @@ Game data (echo names, sets, costs, stat tables, characters, weapons) comes from
 
 ## 10. Build & release
 
-- CI (`.github/workflows/ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc, and the fixture replay (Tesseract on both, Vision on macOS) on `windows-latest` + `macos-14`.
+- CI (`.github/workflows/ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc, and the fixture replay (Tesseract on both, Vision on macOS) on `windows-latest` + `macos-15`.
 - Shared build (`build-app.yml`, called by the two below): sets the version (`scripts/set-version.mjs`), builds NSIS `.exe` (Windows) and `.app` + `.dmg` (macOS, ad-hoc signed), and with the updater key signs the update files (`tauri.updates.conf.json`; tester builds add `tauri.tester.conf.json` for their channel). The commit id is compiled in as `WAVESCAN_BUILD`.
 - Tester builds (`tester-build.yml`, on merge to `main`): version `<patch after the latest release>-tester.<run number>` → rolling `tester-build` pre-release with `latest.json` (`scripts/updater-manifest.mjs`) and SHA-256 sums. Installed tester builds update to it. A warning is added when the bundled game data is older than wutheringtools.com.
 - Game-data sync (`game-data-sync.yml`, daily): opens a PR updating `src/data/` when Wuthering Tools' data changed, then starts CI on it ([ADR 0033](adr/0033-automated-game-data-sync.md)).
