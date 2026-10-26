@@ -64,24 +64,25 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 
 - [x] Windows, 2026-10-09: auto scan of a whole bag (30 echoes) and a watch scan of 37 echoes (all +25, 5 substats), every field correct. The one false flag found (an untuned substat slot on a +5 echo marked "please check") is fixed, with the `spearback-plus5` fixture
 - [x] Windows, community testers (October 2026): scans of 200–500 echoes, few issues besides the echo sets above
-- [ ] macOS: waiting for a community tester
+- [ ] macOS: waiting for a community tester. Checked by the maintainer, 2026-10-26, without the game: the app installs, opens, updates itself and reports "game not found" in Diagnostics. Scanning on a Mac is still untested, so v0.1 calls Mac a preview
 
 ## Phase 4: Handoff + web import (optimizer repo)
 
 - [ ] Export: copy to the clipboard, then open Wuthering Tools' import
   - [x] Copy scan for Wuthering Tools (Review screen)
-  - [ ] A button that opens Wuthering Tools' Wavescan import
+  - [x] A button that copies the scan and opens Wuthering Tools' Settings, where the import is
   - [ ] Save to a file (needs a new Tauri permission, so an ADR)
 - [x] Import in Wuthering Tools: Settings → Wavescan (WT ADR 0038). Validates every row and skips bad ones with a reason, add or replace (locked echoes kept), no duplicates. Doesn't go through the full-backup restore (ADR 0009)
   - [x] Equips characters from `equippedBy` after a review step, with the main echo chosen by the user (WT ADR 0040)
-  - [ ] Out of Labs: the import is behind WT's `wavescanImport` Labs flag
+  - [x] Out of Labs: the import is no longer behind WT's `wavescanImport` flag
 
 ## Phase 6: Release pipeline & trust
 
 - [ ] `release.yml`: Azure Trusted Signing, Developer ID + notarization, checksums, provenance attestation, updater manifest
   - [x] In-app updates: stable and tester channels, "Restart to update", installed at the next launch at the latest, signed with the updater key; `release.yml` with checksums, attestations and `latest.json` ([ADR 0035](adr/0035-in-app-updates.md)). Verified on Windows: an installed copy updated itself, and refused a tampered installer
-  - [ ] Azure Trusted Signing (Windows) and Developer ID + notarization (macOS)
-  - [ ] macOS update checked by a tester
+  - [ ] Azure Trusted Signing (Windows) and Developer ID + notarization (macOS). Not in v0.1: the README tells people what the one-time warning looks like and how to get past it
+  - [x] macOS update checked (maintainer, 2026-10-26): a tester build updated itself to the next one
+  - [ ] macOS: do Screen Recording and Accessibility permissions survive an update? The app is only ad-hoc signed, and macOS ties those permissions to the signature, so they may need turning on again after each update until notarization. Needs a Mac with the game
 - [ ] The "What this app does" page, masked bug-report export
   - [x] Help & feedback: what the app did this session, offline troubleshooting, source at the build's commit, and Report a problem (prefilled GitHub issue, text only) ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). The masked picture export is still to do
   - The game-data download has no off switch (ADR 0034). Any new connection still needs its own ADR, and a switch unless that ADR says why not
