@@ -64,7 +64,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 
 - [x] Windows, 2026-10-09: auto scan of a whole bag (30 echoes) and a watch scan of 37 echoes (all +25, 5 substats), every field correct. The one false flag found (an untuned substat slot on a +5 echo marked "please check") is fixed, with the `spearback-plus5` fixture
 - [x] Windows, community testers (October 2026): scans of 200–500 echoes, few issues besides the echo sets above
-- [ ] macOS: waiting for a community tester. Checked by the maintainer, 2026-10-26, without the game: the app installs, opens, updates itself and reports "game not found" in Diagnostics. Scanning on a Mac is still untested, so v0.1 calls Mac a preview
+- [ ] macOS: waiting for a community tester. Checked by the maintainer, 2026-10-26, without the game: the app installs, opens, updates itself and reports "game not found" in Diagnostics. Mac ships in v0.1 anyway; scanning there gets fixed as reports come in
 
 ## Phase 4: Handoff + web import (optimizer repo)
 

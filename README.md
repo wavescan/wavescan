@@ -33,7 +33,7 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 | System | File |
 |---|---|
 | Windows 10/11 (64-bit) | `Wavescan_x64-setup.exe` |
-| macOS 13+ (Apple Silicon) | `Wavescan_aarch64.dmg` *(preview: the app runs and updates, but scanning hasn't been tested on a Mac yet)* |
+| macOS 13+ (Apple Silicon) | `Wavescan_aarch64.dmg` |
 
 You only download it once. **Wavescan updates itself:** when there's a new version, it downloads it in the background and shows **Restart to update**. If you don't restart, it installs the next time you open it. It never updates in the middle of a scan.
 
@@ -230,7 +230,7 @@ Found a security problem? Please follow [SECURITY.md](SECURITY.md) instead of op
 
 | Version | What it adds |
 |---|---|
-| **v0.1** | Echoes. Watch + auto mode on Windows, and a Mac preview |
+| **v0.1** | Echoes. Watch + auto mode, Windows + Mac |
 | v0.2 | Characters: level, ascension, weapon, forte levels, resonance chain, equipped echoes |
 | v0.3 | Weapon inventory |
 | Later | More languages, ultrawide screens |
