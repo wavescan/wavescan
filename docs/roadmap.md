@@ -7,7 +7,7 @@ The plan of record. Each phase has exit criteria. Don't start the next phase unt
 - [x] Docs scaffold: README, CLAUDE.md, architecture.md, rust-primer.md, ADRs 0001–0015, schema v1
 - [x] Toolchain: Docker check image (Rust 1.99, Node 24, `cargo-nextest`, `cargo-deny`); native setup guide in `docs/development.md`
 - [x] Tauri 2 + Vue 3 + TS + Tailwind/DaisyUI skeleton, `Cargo.toml [lints]` per ADR 0015, `deny.toml`
-- [x] CI (`ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc on `windows-latest` + `macos-14` (actions pinned by SHA, Dependabot)
+- [x] CI (`ci.yml`): fmt, clippy, nextest, deny, vitest, vue-tsc on `windows-latest` + `macos-15` (actions pinned by SHA, Dependabot)
 - [x] Trait seams + fakes (`traits.rs`, `testing.rs`) and the `safety` module with tests
 - [ ] **Spike, Windows:** find the window, WGC capture of the live game (borderless + fullscreen) at ≥30 fps, WinRT OCR on an echo panel crop, `SendInput` click lands in the game (as administrator, [ADR 0023](adr/0023-auto-mode-requires-administrator-on-windows.md))
   - [x] Window finder, WGC capture, WinRT OCR, and the Diagnostics screen are implemented (milestone 3)
