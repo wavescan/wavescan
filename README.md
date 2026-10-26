@@ -32,8 +32,8 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 
 | System | File |
 |---|---|
-| Windows 10/11 (64-bit) | `Wavescan_x64-setup.exe` *(coming soon)* |
-| macOS 13+ (Apple Silicon) | `Wavescan_aarch64.dmg` *(coming soon)* |
+| Windows 10/11 (64-bit) | `Wavescan_x64-setup.exe` |
+| macOS 13+ (Apple Silicon) | `Wavescan_aarch64.dmg` |
 
 You only download it once. **Wavescan updates itself:** when there's a new version, it downloads it in the background and shows **Restart to update**. If you don't restart, it installs the next time you open it. It never updates in the middle of a scan.
 
@@ -44,7 +44,12 @@ Get Wavescan from **[wavescan.app](https://wavescan.app)** or this repository's 
 - **built automatically** from the public source code by GitHub, with a checksum you can verify ([how](#verify-your-download)), and
 - **signed for updates:** the app only installs an update signed with our key, so nobody else can push one to you.
 
-The installers aren't signed with a Microsoft or Apple certificate yet, so Windows or macOS warns you once, when you first install. That's planned.
+The installers aren't signed with a Microsoft or Apple certificate yet (that's planned), so your computer warns you once, the first time:
+
+- **Windows** shows "Windows protected your PC". Click **More info → Run anyway**.
+- **Mac** says it can't check Wavescan. Go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to Wavescan.
+
+Updates don't show the warning again.
 
 Don't download the scanner from anywhere else.
 
@@ -127,7 +132,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 
 | Connection | Why | Sends |
 |---|---|---|
-| `github.com` (Releases) | Each time the app opens, checks for a new version of the scanner, and downloads it (about 6 MB) when there is one. It only installs a version signed with our key. | Nothing about you: a request for the latest version file, which says your version and system, like any download |
+| `github.com` (Releases) | Each time the app opens, checks for a new version of the scanner, and downloads it (about 6 MB) when there is one. It only installs a version signed with our key. GitHub hands the files over from its download server, so a firewall also shows `*.githubusercontent.com`. | Nothing about you: a request for the latest version file, which says your version and system, like any download |
 | `www.wutheringtools.com` | Each time the app opens, downloads the newest list of echoes, sets and characters, and their pictures, so new echoes and fixes are recognised without updating the app. The list is signed by Wuthering Tools, and the app ignores anything that isn't. Without internet, it uses the list it already has. | Nothing about you. It's the same public file for everyone: no account, no ID, no cookies |
 
 Neither has an off switch, because an old list or an old version means misread echoes. If you block them in a firewall, the scanner keeps working with what it has. **Help & feedback** shows whether your list and your version are up to date.
@@ -178,7 +183,10 @@ The scanner reads the word **Echoes** at the top left of the bag to know it's on
 Go to **System Settings → Privacy & Security → Screen Recording**, turn on *Wavescan*, then quit and reopen the scanner.
 
 **Windows: "Windows protected your PC"**
-This shouldn't appear for signed releases. If it does, check that you downloaded from this repository's Releases page, then click **More info → Run anyway**.
+The installer isn't signed with a Microsoft certificate yet, so Windows shows this once. Check that you downloaded it from this repository's Releases page, then click **More info → Run anyway**.
+
+**Mac: "Wavescan can't be opened" or "Apple could not verify Wavescan"**
+The app isn't signed with an Apple certificate yet. Go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to Wavescan. If macOS says the app is "damaged", run `xattr -dr com.apple.quarantine /Applications/Wavescan.app` in Terminal, then open it again.
 
 **Mac: auto mode or the click test says "permission needed: Accessibility"**
 Go to **System Settings → Privacy & Security → Accessibility**, turn on *Wavescan*, then try again.
