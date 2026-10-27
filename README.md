@@ -5,7 +5,12 @@
 
 # Wavescan
 
-> 🌐 [wavescan.app](https://wavescan.app) · **Status: in development, not released yet.** This page describes how the scanner will work at v0.1. Download links appear here once the first signed build ships.
+[![Latest release](https://img.shields.io/github/v/release/wavescan/wavescan)](https://github.com/wavescan/wavescan/releases/latest)
+[![CI](https://github.com/wavescan/wavescan/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/wavescan/wavescan/actions/workflows/ci.yml?query=branch%3Amain)
+[![CodeQL](https://github.com/wavescan/wavescan/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/wavescan/wavescan/security/code-scanning)
+[![License: GPL-3.0](https://img.shields.io/github/license/wavescan/wavescan)](LICENSE)
+
+> 🌐 [wavescan.app](https://wavescan.app) · **[Download the latest version](#download)**
 
 Wavescan is a small, free desktop app for Windows and Mac. It reads your **echoes** from the Wuthering Waves game window and turns them into a file you can import into [Wuthering Tools](https://wutheringtools.com) in one click. No typing in substats one by one.
 
