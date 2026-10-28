@@ -1,0 +1,46 @@
+name: Retry Mac jobs
+
+# GitHub sometimes has no Apple Silicon Mac free for a while. A macOS job that waits about
+# 15 minutes without a runner is cancelled with "The job was not acquired by Runner of type
+# hosted even after multiple attempts", which fails the whole run although nothing ran.
+# This re-runs such a run's failed jobs, up to twice. It only does that when every job that
+# didn't succeed never got a runner, so a real failure (a broken test, a bad build) is never
+# retried, and a run cancelled because a newer push replaced it is left alone.
+#
+# It checks out no code and reads only the run's job list, so the write permission it needs
+# to start a re-run can't be steered by what's in a branch.
+
+on:
+  workflow_run:
+    workflows: [CI, Tester build, Release]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  retry:
+    name: Re-run jobs that never got a runner
+    if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.run_attempt < 3
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: |
+          # Jobs that failed or were cancelled, as "<runner name>|<job name>". A job that
+          # never started has no runner name.
+          jobs=$(gh api "repos/$GH_REPO/actions/runs/$RUN_ID/attempts/$ATTEMPT/jobs" --paginate \
+            -q '.jobs[] | select(.conclusion == "failure" or .conclusion == "cancelled") | "\(.runner_name // "")|\(.name)"')
+          echo "$jobs"
+          if [ -z "$jobs" ]; then
+            echo "Nothing failed or was cancelled; not retrying."; exit 0
+          fi
+          if echo "$jobs" | grep -v '^|' | grep -q .; then
+            echo "A job ran and failed, so this is a real failure; not retrying."; exit 0
+          fi
+          echo "::notice::Every failed job never got a runner (GitHub had no Mac free). Re-running them."
+          gh run rerun "$RUN_ID" --failed
