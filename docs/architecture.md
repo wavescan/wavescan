@@ -179,7 +179,7 @@ Only these outbound connections exist ([ADR 0010](adr/0010-no-telemetry-network-
 
 Adding a host means: ADR → this table → the README table → CSP `connect-src` (for the webview; Rust plugins like the updater only reach their configured endpoint).
 
-**Pages opened in the browser aren't Wavescan connections.** Help & feedback, Report a problem, the auto-mode risk step and Review's "Copy and open Wuthering Tools" can ask the OS to open a page in the user's default browser, limited by the opener scope to `https://github.com/wavescan/wavescan/*`, Kuro's Fair Play Policy page and `https://www.wutheringtools.com/settings` ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md)). The browser makes that request; Wavescan sends nothing, and a bug report is only posted when the user presses Submit on GitHub.
+**Pages opened in the browser aren't Wavescan connections.** Help & feedback, Report a problem, the auto-mode risk step and Review's "Copy and open Wuthering Tools" / "Copy and open Tacet Lab" can ask the OS to open a page in the user's default browser, limited by the opener scope to `https://github.com/wavescan/wavescan/*`, Kuro's Fair Play Policy page, `https://www.wutheringtools.com/settings` and `https://dj12421.github.io/Tacet-Lab/?import=1` ([ADR 0028](adr/0028-browser-links-mini-window-and-saved-scan.md), [ADR 0037](adr/0037-other-sites-can-import-the-scan.md)). The browser makes that request; Wavescan sends nothing, and a bug report is only posted when the user presses Submit on GitHub.
 
 The Tesseract reader makes no connections: its worker script, WebAssembly core and model (`public/tesseract/`, served from the app at `/tesseract/` by the Vite config) all load from the app itself, and tesseract.js's default CDN is never used.
 

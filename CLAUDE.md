@@ -111,7 +111,8 @@ Parsing, fuzzy matching and ROI layouts come from **`@wutheringtools/scanner-cor
 
 | Change | Also check |
 |---|---|
-| `schema/scan.v1.json` | Bump version per ADR 0008. Update the web app's import mapper in the optimizer repo. Update the golden JSON |
+| `schema/scan.v1.json` | Bump version per ADR 0008. Update the web app's import mapper in the optimizer repo, and tell Tacet Lab's developer (ADR 0037). Update the golden JSON |
+| Sites the scan can be opened in | `IMPORT_SITES` in `src/feedback/links.ts`, the opener scope in `capabilities/default.json` (exact URL), ADR 0037 |
 | ROI / layout | `docs/screens/*.md`, fixtures at **every** resolution, the User ID mask region |
 | Input / navigator | Abort tests, click clamp tests, the README auto-mode section |
 | Network / updater | README connections table, `docs/architecture.md#network`, CSP, capabilities |
