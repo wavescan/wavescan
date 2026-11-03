@@ -467,13 +467,12 @@ const queuePosition = computed(() => {
           </dd>
         </div>
       </dl>
-      <!-- Wuthering Tools is the main action; other sites that import the scan follow. -->
+      <!-- One equal button per site that imports the scan (IMPORT_SITES order). -->
       <button
-        v-for="(site, i) in IMPORT_SITES"
+        v-for="site in IMPORT_SITES"
         :key="site.url"
         type="button"
-        class="btn h-auto min-h-10 py-2 leading-tight"
-        :class="i === 0 ? 'btn-primary' : 'btn-outline'"
+        class="btn btn-primary h-auto min-h-10 py-2 leading-tight"
         :disabled="built.scan.echoes.length === 0"
         @click="copyAndOpen(site)"
       >

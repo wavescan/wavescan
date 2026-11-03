@@ -20,7 +20,7 @@ Options:
 
 ## Decision
 
-- **Add "Copy and open Tacet Lab"** under "Copy and open Wuthering Tools" on the Review screen. WT stays the main action; Tacet Lab's button is outlined. Both copy the same scan, unchanged.
+- **Add "Copy and open Tacet Lab"** under "Copy and open Wuthering Tools" on the Review screen. Both buttons look the same: neither site is presented as the lesser option. Both copy the same scan, unchanged.
 - **Add one exact URL to the opener scope:** `https://dj12421.github.io/Tacet-Lab/?import=1`. The scope is a glob, so the `?` is written `[?]` (a bare `?` matches any one character). Not the rest of `dj12421.github.io`, and not the rest of Tacet Lab.
 - **Sites live in one list,** `IMPORT_SITES` in `src/feedback/links.ts` (name, URL, where to paste). The buttons and the "opened in your browser" line come from it, so another site is one entry plus the scope line, with an ADR note.
 - **Wording says "Wuthering Tools or Tacet Lab"** where the app and README used to say only WT. Claims about what happens after the paste (stored only in the browser, asks about unchecked values) stay attached to WT, the site we can vouch for.
