@@ -1,5 +1,5 @@
 //! Wavescan: reads Wuthering Waves echoes from the game window and exports them as a
-//! `WutheringToolsScan` JSON file for Wuthering Tools.
+//! `WutheringToolsScan` JSON file for Wuthering Tools (and other sites that import it, like Tacet Lab).
 //!
 //! Start with `docs/architecture.md` and `docs/rust-primer.md`. In short: this crate is a
 //! thin layer of OS adapters (window, capture, OCR, input) behind traits; the logic that

@@ -12,7 +12,7 @@
 
 > 🌐 [wavescan.app](https://wavescan.app) · **[Download the latest version](#download)**
 
-Wavescan is a small, free desktop app for Windows and Mac. It reads your **echoes** from the Wuthering Waves game window and turns them into a file you can import into [Wuthering Tools](https://wutheringtools.com) in one click. No typing in substats one by one.
+Wavescan is a small, free desktop app for Windows and Mac. It reads your **echoes** from the Wuthering Waves game window and turns them into a file you can import into [Wuthering Tools](https://wutheringtools.com) or [Tacet Lab](https://dj12421.github.io/Tacet-Lab/) in one click. No typing in substats one by one.
 
 Characters (level, weapon, forte, resonance chain) and weapons come in later updates. See [What's coming](#whats-coming).
 
@@ -24,7 +24,7 @@ Characters (level, weapon, forte, resonance chain) and weapons come in later upd
 - [Will it work on my PC/Mac?](#will-it-work-on-my-pcmac)
 - [Your first scan](#your-first-scan)
 - [Is it safe?](#is-it-safe)
-- [Importing into Wuthering Tools](#importing-into-wuthering-tools)
+- [Importing your scan](#importing-your-scan)
 - [Change how it looks](#change-how-it-looks)
 - [Troubleshooting](#troubleshooting)
 - [Check your setup (Diagnostics)](#check-your-setup-diagnostics)
@@ -83,7 +83,7 @@ The scanner has two modes. **Watch mode is the default, and it's what we recomme
    - Playing on one screen? Press **Mini window** for a small counter that stays on top of the game.
    - If you go to another screen in the game, or a popup covers the bag, the scanner stops reading and says so. Go back to **Bag → Echoes** (or close the popup) and it carries on.
 4. When you're done, press **Stop and review**. Each echo shows its picture from the game, so you can spot it quickly. Anything the scanner wasn't sure about is marked **check**. Press **Check them now** to go through them one by one. For a stat, the scanner only offers values the game can actually roll.
-5. Press **Copy and open Wuthering Tools** (see [Importing into Wuthering Tools](#importing-into-wuthering-tools)). **Save file** is coming.
+5. Press **Copy and open Wuthering Tools** or **Copy and open Tacet Lab** (see [Importing your scan](#importing-your-scan)). **Save file** is coming.
 
 If you close the scanner before exporting, it offers to carry on with that scan next time.
 
@@ -119,7 +119,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 - It works out each echo's set by comparing the small set icon with reference copies of the set icons. The copies come with the app, and newer ones arrive with the game-data download below. Your pictures are never uploaded for this.
 - Each time it opens, it downloads the newest list of echoes, sets and their pictures from Wuthering Tools, so new echoes and fixes are recognised without updating the app. See the table below.
 - Each time it opens, it checks GitHub for a new version of the scanner, and installs one only if it's signed with our key. See the table below.
-- It opens a web page only when you click a link in **Help & feedback**, **Report a problem**, the auto mode warning or **Copy and open Wuthering Tools**, and only pages on this GitHub repository, Kuro's Fair Play Policy or Wuthering Tools' Settings page. Your browser opens them; the scanner itself doesn't connect to anything.
+- It opens a web page only when you click a link in **Help & feedback**, **Report a problem**, the auto mode warning or a **Copy and open** button, and only pages on this GitHub repository, Kuro's Fair Play Policy, Wuthering Tools' Settings page or Tacet Lab's import screen. Your browser opens them; the scanner itself doesn't connect to anything.
 - It keeps a copy of your current scan on your computer (echo stats only, no pictures) so you don't lose it if you close the app. **Clear this scan** on the Review screen deletes it.
 - It keeps your in-game name on your computer, if you enter it, to recognise echoes on your main character. It's never put in the scan or in a report.
 - In auto mode only, it sends mouse clicks and wheel scrolls to the game window. While auto mode is on, it also listens for **F8** so you can stop it; F8 goes back to normal as soon as auto mode stops.
@@ -129,7 +129,7 @@ We built the scanner so you don't have to trust us. You can check everything you
 - ❌ It never reads or changes the game's memory, and it doesn't inject anything into the game.
 - ❌ It never opens, reads or changes game files.
 - ❌ It never collects your data. There are no accounts, no analytics and no tracking.
-- ❌ It never uploads your scan. Your scan stays on your computer until *you* paste or open it in Wuthering Tools, which also stores it only in your browser.
+- ❌ It never uploads your scan. Your scan stays on your computer until *you* paste it into a site like Wuthering Tools (which stores it only in your browser) or Tacet Lab.
 - ❌ It never reads your **User ID**. The game prints it in the bottom-right corner. The scanner skips that area and blacks it out of any picture it saves for bug reports.
 - ❌ It never saves screenshots, unless you turn on "Save debug frames" yourself.
 
@@ -155,12 +155,22 @@ Each release lists a SHA-256 checksum and a GitHub build attestation.
 
 The result should match the checksum on the Releases page. With the [GitHub CLI](https://cli.github.com) you can also run `gh attestation verify <file> --repo wavescan/wavescan`. That proves GitHub built the file from this repository's code.
 
-## Importing into Wuthering Tools
+## Importing your scan
+
+Your scan works with any site that imports Wavescan scans. Two are built in.
+
+**Wuthering Tools**
 
 1. On the **Review** screen, press **Copy and open Wuthering Tools**. The scanner copies your scan and opens Wuthering Tools' Settings in your browser.
 2. Open **Wavescan**, paste the scan and choose whether to add to your echoes or replace them.
 
-Wuthering Tools checks every echo first and lists any it skipped, with the reason. Echoes you already have aren't added twice, and locked echoes are never removed. **Copy scan only** copies without opening the browser.
+Wuthering Tools checks every echo first and lists any it skipped, with the reason. Echoes you already have aren't added twice, and locked echoes are never removed.
+
+**Tacet Lab**
+
+On the **Review** screen, press **Copy and open Tacet Lab**. The scanner copies your scan and opens Tacet Lab's import screen in your browser. Paste the scan there. Tacet Lab is made by another community developer, so its import works the way its site describes.
+
+**Somewhere else?** **Copy scan only** copies the scan without opening a browser, so you can paste it anywhere.
 
 ## Change how it looks
 

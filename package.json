@@ -2,7 +2,7 @@
   "name": "wavescan",
   "private": true,
   "version": "0.0.1",
-  "description": "Reads your Wuthering Waves echoes from the game window and exports them for Wuthering Tools.",
+  "description": "Reads your Wuthering Waves echoes from the game window and exports them for Wuthering Tools, Tacet Lab and other build planners.",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "engines": {

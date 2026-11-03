@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { loadBundledScannerData } from "@/data/scannerData";
 import { extractEcho } from "@/session/echoExtract";
 import { newIssueUrl, MAX_URL_BODY, reportBody, reportTitle, type ReportContext } from "@/feedback/issue";
-import { ALLOWED_URL_PREFIXES, isAllowedUrl, issueSearchUrl, REPO_URL, sourceUrl, WT_IMPORT_URL } from "@/feedback/links";
+import { ALLOWED_URL_PREFIXES, IMPORT_SITES, isAllowedUrl, issueSearchUrl, REPO_URL, sourceUrl, TACET_LAB_IMPORT_URL, WT_IMPORT_URL } from "@/feedback/links";
 import { problemForAutoStop, problemForError } from "@/feedback/problems";
 import type { AutoScanStop } from "@/auto/autoScan";
 import { readinessItems, readinessSummary } from "@/setup/readiness";
@@ -19,14 +19,22 @@ beforeAll(() => {
 const app: AppInfo = { name: "Wavescan", version: "0.1.0", platform: "windows", build: "269ae79", elevated: false };
 
 describe("links", () => {
-  it("only allows the repository's pages, the Fair Play policy and Wuthering Tools' import", () => {
+  it("only allows the repository's pages, the Fair Play policy and the import pages", () => {
     expect(isAllowedUrl(`${REPO_URL}/issues/new?title=x`)).toBe(true);
     expect(isAllowedUrl(WT_IMPORT_URL)).toBe(true);
+    expect(isAllowedUrl(TACET_LAB_IMPORT_URL)).toBe(true);
     expect(isAllowedUrl("https://www.wutheringtools.com/")).toBe(false);
+    expect(isAllowedUrl("https://dj12421.github.io/Tacet-Lab/")).toBe(false);
+    expect(isAllowedUrl("https://dj12421.github.io/other-site/")).toBe(false);
     expect(isAllowedUrl("https://github.com/wavescan/wavescan-evil/issues")).toBe(false);
     expect(isAllowedUrl("https://github.com/someone/else")).toBe(false);
     expect(isAllowedUrl("https://example.com")).toBe(false);
     expect(isAllowedUrl("file:///C:/Windows")).toBe(false);
+  });
+
+  it("offers Wuthering Tools first, then Tacet Lab, each at an allowed import page", () => {
+    expect(IMPORT_SITES.map((site) => site.name)).toEqual(["Wuthering Tools", "Tacet Lab"]);
+    for (const site of IMPORT_SITES) expect(isAllowedUrl(site.url)).toBe(true);
   });
 
   it("matches the opener scope in the Tauri capability (ADR 0028)", () => {
@@ -36,7 +44,9 @@ describe("links", () => {
     const opener = capability.permissions.find(
       (p): p is { identifier: string; allow: { url: string }[] } => typeof p === "object" && p.identifier === "opener:allow-open-url",
     );
-    const scoped = opener?.allow.map((a) => a.url.replace(/\*$/, "")) ?? [];
+    // The scope is a glob: a trailing * allows the pages below a prefix, and [?] is a
+    // literal "?" (a bare ? would match any one character).
+    const scoped = opener?.allow.map((a) => a.url.replace(/\*$/, "").replace("[?]", "?")) ?? [];
     expect(scoped).toEqual([...ALLOWED_URL_PREFIXES]);
     expect(capability.permissions).not.toContain("opener:default");
   });
