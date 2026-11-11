@@ -1,0 +1,17 @@
+{
+  "echo": "IceglintDancer",
+  "echoSet": null,
+  "cost": 1,
+  "rank": 5,
+  "level": 25,
+  "stat": "ATK",
+  "substats": [
+    { "type": "ATK", "value": 7.9 },
+    { "type": "BasicAttackDMGBonus", "value": 7.9 },
+    { "type": "HP", "value": 11.6 },
+    { "type": "DEF", "value": 12.8 },
+    { "type": "ATK_FLAT", "value": 40 }
+  ],
+  "equippedBy": null,
+  "notes": "16:9 at 2560x1440, Windows. Issue #89: a short last row 'ATK 40' was dropped by Tesseract."
+}
