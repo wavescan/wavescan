@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { GRID_16_10 } from "@/auto/grid";
-import { MAX_READS_IN_FLIGHT, createNavigator, measureMove, type GridPosition, type NavigatorOptions } from "@/auto/navigator";
+import {
+  MAX_READS_IN_FLIGHT,
+  createNavigator,
+  measureMove,
+  repinAnchor,
+  type GridPosition,
+  type NavigatorOptions,
+} from "@/auto/navigator";
 import { createFakeGame, fakeEchoes, type FakeEcho, type FakeGameOptions } from "./support/fakeGame";
 
 // The auto-mode navigator against a pretend echo grid (tests/support/fakeGame.ts): it has
@@ -118,6 +125,20 @@ describe("navigator", () => {
     expect(result.reason).toBe("end-of-list");
     expect(ids).toEqual(range(48));
   });
+
+  // Auto-mode report (2026-11-11): a row was read, the grid scrolled, then a whole row was
+  // skipped. Rows on real captures sit closer than `rowPitch` (0.195 vs 0.1967 at 2560×1440,
+  // 0.176 vs 0.177 at 16:10), and numbering rows from the top of the list let that add up
+  // until two rows got the same number. Identical-looking rows (a run of the same echo) got
+  // past the thumbnail check. 1% here skips a row within 100 rows without the fix; much
+  // more trips the row detection's own pitch tolerance, which stops the run instead.
+  for (const frame of [{ width: 2560, height: 1440 }, { width: 2880, height: 1800 }]) {
+    it(`skips no row when real rows sit closer than measured and look the same: ${frame.width}×${frame.height}`, async () => {
+      const { result, ids } = await scan({ echoes: fakeEchoes(600), frame, pitchScale: 0.99, art: () => 90 });
+      expect(result.reason, result.detail).toBe("end-of-list");
+      expect(ids).toEqual(range(600));
+    }, 30_000);
+  }
 
   it("copes with clicks and scrolls that show up a few frames late", async () => {
     const { result, ids } = await scan({ echoes: fakeEchoes(40), lag: 3 });
@@ -315,5 +336,18 @@ describe("measureMove", () => {
   it("is 0 when nothing moved, and when there are no edges", () => {
     expect(measureMove(GRID_16_10, [0.3, 0.3 + p], [0.3, 0.3 + p])).toBeCloseTo(0);
     expect(measureMove(GRID_16_10, [], [0.3])).toBe(0);
+  });
+});
+
+describe("repinAnchor", () => {
+  const p = GRID_16_10.rowPitch;
+  it("pins to the nearest edge on screen, numbered from the old anchor", () => {
+    // Row 10 at 0.5 moves up 0.05; the edges found are a little off where the pitch predicts.
+    expect(repinAnchor({ y: 0.5, number: 10 }, 0.05, [0.452 - p, 0.452, 0.452 + p], GRID_16_10)).toEqual({ y: 0.452, number: 10 });
+    expect(repinAnchor({ y: 0.5, number: 10 }, 0.05, [0.452 + p, 0.452 + 2 * p], GRID_16_10)).toEqual({ y: 0.452 + p, number: 11 });
+  });
+
+  it("just moves the anchor when no edge was found", () => {
+    expect(repinAnchor({ y: 0.5, number: 3 }, 0.05, [], GRID_16_10)).toEqual({ y: 0.45, number: 3 });
   });
 });

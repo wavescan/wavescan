@@ -211,6 +211,28 @@ export function measureMove(layout: GridLayout, before: readonly number[], after
   return median(moves);
 }
 
+/** A row edge (frame y fraction) and its row number, counted from the top of the list. */
+export interface RowAnchor {
+  y: number;
+  number: number;
+}
+
+/**
+ * Moves `anchor` up by `move` (the grid's measured move) and pins it to the edge in `edges`
+ * nearest to where it should now be, numbered from the old anchor. That edge is really on
+ * screen, so a small error in a measured move or in `rowPitch` is dropped at every scroll
+ * instead of adding up over the list. Unchanged apart from the move when there's no edge.
+ */
+export function repinAnchor(anchor: RowAnchor, move: number, edges: readonly number[], layout: GridLayout): RowAnchor {
+  const moved = { y: anchor.y - move, number: anchor.number };
+  let nearest: number | undefined;
+  for (const edge of edges) {
+    if (nearest === undefined || Math.abs(edge - moved.y) < Math.abs(nearest - moved.y)) nearest = edge;
+  }
+  if (nearest === undefined) return moved;
+  return { y: nearest, number: moved.number + Math.round((nearest - moved.y) / layout.rowPitch) };
+}
+
 /** Why a run is ending, thrown inside `run` and turned into its result. */
 interface StopSignal {
   navigatorStop: NavigatorStop;
@@ -512,13 +534,21 @@ export function createNavigator<Echo extends NavigatorEcho>(
       const origin = rows[0]?.barTop;
       if (origin === undefined) throw stopWith("grid-not-found", "No echo grid on screen. Open Bag → Echoes first.");
 
-      /** How far the grid has scrolled since the top (frame fraction). */
-      let scrolled = 0;
+      /**
+       * A row edge on screen and its row number, counted from the top of the list. Every
+       * other row is numbered from it, so it's moved with each scroll and pinned again to the
+       * nearest edge really on screen. Rows are then only ever counted a few pitches from a
+       * real edge: `rowPitch` is a rounded measurement (real rows can sit ~0.8% closer), and
+       * counting from the top of the list let that add up until two rows got the same number
+       * and one was skipped (a run of identical echoes looks the same after the scroll, so the
+       * thumbnail check below didn't catch it).
+       */
+      let anchor = { y: origin, number: 0 };
       /** Highest row number read so far. */
       let done = -1;
       /** Calibrated grid move per wheel notch. */
       let perTick = layout.rowPitch * NOMINAL_NOTCH_ROWS;
-      const rowNumber = (barTop: number) => Math.round((barTop + scrolled - origin) / layout.rowPitch);
+      const rowNumber = (barTop: number) => anchor.number + Math.round((barTop - anchor.y) / layout.rowPitch);
 
       for (;;) {
         for (const row of rows) {
@@ -578,7 +608,7 @@ export function createNavigator<Echo extends NavigatorEcho>(
           }
           stalls = 0;
           perTick = Math.max(perTick, move / ticks);
-          scrolled += move;
+          anchor = repinAnchor(anchor, move, next.edges, layout);
           current = next;
           rows = visibleRows(layout, current.sample);
           if (rows.length === 0) {

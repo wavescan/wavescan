@@ -29,6 +29,11 @@ export interface FakeGameOptions {
   frame?: FrameSize;
   /** Grid move per wheel notch, as a share of a row (1/8 measured at 1920×1080). */
   notchRows?: number;
+  /**
+   * The game's real row spacing as a share of `layout.rowPitch`. 1 by default. The layout's
+   * pitch is a rounded measurement: rows on real 16:9 captures sit about 0.8% closer.
+   */
+  pitchScale?: number;
   /** Rows already scrolled past when the test starts. */
   startRows?: number;
   /** Index of the echo selected when the test starts (the game selects the first). */
@@ -87,8 +92,9 @@ export function createFakeGame(options: FakeGameOptions) {
   const rowCount = Math.ceil(echoes.length / 6);
   const top0 = TOP_ROW_16_10 * scale;
   const stripBottom = layout.strip.y + layout.strip.height;
+  const pitch = layout.rowPitch * (options.pitchScale ?? 1);
   // The list ends with the last row's level bar just inside the scrolling area.
-  const lastBarTop = top0 + (rowCount - 1) * layout.rowPitch;
+  const lastBarTop = top0 + (rowCount - 1) * pitch;
   const maxOffset = Math.max(0, lastBarTop + layout.levelBarHeight + 0.01 * scale - stripBottom);
   const notch = (options.notchRows ?? 1 / 8) * layout.rowPitch;
   const art = options.art ?? ((echo: FakeEcho, cy: number) => 40 + ((echo.id * 37 + cy * 11) % 9) * 18);
@@ -139,7 +145,7 @@ export function createFakeGame(options: FakeGameOptions) {
     spring = { from: offset, to: target, start: seq + BOUNCE_HOLD_FRAMES };
   }
 
-  const barTop = (row: number) => top0 + row * layout.rowPitch - offset;
+  const barTop = (row: number) => top0 + row * pitch - offset;
 
   /** The echo index under a point, or null for empty space. */
   function cardAt(point: FracPoint): number | null {
@@ -181,7 +187,7 @@ export function createFakeGame(options: FakeGameOptions) {
         let value = 80;
         if (column >= 0) {
           // Only the row whose card can cover this y, and its neighbours.
-          const near = Math.floor((fy + offset - top0) / layout.rowPitch);
+          const near = Math.floor((fy + offset - top0) / pitch);
           for (let row = Math.max(0, near); row <= Math.min(rowCount - 1, near + 1); row++) {
             const index = row * 6 + column;
             if (index >= echoes.length) continue;
