@@ -7,6 +7,8 @@ export const REPO_URL = "https://github.com/wavescan/wavescan";
 export const FAIR_PLAY_URL = "https://wutheringwaves.kurogames.com/en/main/news/detail/742";
 /** Wuthering Tools' Settings, where its Wavescan section imports the copied scan. */
 export const WT_IMPORT_URL = "https://www.wutheringtools.com/settings";
+/** The invite to Wavescan's Discord server (doesn't expire), linked from the sidebar. */
+export const DISCORD_URL = "https://discord.gg/2dP2SnsZXM";
 /** Tacet Lab, a community build planner; `?import=1` opens its import screen straight away. */
 export const TACET_LAB_IMPORT_URL = "https://dj12421.github.io/Tacet-Lab/?import=1";
 
@@ -24,7 +26,7 @@ export const IMPORT_SITES: readonly ImportSite[] = [
 ];
 
 /** The URL prefixes the app may open (mirrors the capability scope). */
-export const ALLOWED_URL_PREFIXES = [`${REPO_URL}/`, FAIR_PLAY_URL, WT_IMPORT_URL, TACET_LAB_IMPORT_URL] as const;
+export const ALLOWED_URL_PREFIXES = [`${REPO_URL}/`, FAIR_PLAY_URL, WT_IMPORT_URL, TACET_LAB_IMPORT_URL, DISCORD_URL] as const;
 
 /** True if `url` is one the app is allowed to open. */
 export function isAllowedUrl(url: string): boolean {

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { loadBundledScannerData } from "@/data/scannerData";
 import { extractEcho } from "@/session/echoExtract";
 import { newIssueUrl, MAX_URL_BODY, reportBody, reportTitle, type ReportContext } from "@/feedback/issue";
-import { ALLOWED_URL_PREFIXES, IMPORT_SITES, isAllowedUrl, issueSearchUrl, REPO_URL, sourceUrl, TACET_LAB_IMPORT_URL, WT_IMPORT_URL } from "@/feedback/links";
+import { ALLOWED_URL_PREFIXES, DISCORD_URL, IMPORT_SITES, isAllowedUrl, issueSearchUrl, REPO_URL, sourceUrl, TACET_LAB_IMPORT_URL, WT_IMPORT_URL } from "@/feedback/links";
 import { problemForAutoStop, problemForError } from "@/feedback/problems";
 import type { AutoScanStop } from "@/auto/autoScan";
 import { readinessItems, readinessSummary } from "@/setup/readiness";
@@ -26,6 +26,8 @@ describe("links", () => {
     expect(isAllowedUrl("https://www.wutheringtools.com/")).toBe(false);
     expect(isAllowedUrl("https://dj12421.github.io/Tacet-Lab/")).toBe(false);
     expect(isAllowedUrl("https://dj12421.github.io/other-site/")).toBe(false);
+    expect(isAllowedUrl(DISCORD_URL)).toBe(true);
+    expect(isAllowedUrl("https://discord.gg/someone-else")).toBe(false);
     expect(isAllowedUrl("https://github.com/wavescan/wavescan-evil/issues")).toBe(false);
     expect(isAllowedUrl("https://github.com/someone/else")).toBe(false);
     expect(isAllowedUrl("https://example.com")).toBe(false);

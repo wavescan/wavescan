@@ -51,6 +51,7 @@ Options for opening pages:
 - When Wuthering Tools ships its `/import/scan` page (ADR 0009), add that URL to the scope for "Open in Wuthering Tools".
   **Done 2026-10-16:** the scope has `https://www.wutheringtools.com/settings`, where WT's Wavescan import lives, for the "Copy and open Wuthering Tools" button on the Review screen. Only that exact URL, not the rest of the site.
   **Added 2026-10-31 ([ADR 0037](0037-other-sites-can-import-the-scan.md)):** `https://dj12421.github.io/Tacet-Lab/?import=1`, Tacet Lab's import screen, for "Copy and open Tacet Lab". Again only that exact URL.
+  **Added 2026-11-11 ([ADR 0038](0038-discord-link-in-the-sidebar.md)):** `https://discord.gg/2dP2SnsZXM`, the invite to Wavescan's Discord server, for the sidebar's Discord link. Again only that exact URL.
 
 ## Related
 

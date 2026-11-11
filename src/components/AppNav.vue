@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { errorMessage, openUrl } from "@/ipc/commands";
 import type { AppInfo } from "@/ipc/types";
+import { DISCORD_URL } from "@/feedback/links";
 import { useScanStore } from "@/review/scanStore";
 import { summarize } from "@/review/list";
 import { go, navigation, type View } from "@/ui/navigation";
 import AppIcon, { type IconName } from "@/components/AppIcon.vue";
+import DiscordIcon from "@/components/DiscordIcon.vue";
 import WavescanMark from "@/components/WavescanMark.vue";
 
-// The sidebar: every screen, how many echoes still need a look, and which build this is.
+// The sidebar: every screen, how many echoes still need a look, a link to Wavescan's Discord
+// and which build this is.
 // While a scan runs, the mark at the top reacts to each echo read (WavescanMark's `beat`).
 
 defineProps<{ info: AppInfo | null }>();
@@ -25,6 +29,18 @@ const ITEMS: { view: View; label: string; icon: IconName }[] = [
 ];
 
 const markBeat = computed(() => (navigation.busy ? summary.value.total : 0));
+
+/** Why the Discord link didn't open, with the address to type in instead. */
+const discordError = ref<string | null>(null);
+
+async function openDiscord() {
+  try {
+    discordError.value = null;
+    await openUrl(DISCORD_URL);
+  } catch (error) {
+    discordError.value = `Couldn't open your browser: ${errorMessage(error)}. The address is ${DISCORD_URL}`;
+  }
+}
 
 const isCurrent = (view: View) => navigation.view === view || (view === "help" && navigation.view === "report");
 </script>
@@ -73,6 +89,22 @@ const isCurrent = (view: View) => navigation.view === view || (view === "help" &
       >live</span>
     </button>
     <div class="flex-1" />
+    <button
+      type="button"
+      class="flex min-h-11 items-center gap-3 rounded-sm px-3 text-left text-sm opacity-80 transition-colors hover:bg-base-200 hover:opacity-100"
+      aria-label="Join the Wavescan Discord (opens in your browser)"
+      @click="openDiscord"
+    >
+      <DiscordIcon />
+      <span class="flex-1">Discord</span>
+    </button>
+    <p
+      v-if="discordError"
+      role="alert"
+      class="px-2 pb-2 text-xs break-words text-error"
+    >
+      {{ discordError }}
+    </p>
     <div class="px-2 text-xs opacity-70">
       <template v-if="info">
         v{{ info.version }}<template v-if="info.build">

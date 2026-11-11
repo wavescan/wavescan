@@ -69,3 +69,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0035](./0035-in-app-updates.md) | In-app updates: two channels, installed at the next launch at the latest | accepted | | distribution, network, security, supply-chain, ui |
 | [0036](./0036-colour-schemes-and-bundled-title-fonts.md) | Three colour schemes from Wuthering Waves, a theme picker, and bundled title fonts | accepted | | ui, dependencies, privacy |
 | [0037](./0037-other-sites-can-import-the-scan.md) | Other sites can import the scan: Tacet Lab next to Wuthering Tools | accepted | | ui, security, interop |
+| [0038](./0038-discord-link-in-the-sidebar.md) | A link to Wavescan's Discord in the sidebar | accepted | | ui, security, community |
