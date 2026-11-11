@@ -168,7 +168,7 @@ describe("createBundledTesseract", () => {
 
   it("starts the pool from the bundled files on the first read, once", async () => {
     const started: unknown[] = [];
-    const tesseract = createBundledTesseract("http://tauri.localhost/tesseract", async (paths) => {
+    const tesseract = createBundledTesseract("https://tauri.localhost/tesseract", async (paths) => {
       started.push(paths);
       return [answers("ok")];
     });
@@ -177,9 +177,9 @@ describe("createBundledTesseract", () => {
     expect([a![0]!.lines[0]!.text, b![0]!.lines[0]!.text]).toEqual(["ok", "ok"]);
     expect(started).toEqual([
       {
-        workerPath: "http://tauri.localhost/tesseract/worker.min.js",
-        corePath: "http://tauri.localhost/tesseract/tesseract-core-simd-lstm.js",
-        langPath: "http://tauri.localhost/tesseract",
+        workerPath: "https://tauri.localhost/tesseract/worker.min.js",
+        corePath: "https://tauri.localhost/tesseract/tesseract-core-simd-lstm.js",
+        langPath: "https://tauri.localhost/tesseract",
         workerBlobURL: false,
       },
     ]);
@@ -192,7 +192,7 @@ describe("createBundledTesseract", () => {
       if (attempts === 1) throw startFailure(undefined);
       return [answers("ok")];
     };
-    const tesseract = createBundledTesseract("http://x/tesseract", start, javascript);
+    const tesseract = createBundledTesseract("https://x/tesseract", start, javascript);
 
     await expect(tesseract.read([crop])).rejects.toThrow(
       "Tesseract couldn't read the echo: a Tesseract worker couldn't load its script (worker.min.js: 200 text/javascript; " +
@@ -207,7 +207,7 @@ describe("createBundledTesseract", () => {
     const broken = fakeWorker(() => {
       throw new Error("no model");
     });
-    const tesseract = createBundledTesseract("http://x/tesseract", async () => [broken], javascript);
+    const tesseract = createBundledTesseract("https://x/tesseract", async () => [broken], javascript);
     await expect(tesseract.read([crop])).rejects.toThrow("Tesseract couldn't read the echo: no model");
   });
 });
@@ -283,7 +283,7 @@ describe("Tesseract start failures", () => {
       url.endsWith(".js")
         ? Promise.resolve(new Response("", { status: 200, headers: { "content-type": "text/html" } }))
         : Promise.reject(new TypeError("Failed to fetch"))) as typeof fetch;
-    await expect(describeAssets(["http://tauri.localhost/tesseract/worker.min.js", "http://x/eng.traineddata.gz"], fakeFetch)).resolves.toBe(
+    await expect(describeAssets(["https://tauri.localhost/tesseract/worker.min.js", "https://x/eng.traineddata.gz"], fakeFetch)).resolves.toBe(
       "worker.min.js: 200 text/html; eng.traineddata.gz: Failed to fetch",
     );
   });

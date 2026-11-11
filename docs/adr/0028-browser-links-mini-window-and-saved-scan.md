@@ -50,6 +50,7 @@ Options for opening pages:
 - **Don't** put pictures, the User ID region or anything outside the echo panel in a report or in the saved scan.
 - When Wuthering Tools ships its `/import/scan` page (ADR 0009), add that URL to the scope for "Open in Wuthering Tools".
   **Done 2026-10-16:** the scope has `https://www.wutheringtools.com/settings`, where WT's Wavescan import lives, for the "Copy and open Wuthering Tools" button on the Review screen. Only that exact URL, not the rest of the site.
+  **Added 2026-10-31 ([ADR 0037](0037-other-sites-can-import-the-scan.md)):** `https://dj12421.github.io/Tacet-Lab/?import=1`, Tacet Lab's import screen, for "Copy and open Tacet Lab". Again only that exact URL.
 
 ## Related
 

@@ -72,7 +72,7 @@ const STATUS = {
         {{ summary.ready === summary.total && summary.total > 0 ? "Ready when you are" : "Let's get the game ready" }}
       </h1>
       <p class="max-w-2xl opacity-80">
-        Wavescan reads your echoes from the game window and turns them into a file for Wuthering Tools.
+        Wavescan reads your echoes from the game window and turns them into a scan you can import into Wuthering Tools or Tacet Lab.
         It only looks at the game, and nothing leaves your computer.
       </p>
       <div

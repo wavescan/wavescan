@@ -68,3 +68,4 @@ Statuses: `proposed` · `accepted` · `deprecated` · `superseded`.
 | [0034](./0034-download-signed-game-data-on-launch.md) | Download signed game data and pictures on every launch, with no off switch | accepted | | data, network, security, privacy |
 | [0035](./0035-in-app-updates.md) | In-app updates: two channels, installed at the next launch at the latest | accepted | | distribution, network, security, supply-chain, ui |
 | [0036](./0036-colour-schemes-and-bundled-title-fonts.md) | Three colour schemes from Wuthering Waves, a theme picker, and bundled title fonts | accepted | | ui, dependencies, privacy |
+| [0037](./0037-other-sites-can-import-the-scan.md) | Other sites can import the scan: Tacet Lab next to Wuthering Tools | accepted | | ui, security, interop |
