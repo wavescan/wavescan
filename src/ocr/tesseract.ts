@@ -10,6 +10,12 @@ import type { OcrLine, RegionText } from "@/ipc/types";
 /** Characters Tesseract may output. Same list as Wuthering Tools. */
 export const CHAR_WHITELIST =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜàáâãäåèéêëìíîïòóôõöùúûü0123456789.:,-'+% ";
+/**
+ * Characters Tesseract may output for crops that hold only stat values ("13.8%", "470").
+ * With letters allowed, the flat "40" on a last substat row read as "AO" or "4O" (issues
+ * #88, #89, 2560×1440), and the row was dropped.
+ */
+export const NUMERIC_WHITELIST = "0123456789.%";
 /** Page segmentation "single uniform block of text". */
 export const PSM_SINGLE_BLOCK = "6";
 /**
@@ -140,6 +146,8 @@ function toLines(result: Recognized): OcrLine[] {
 export interface TesseractReaderOptions {
   /** Region ids read again in sparse-text mode when the first read finds nothing. */
   sparseRetryIds?: readonly string[];
+  /** Region ids that hold only numbers, read with `NUMERIC_WHITELIST` instead of `CHAR_WHITELIST`. */
+  numericIds?: readonly string[];
 }
 
 /**
@@ -150,6 +158,7 @@ export interface TesseractReaderOptions {
 export function createTesseractReader(workers: TesseractWorker[], options: TesseractReaderOptions = {}) {
   if (workers.length === 0) throw new Error("the Tesseract reader needs at least one worker");
   const sparseRetry = new Set(options.sparseRetryIds ?? []);
+  const numeric = new Set(options.numericIds ?? []);
   const idle = [...workers];
   const waiting: ((worker: TesseractWorker) => void)[] = [];
 
@@ -173,7 +182,17 @@ export function createTesseractReader(workers: TesseractWorker[], options: Tesse
     return withWorker(async (worker) => {
       const started = performance.now();
       const output = { text: false, blocks: true };
-      let lines = toLines(await worker.recognize(image, {}, output));
+      let lines: OcrLine[];
+      if (numeric.has(id)) {
+        await worker.setParameters({ tessedit_char_whitelist: NUMERIC_WHITELIST });
+        try {
+          lines = toLines(await worker.recognize(image, {}, output));
+        } finally {
+          await worker.setParameters({ tessedit_char_whitelist: CHAR_WHITELIST });
+        }
+      } else {
+        lines = toLines(await worker.recognize(image, {}, output));
+      }
       if (lines.length === 0 && sparseRetry.has(id)) {
         await worker.setParameters({ tessedit_pageseg_mode: PSM_SPARSE_TEXT });
         try {
@@ -194,6 +213,12 @@ export function createTesseractReader(workers: TesseractWorker[], options: Tesse
     terminate: () => Promise.all(workers.map((worker) => worker.terminate())).then(() => undefined),
   };
 }
+
+/** The app's reader options: which regions get a sparse retry, and which are numbers only. */
+export const READER_OPTIONS: TesseractReaderOptions = {
+  sparseRetryIds: ["name"],
+  numericIds: ["substatValues"],
+};
 
 export type TesseractReader = ReturnType<typeof createTesseractReader>;
 
@@ -293,7 +318,7 @@ export function createBundledTesseract(
       // Load the worker script directly; a blob: URL would need a looser CSP.
       workerBlobURL: false,
     })
-      .then((workers) => createTesseractReader(workers, { sparseRetryIds: ["name"] }))
+      .then((workers) => createTesseractReader(workers, READER_OPTIONS))
       .catch(async (error: unknown) => {
         reader = null;
         const files = await describeAssets(

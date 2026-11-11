@@ -5,8 +5,10 @@ import { gunzipSync } from "node:zlib";
 import type { RegionText } from "@/ipc/types";
 import { createRegionReader, readEngineFor, readEngineLabel } from "@/ocr/regionReader";
 import {
+  NUMERIC_WHITELIST,
   PSM_SINGLE_BLOCK,
   PSM_SPARSE_TEXT,
+  READER_OPTIONS,
   SCALE,
   createBundledTesseract,
   createTesseractReader,
@@ -82,7 +84,11 @@ function fakeWorker(answer: (psm: string) => string[], log: string[] = [], name 
       return { data: { blocks: [{ paragraphs: [{ lines }] }] } };
     },
     async setParameters(params) {
-      psm = params.tessedit_pageseg_mode ?? psm;
+      if (params.tessedit_char_whitelist !== undefined) {
+        log.push(`${name}:whitelist:${params.tessedit_char_whitelist === NUMERIC_WHITELIST ? "numeric" : "text"}`);
+      }
+      if (params.tessedit_pageseg_mode === undefined) return;
+      psm = params.tessedit_pageseg_mode;
       log.push(`${name}:psm:${psm}`);
     },
     async terminate() {
@@ -134,6 +140,23 @@ describe("createTesseractReader", () => {
       `w:psm:${PSM_SINGLE_BLOCK}`,
       "w:read:6",
     ]);
+  });
+
+  it("reads number-only regions with the numeric whitelist, then goes back to the text one (#88, #89)", async () => {
+    const log: string[] = [];
+    const reader = createTesseractReader([fakeWorker(() => ["40"], log)], { numericIds: ["substatValues"] });
+    const [values, labels] = await reader.read([
+      { id: "substatValues", crop },
+      { id: "substatLabels", crop },
+    ]);
+    expect(values!.lines.map((l) => l.text)).toEqual(["40"]);
+    expect(labels!.lines.map((l) => l.text)).toEqual(["40"]);
+    expect(log).toEqual(["w:whitelist:numeric", "w:read:6", "w:whitelist:text", "w:read:6"]);
+  });
+
+  it("the app reads only the substat value column as numbers", () => {
+    expect(READER_OPTIONS).toEqual({ sparseRetryIds: ["name"], numericIds: ["substatValues"] });
+    expect(NUMERIC_WHITELIST).toBe("0123456789.%");
   });
 
   it("fails the read when a crop can't be read, and keeps working afterwards", async () => {

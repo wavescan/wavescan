@@ -79,7 +79,7 @@ Every echo fixture is on Bag → Echoes, so each one must also classify as `bag.
 
 `npm run test:fixtures` runs every replay this OS supports. CI runs it on the Windows and macOS runners after `cargo nextest`, so every change is checked against both engines. It isn't part of `npm test` because it takes a minute or so. Both replays refuse a screenshot whose User ID area isn't masked, so an unmasked capture fails `npm run check` and CI.
 
-Change a Tesseract setting (`src/ocr/tesseract.ts`) only with a replay run before and after. Measured 2026-10-08: 100% of 272 fields on the 27 fixtures, about 150 ms per crop on an M-series Mac.
+Change a Tesseract setting (`src/ocr/tesseract.ts`) only with a replay run before and after. Measured 2026-10-08: 100% of 272 fields on the 27 fixtures, about 150 ms per crop on an M-series Mac. Measured 2026-11-11, after the substat value column was limited to digits, `.` and `%` (issues #88, #89: a flat "40" read as "AO"): 100% of 340 fields on the 29 fixtures, about 115 ms per crop.
 
 ## Rules
 
@@ -95,6 +95,6 @@ Change a Tesseract setting (`src/ocr/tesseract.ts`) only with a replay run befor
 | Screen | Have | Still needed |
 |---|---|---|
 | Bag → Echoes grid | 16:10: 4 frames of a manual scroll at 2304×1440 (two before/after pairs), plus the echo fixtures' grids. 16:9: 3 frames at 1920×1080 (a stacked echo selected, a half-cut last row, the end of the list with a last row of 2 cards), plus the 1920×1080 echo fixtures' grids (one-row scroll pairs) | 16:9 at 2560×1440 / 3840×2160 · a scroll by the scanner itself |
-| Bag → Echoes | 16:10, Windows: 11 at 2880×1800 (5★ +15/+20/+25, one 4★, cost 1/3/4, wrapped labels, collab and "Reminiscence" names, an equipped echo, a toast over the grid), 1 at 2800×1752 (from a JPEG), two 2★ +0 (one with an HP main stat), a 2★ +5 whose unlocked slot isn't tuned (no substats). 16:9, Windows: 14 at 1920×1080 (+5/+15/+20/+25, cost 1/3/4, wrapped labels, flat HP, equipped echoes, a "Nightmare:" name whose "Equipped by" line watch mode once read too early), rebuilt from windowed desktop screenshots (see [`docs/screens/echoes.md`](screens/echoes.md)). Not in the repo yet: 2304×1440 | 16:9 at 2560×1440 / 3840×2160 and fullscreen · macOS · 3★ echoes · +10 echoes |
+| Bag → Echoes | 16:10, Windows: 11 at 2880×1800 (5★ +15/+20/+25, one 4★, cost 1/3/4, wrapped labels, collab and "Reminiscence" names, an equipped echo, a toast over the grid), 1 at 2800×1752 (from a JPEG), two 2★ +0 (one with an HP main stat), a 2★ +5 whose unlocked slot isn't tuned (no substats). 16:9, Windows: 2 at 2560×1440 (a flat "DEF 40" / "ATK 40" on the last row, issues #88 and #89), 14 at 1920×1080 (+5/+15/+20/+25, cost 1/3/4, wrapped labels, flat HP, equipped echoes, a "Nightmare:" name whose "Equipped by" line watch mode once read too early), rebuilt from windowed desktop screenshots (see [`docs/screens/echoes.md`](screens/echoes.md)). Not in the repo yet: 2304×1440 | 16:9 at 3840×2160 and fullscreen · macOS · 3★ echoes · +10 echoes |
 | Characters (v0.2) | none | see the roadmap checklist |
 | Weapons (v0.3) | none | see the roadmap checklist |

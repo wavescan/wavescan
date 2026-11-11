@@ -5,6 +5,7 @@ import { loadBundledScannerData } from "@/data/scannerData";
 import type { FracRect, RegionText } from "@/ipc/types";
 import {
   POOL_SIZE,
+  READER_OPTIONS,
   createTesseractReader,
   startTesseractWorkers,
   type Crop,
@@ -89,9 +90,7 @@ const timings: number[] = [];
 describe("fixture replay: echoes through Tesseract", () => {
   beforeAll(async () => {
     loadBundledScannerData();
-    const reader = createTesseractReader(await startTesseractWorkers({ langPath: MODEL_DIR }), {
-      sparseRetryIds: ["name"],
-    });
+    const reader = createTesseractReader(await startTesseractWorkers({ langPath: MODEL_DIR }), READER_OPTIONS);
     try {
       // All fixtures at once: their crops share the pool, like overlapping reads in auto mode.
       await Promise.all(
