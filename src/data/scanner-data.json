@@ -1,7 +1,7 @@
 {
  "format": "WutheringToolsScannerData",
  "version": 1,
- "hash": "8564c62fd6f19b2505a4dd9176d9607bd03d32fcb9f04614c082926e70e50a21",
+ "hash": "e1d7f1eba901c5c19d2fe3a2856eea7283905274ae6c1232e365c6346473cb29",
  "data": {
   "echoes": {
    "AbyssalGladius": {
@@ -2907,6 +2907,12 @@
     "weapon": "Broadblade"
    },
    {
+    "key": "Lily",
+    "name": "Lily",
+    "rarity": 5,
+    "weapon": "Pistol"
+   },
+   {
     "key": "Lingyang",
     "name": "Lingyang",
     "rarity": 5,
@@ -3461,6 +3467,12 @@
     "rarity": 5
    },
    {
+    "key": "Lullaby",
+    "name": "Lullaby",
+    "type": "Pistol",
+    "rarity": 5
+   },
+   {
     "key": "Lumingloss",
     "name": "Lumingloss",
     "type": "Sword",
@@ -3882,11 +3894,11 @@
    }
   ]
  },
- "publishedAt": "2026-10-22T03:17:12.968Z",
+ "publishedAt": "2026-11-12T01:30:08.441Z",
  "assets": {
   "file": "scanner-assets.json",
   "hash": "b87ecccb588b017e361263bd0388abc411bf84cea4dd313b5dafd26daccdb912"
  },
  "keyId": "4465e4c3be6d190d",
- "signature": "EK+ucqqPFyU1UZXaISuxKG2OB812xNOWq+9G/aLV6iEnNBxyvDr/WQA/jch+wsk8rXO8T8/htZkX7r7FPn366g=="
+ "signature": "uERkCGyeBMwqz2xBZSL0rYGEaFHX5ZEN1RRvMv52C018kVzhdbZHUZqvkNEhPIB9IvmZYLhKNy42py/IKGGqIw=="
 }
