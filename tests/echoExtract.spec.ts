@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadBundledScannerData } from "@/data/scannerData";
 import type { OcrLine, RegionText } from "@/ipc/types";
-import { extractEcho } from "@/session/echoExtract";
+import { extractEcho, readsAsEchoName } from "@/session/echoExtract";
 
 const at = (text: string, y: number, x = 0): OcrLine => ({ text, bounds: { x, y, width: 100, height: 30 } });
 const region = (id: string, texts: string[], x = 0): RegionText => ({
@@ -60,5 +60,26 @@ describe("a short flat value on the last substat row (issues #88, #89)", () => {
       ["DEF", "40"],
     ]);
     expect(echo.confidence.substats).toEqual(["high", "high", "high", "high", "high"]);
+  });
+});
+
+describe("readsAsEchoName (issue #102)", () => {
+  beforeAll(() => loadBundledScannerData());
+
+  it("is false for what block mode read on Soulfrayer, and for nothing", () => {
+    expect(readsAsEchoName([at("SO", 0)])).toBe(false);
+    expect(readsAsEchoName([at("SOU:", 0)])).toBe(false);
+    expect(readsAsEchoName([])).toBe(false);
+  });
+
+  it("is true for the sparse-text read, stray mark and all, and for other echo names", () => {
+    expect(readsAsEchoName([at("Soulfrayer", 0), at("a", 40, 900)])).toBe(true);
+    expect(readsAsEchoName([at("Glommoth ys ge", 0)])).toBe(true);
+  });
+
+  it("identifies Soulfrayer from the sparse-text read", () => {
+    const echo = extractEcho([region("name", ["Soulfrayer"]), region("secondaryStat", ["ATK 100"])]);
+    expect(echo.confidence.name).toBe("high");
+    expect(echo.slot.echo).toBe("Soulfrayer");
   });
 });

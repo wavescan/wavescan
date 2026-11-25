@@ -1,0 +1,17 @@
+{
+  "echo": "Soulfrayer",
+  "echoSet": null,
+  "cost": 3,
+  "rank": 5,
+  "level": 25,
+  "stat": "Electro",
+  "substats": [
+    { "type": "CritRate", "value": 9.3 },
+    { "type": "EnergyRegen", "value": 10.0 },
+    { "type": "CritDMG", "value": 17.4 },
+    { "type": "HP_FLAT", "value": 320 },
+    { "type": "ATK", "value": 6.4 }
+  ],
+  "equippedBy": "Hsin",
+  "notes": "16:9 at 1920x1080, Windows. Issue #102: Tesseract read the name as 'SOU:'. The echo's model (a tall pole and dish) is drawn right behind and beside the name."
+}
