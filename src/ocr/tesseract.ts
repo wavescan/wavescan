@@ -1,5 +1,6 @@
 import { createWorker, type Worker, type WorkerOptions } from "tesseract.js";
 import type { OcrLine, RegionText } from "@/ipc/types";
+import { readsAsEchoName } from "@/session/echoExtract";
 
 // The Tesseract reader (ADR 0027): reads echo text on Windows, and in the fixture replay on
 // every OS. Every Tesseract setting lives in this file, set up like Wuthering Tools' browser
@@ -19,8 +20,9 @@ export const NUMERIC_WHITELIST = "0123456789.%";
 /** Page segmentation "single uniform block of text". */
 export const PSM_SINGLE_BLOCK = "6";
 /**
- * Page segmentation "sparse text", for a retry when a crop read as nothing. Modes 6 and 7
- * return nothing for one clean Whiff Whaff name crop that mode 11 reads.
+ * Page segmentation "sparse text", for a retry when a crop's first read isn't usable.
+ * Modes 6 and 7 return nothing for one clean Whiff Whaff name crop that mode 11 reads, and
+ * "SO" for Soulfrayer, whose bright dish fills the right half of the name crop (issue #102).
  */
 export const PSM_SPARSE_TEXT = "11";
 /** Crops are enlarged this many times (with smoothing) before reading. */
@@ -144,8 +146,12 @@ function toLines(result: Recognized): OcrLine[] {
 }
 
 export interface TesseractReaderOptions {
-  /** Region ids read again in sparse-text mode when the first read finds nothing. */
-  sparseRetryIds?: readonly string[];
+  /**
+   * Regions read again in sparse-text mode when the first read isn't usable, each with the
+   * check for "usable". The retry's lines are kept when they pass the check, or when the
+   * first read found nothing at all; otherwise the first read stands.
+   */
+  sparseRetry?: Readonly<Record<string, (lines: readonly OcrLine[]) => boolean>>;
   /** Region ids that hold only numbers, read with `NUMERIC_WHITELIST` instead of `CHAR_WHITELIST`. */
   numericIds?: readonly string[];
 }
@@ -157,7 +163,7 @@ export interface TesseractReaderOptions {
  */
 export function createTesseractReader(workers: TesseractWorker[], options: TesseractReaderOptions = {}) {
   if (workers.length === 0) throw new Error("the Tesseract reader needs at least one worker");
-  const sparseRetry = new Set(options.sparseRetryIds ?? []);
+  const sparseRetry = options.sparseRetry ?? {};
   const numeric = new Set(options.numericIds ?? []);
   const idle = [...workers];
   const waiting: ((worker: TesseractWorker) => void)[] = [];
@@ -193,13 +199,16 @@ export function createTesseractReader(workers: TesseractWorker[], options: Tesse
       } else {
         lines = toLines(await worker.recognize(image, {}, output));
       }
-      if (lines.length === 0 && sparseRetry.has(id)) {
+      const usable = sparseRetry[id];
+      if (usable && !usable(lines)) {
         await worker.setParameters({ tessedit_pageseg_mode: PSM_SPARSE_TEXT });
+        let retry: OcrLine[];
         try {
-          lines = toLines(await worker.recognize(image, {}, output));
+          retry = toLines(await worker.recognize(image, {}, output));
         } finally {
           await worker.setParameters({ tessedit_pageseg_mode: PSM_SINGLE_BLOCK });
         }
+        if (lines.length === 0 || usable(retry)) lines = retry;
       }
       const elapsed_ms = prepMs + performance.now() - started;
       return { id, lines, width: crop.width, height: crop.height, elapsed_ms };
@@ -214,9 +223,12 @@ export function createTesseractReader(workers: TesseractWorker[], options: Tesse
   };
 }
 
-/** The app's reader options: which regions get a sparse retry, and which are numbers only. */
+/**
+ * The app's reader options: the name is read again as sparse text unless it already reads
+ * as an echo's name, and the substat value column is numbers only.
+ */
 export const READER_OPTIONS: TesseractReaderOptions = {
-  sparseRetryIds: ["name"],
+  sparseRetry: { name: readsAsEchoName },
   numericIds: ["substatValues"],
 };
 

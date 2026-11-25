@@ -8,7 +8,7 @@ import {
   type FieldConfidence,
   type ParsedEchoSlot,
 } from "@wutheringtools/scanner-core";
-import type { RegionText } from "@/ipc/types";
+import type { OcrLine, RegionText } from "@/ipc/types";
 import { SUBSTAT_ROW_IDS, type EchoRegionId } from "./echoRegions";
 import { inferMainStatKey, inferRank, rowValue } from "./echoRank";
 import { expectedSubstatCount } from "./exportScan";
@@ -17,6 +17,23 @@ import { toCoreLines } from "./samples";
 import { matchHpLabel } from "./hpLabel";
 import type { PanelSamples } from "./panelSamples";
 import { matchSetIcon } from "./setIcon";
+
+/** The name crop's lines as one string, the way `extractEcho` reads them. */
+function nameTextOf(lines: readonly OcrLine[]): string {
+  return readingOrder(lines)
+    .map((l) => l.text)
+    .join(" ")
+    .trim();
+}
+
+/**
+ * Whether the name crop's lines match an echo in the game data, the same way `extractEcho`
+ * identifies the echo (without the cost hint). Tesseract reads the name again in another
+ * mode when this is false (`READER_OPTIONS` in `src/ocr/tesseract.ts`, issue #102).
+ */
+export function readsAsEchoName(lines: readonly OcrLine[]): boolean {
+  return resolveEchoByNameAndCost(nameTextOf(lines), "").echo !== null;
+}
 
 /** One echo read from the screen, with per-field confidence. */
 export interface ExtractedEcho {
@@ -135,7 +152,7 @@ export function extractEcho(results: RegionText[], samples: PanelSamples = {}): 
       .join(joiner)
       .trim();
 
-  const nameText = text("name");
+  const nameText = nameTextOf(byId.get("name")?.lines ?? []);
   const levelText = text("level");
   const level = parseLevel(levelText);
   const mainStatText = text("mainStat");

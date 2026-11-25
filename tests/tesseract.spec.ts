@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
+import { loadBundledScannerData } from "@/data/scannerData";
 import type { RegionText } from "@/ipc/types";
 import { createRegionReader, readEngineFor, readEngineLabel } from "@/ocr/regionReader";
 import {
@@ -18,6 +19,7 @@ import {
   type Crop,
   type TesseractWorker,
 } from "@/ocr/tesseract";
+import { readsAsEchoName } from "@/session/echoExtract";
 
 function solid(width: number, height: number, [r, g, b]: [number, number, number]): Crop {
   const rgba = new Uint8Array(width * height * 4);
@@ -126,7 +128,7 @@ describe("createTesseractReader", () => {
   it("reads an empty name again as sparse text, then goes back to block mode", async () => {
     const log: string[] = [];
     const worker = fakeWorker((psm) => (psm === PSM_SPARSE_TEXT ? ["Whiff Whaff"] : []), log);
-    const reader = createTesseractReader([worker], { sparseRetryIds: ["name"] });
+    const reader = createTesseractReader([worker], { sparseRetry: { name: (lines) => lines.length > 0 } });
     const [name, other] = await reader.read([
       { id: "name", crop },
       { id: "substatBlock", crop },
@@ -142,6 +144,28 @@ describe("createTesseractReader", () => {
     ]);
   });
 
+  it("reads a name again as sparse text when the first read isn't usable, and keeps the better one (#102)", async () => {
+    const usable = (lines: readonly { text: string }[]) => lines.some((l) => l.text === "Soulfrayer");
+    const read = async (sparse: string[]) => {
+      const log: string[] = [];
+      const worker = fakeWorker((psm) => (psm === PSM_SPARSE_TEXT ? sparse : ["SO"]), log);
+      const [name] = await createTesseractReader([worker], { sparseRetry: { name: usable } }).read([{ id: "name", crop }]);
+      return { text: name!.lines.map((l) => l.text), log };
+    };
+    const fixed = await read(["Soulfrayer", "a"]);
+    expect(fixed.text).toEqual(["Soulfrayer", "a"]);
+    expect(fixed.log).toEqual(["w:read:6", `w:psm:${PSM_SPARSE_TEXT}`, `w:read:${PSM_SPARSE_TEXT}`, `w:psm:${PSM_SINGLE_BLOCK}`]);
+    // A retry that's no better leaves the first read, so the name is still flagged as unread.
+    expect((await read(["S0 ul"])).text).toEqual(["SO"]);
+  });
+
+  it("doesn't read a usable name twice", async () => {
+    const log: string[] = [];
+    const worker = fakeWorker(() => ["Soulfrayer"], log);
+    await createTesseractReader([worker], { sparseRetry: { name: () => true } }).read([{ id: "name", crop }]);
+    expect(log).toEqual(["w:read:6"]);
+  });
+
   it("reads number-only regions with the numeric whitelist, then goes back to the text one (#88, #89)", async () => {
     const log: string[] = [];
     const reader = createTesseractReader([fakeWorker(() => ["40"], log)], { numericIds: ["substatValues"] });
@@ -154,8 +178,10 @@ describe("createTesseractReader", () => {
     expect(log).toEqual(["w:whitelist:numeric", "w:read:6", "w:whitelist:text", "w:read:6"]);
   });
 
-  it("the app reads only the substat value column as numbers", () => {
-    expect(READER_OPTIONS).toEqual({ sparseRetryIds: ["name"], numericIds: ["substatValues"] });
+  it("the app retries only the name, and reads only the substat value column as numbers", () => {
+    expect(Object.keys(READER_OPTIONS.sparseRetry ?? {})).toEqual(["name"]);
+    expect(READER_OPTIONS.sparseRetry?.name).toBe(readsAsEchoName);
+    expect(READER_OPTIONS.numericIds).toEqual(["substatValues"]);
     expect(NUMERIC_WHITELIST).toBe("0123456789.%");
   });
 
@@ -184,6 +210,8 @@ describe("createTesseractReader", () => {
 const region = (id: string): RegionText => ({ id, lines: [], width: 1, height: 1, elapsed_ms: 1 });
 
 describe("createBundledTesseract", () => {
+  // The app's options check the name against the game data, which the app loads at launch.
+  beforeAll(() => loadBundledScannerData());
   const answers = (text: string) => fakeWorker(() => [text]);
   const crop = { id: "name", crop: solid(1, 1, [0, 0, 0]) };
   const javascript = ((url: string) =>
