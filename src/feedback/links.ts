@@ -3,6 +3,9 @@
 // so keep the two lists in step. Opening a page is the browser's connection, not the app's:
 // Wavescan itself sends nothing.
 
+import type { WutheringToolsScan } from "@/session/exportScan";
+import { scanForTacetLab } from "@/session/siteExport";
+
 export const REPO_URL = "https://github.com/wavescan/wavescan";
 export const FAIR_PLAY_URL = "https://wutheringwaves.kurogames.com/en/main/news/detail/742";
 /** Wuthering Tools' Settings, where its Wavescan section imports the copied scan. */
@@ -18,11 +21,18 @@ export interface ImportSite {
   url: string;
   /** Where to paste the scan once the page is open. */
   pasteHint: string;
+  /** Changes the copied scan for this site's import; the scan is copied as built without it. */
+  adaptScan?: (scan: WutheringToolsScan) => WutheringToolsScan;
 }
 
 export const IMPORT_SITES: readonly ImportSite[] = [
   { name: "Wuthering Tools", url: WT_IMPORT_URL, pasteHint: "Paste the scan in Settings → Wavescan." },
-  { name: "Tacet Lab", url: TACET_LAB_IMPORT_URL, pasteHint: "Paste the scan in its import screen." },
+  {
+    name: "Tacet Lab",
+    url: TACET_LAB_IMPORT_URL,
+    pasteHint: "Paste the scan in its import screen.",
+    adaptScan: scanForTacetLab,
+  },
 ];
 
 /** The URL prefixes the app may open (mirrors the capability scope). */
