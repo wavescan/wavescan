@@ -100,10 +100,14 @@ function report(candidate: EchoCandidate, field: FieldId | null) {
   goReport({ kind: "misread", echoId: candidate.id, field });
 }
 
-/** Copies the scan; true when it worked. Problems are shown under the buttons. */
-async function copyScan(): Promise<boolean> {
+/**
+ * Copies the scan, as `site` imports it when given; true when it worked. Problems are shown
+ * under the buttons.
+ */
+async function copyScan(site?: ImportSite): Promise<boolean> {
+  const scan = site?.adaptScan ? site.adaptScan(built.value.scan) : built.value.scan;
   try {
-    await navigator.clipboard.writeText(JSON.stringify(built.value.scan, null, 2));
+    await navigator.clipboard.writeText(JSON.stringify(scan, null, 2));
     copied.value = true;
     message.value = null;
     setTimeout(() => (copied.value = false), 2500);
@@ -116,7 +120,7 @@ async function copyScan(): Promise<boolean> {
 
 /** Copies the scan, then opens `site`'s import page in the browser to paste it into. */
 async function copyAndOpen(site: ImportSite) {
-  if (!(await copyScan())) return;
+  if (!(await copyScan(site))) return;
   try {
     await openUrl(site.url);
     opened.value = site;
@@ -482,7 +486,7 @@ const queuePosition = computed(() => {
         type="button"
         class="btn btn-sm"
         :disabled="built.scan.echoes.length === 0"
-        @click="copyScan"
+        @click="copyScan()"
       >
         <AppIcon name="copy" /> {{ copied ? "Copied" : "Copy scan only" }}
       </button>

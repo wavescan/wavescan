@@ -21,6 +21,7 @@ Options:
 ## Decision
 
 - **Add "Copy and open Tacet Lab"** under "Copy and open Wuthering Tools" on the Review screen. Both buttons look the same: neither site is presented as the lesser option. Both copy the same scan, unchanged.
+  **Changed 2026-11-25 (issue #103):** a site can adapt the copied scan (`adaptScan` on its `IMPORT_SITES` entry). Tacet Lab's copy renames echo keys it doesn't recognise, listed in `TACET_LAB_ECHO_KEYS` (`src/session/siteExport.ts`): so far only `YoungRoseshroom` → `BabyRoseshroom`, Wuthering Tools' key for "Baby Roseshroom", until Wuthering Tools renames it with a migration for saved data. Everything else, `format` included (Tacet Lab only imports `WutheringToolsScan`), stays as built. "Copy and open Wuthering Tools" and "Copy scan only" copy the scan unchanged. Phantom echoes are left as they are: that's for Tacet Lab's import.
 - **Add one exact URL to the opener scope:** `https://dj12421.github.io/Tacet-Lab/?import=1`. The scope is a glob, so the `?` is written `[?]` (a bare `?` matches any one character). Not the rest of `dj12421.github.io`, and not the rest of Tacet Lab.
 - **Sites live in one list,** `IMPORT_SITES` in `src/feedback/links.ts` (name, URL, where to paste). The buttons and the "opened in your browser" line come from it, so another site is one entry plus the scope line, with an ADR note.
 - **Wording says "Wuthering Tools or Tacet Lab"** where the app and README used to say only WT. Claims about what happens after the paste (stored only in the browser, asks about unchecked values) stay attached to WT, the site we can vouch for.
@@ -42,5 +43,5 @@ Opening a page is still the browser's connection, not Wavescan's ([ADR 0028](002
 
 ## Related
 
-- `src/feedback/links.ts` (`IMPORT_SITES`, `TACET_LAB_IMPORT_URL`), `src/views/ReviewView.vue`, `src-tauri/capabilities/default.json`, `tests/feedback.spec.ts`
+- `src/feedback/links.ts` (`IMPORT_SITES`, `TACET_LAB_IMPORT_URL`), `src/session/siteExport.ts`, `src/views/ReviewView.vue`, `src-tauri/capabilities/default.json`, `tests/feedback.spec.ts`
 - [ADR 0008](0008-scan-json-schema-v1.md) (the scan format), [ADR 0028](0028-browser-links-mini-window-and-saved-scan.md) (opener scope)
